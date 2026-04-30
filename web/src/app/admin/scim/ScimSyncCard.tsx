@@ -5,6 +5,7 @@ import Card from "@/refresh-components/cards/Card";
 import { Button, Divider } from "@opal/components";
 import Text from "@/refresh-components/texts/Text";
 import { timeAgo } from "@/lib/time";
+import { useTranslations } from "next-intl";
 
 // ---------------------------------------------------------------------------
 // Props

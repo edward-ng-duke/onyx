@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { SvgExternalLink, SvgUser, SvgUserPlus } from "@opal/icons";
 import { Button, MessageCard } from "@opal/components";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
@@ -65,22 +66,23 @@ function UsersContent() {
 
 export default function UsersPage() {
   const [inviteOpen, setInviteOpen] = useState(false);
+  const t = useTranslations("admin.users");
 
   return (
     <SettingsLayouts.Root width="lg">
       <SettingsLayouts.Header
-        title="Users & Requests"
+        title={t("headerTitle")}
         icon={SvgUser}
         rightChildren={
           <Button icon={SvgUserPlus} onClick={() => setInviteOpen(true)}>
-            Invite Users
+            {t("inviteUsers")}
           </Button>
         }
       >
         <MessageCard
           variant="info"
-          title="Upcoming changes to permissions"
-          description="Onyx is transitioning to group-based permissions for more granular access control. Curator and Global Curator roles will be replaced by configurable group permissions. We recommend reviewing current role assignments to ensure a smooth transition."
+          title={t("permissionsBannerTitle")}
+          description={t("permissionsBannerDescription")}
           rightChildren={
             <Button
               icon={SvgExternalLink}
@@ -92,7 +94,7 @@ export default function UsersPage() {
                 )
               }
             >
-              Learn more
+              {t("learnMore")}
             </Button>
           }
         />

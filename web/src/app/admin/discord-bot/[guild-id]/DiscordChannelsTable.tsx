@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   Table,
   TableBody,
@@ -59,12 +60,13 @@ export function DiscordChannelsTable({
   onChannelUpdate,
   disabled = false,
 }: Props) {
+  const t = useTranslations("admin.discordBot");
   if (channels.length === 0) {
     return (
       <EmptyMessageCard
         sizePreset="main-ui"
-        title="No channels configured"
-        description="Run !sync-channels in Discord to add channels."
+        title={t("channelsEmptyTitle")}
+        description={t("channelsEmptyDescription")}
       />
     );
   }
@@ -73,11 +75,11 @@ export function DiscordChannelsTable({
     <Table>
       <TableHeader>
         <TableRow className="[&>th]:whitespace-nowrap">
-          <TableHead>Channel</TableHead>
-          <TableHead>Enabled</TableHead>
-          <TableHead>Require @mention</TableHead>
-          <TableHead>Thread Only Mode</TableHead>
-          <TableHead>Agent Override</TableHead>
+          <TableHead>{t("columnChannel")}</TableHead>
+          <TableHead>{t("columnEnabled")}</TableHead>
+          <TableHead>{t("columnRequireMention")}</TableHead>
+          <TableHead>{t("columnThreadOnly")}</TableHead>
+          <TableHead>{t("columnAgentOverride")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

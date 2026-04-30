@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { ThreeDotsLoader } from "@/components/Loading";
 import { getDatesList, useQueryAnalytics } from "../lib";
 import { Text } from "@opal/components";
@@ -12,6 +15,7 @@ export function FeedbackChart({
 }: {
   timeRange: DateRangePickerValue;
 }) {
+  const t = useTranslations("admin.performance.feedback");
   const {
     data: queryAnalyticsData,
     isLoading: isQueryAnalyticsLoading,
@@ -32,7 +36,7 @@ export function FeedbackChart({
   ) {
     chart = (
       <div className="h-80 text-red-600 text-bold flex flex-col">
-        <p className="m-auto">Failed to fetch feedback data...</p>
+        <p className="m-auto">{t("fetchFailed")}</p>
       </div>
     );
   } else {
@@ -67,8 +71,8 @@ export function FeedbackChart({
 
   return (
     <CardSection className="mt-8">
-      <Title>Feedback</Title>
-      <Text as="p">Thumbs Up / Thumbs Down over time</Text>
+      <Title>{t("title")}</Title>
+      <Text as="p">{t("description")}</Text>
       {chart}
     </CardSection>
   );

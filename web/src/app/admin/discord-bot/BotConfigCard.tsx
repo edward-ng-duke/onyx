@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Section } from "@/layouts/general-layouts";
 import Text from "@/refresh-components/texts/Text";
 import Card from "@/refresh-components/cards/Card";
@@ -19,6 +20,7 @@ import { ConfirmEntityModal } from "@/components/modals/ConfirmEntityModal";
 import { getFormattedDateTime } from "@/lib/dateUtils";
 
 export function BotConfigCard() {
+  const t = useTranslations("admin.discordBot");
   const {
     data: botConfig,
     isLoading,
@@ -46,7 +48,7 @@ export function BotConfigCard() {
           alignItems="center"
         >
           <Text mainContentEmphasis text05>
-            Bot Token
+            {t("botToken")}
           </Text>
         </Section>
         <ThreeDotsLoader />
@@ -59,7 +61,7 @@ export function BotConfigCard() {
 
   const handleSaveToken = async () => {
     if (!botToken.trim()) {
-      toast.error("Please enter a bot token");
+      toast.error(t("saveTokenEmpty"));
       return;
     }
 
@@ -68,11 +70,9 @@ export function BotConfigCard() {
       await createBotConfig(botToken.trim());
       setBotToken("");
       refreshBotConfig();
-      toast.success("Bot token saved successfully");
+      toast.success(t("saveTokenSuccess"));
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to save bot token"
-      );
+      toast.error(err instanceof Error ? err.message : t("saveTokenFailed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -83,11 +83,9 @@ export function BotConfigCard() {
     try {
       await deleteBotConfig();
       refreshBotConfig();
-      toast.success("Bot token deleted");
+      toast.success(t("deleteTokenSuccess"));
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to delete bot token"
-      );
+      toast.error(err instanceof Error ? err.message : t("deleteTokenFailed"));
     } finally {
       setIsSubmitting(false);
       setShowDeleteConfirm(false);
@@ -99,29 +97,29 @@ export function BotConfigCard() {
       {showDeleteConfirm && (
         <ConfirmEntityModal
           danger
-          entityType="Discord bot token"
-          entityName="Discord Bot Token"
+          entityType={t("deleteTokenEntityType")}
+          entityName={t("deleteTokenEntityName")}
           onClose={() => setShowDeleteConfirm(false)}
           onSubmit={handleDeleteToken}
-          additionalDetails="This will disconnect your Discord bot. You will need to re-enter the token to use the bot again."
+          additionalDetails={t("deleteTokenAdditionalDetails")}
         />
       )}
       <Card>
         <Section flexDirection="row" justifyContent="between">
           <Section flexDirection="row" gap={0.5} width="fit">
             <Text mainContentEmphasis text05>
-              Bot Token
+              {t("botToken")}
             </Text>
             {isConfigured ? (
-              <Badge variant="success">Configured</Badge>
+              <Badge variant="success">{t("configured")}</Badge>
             ) : (
-              <Badge variant="secondary">Not Configured</Badge>
+              <Badge variant="secondary">{t("notConfigured")}</Badge>
             )}
           </Section>
           {isConfigured && (
             <Tooltip
               tooltip={
-                hasServerConfigs ? "Delete server configs first" : undefined
+                hasServerConfigs ? t("deleteServerConfigsFirst") : undefined
               }
             >
               <Button
@@ -129,7 +127,7 @@ export function BotConfigCard() {
                 variant="danger"
                 onClick={() => setShowDeleteConfirm(true)}
               >
-                Delete Discord Token
+                {t("deleteDiscordToken")}
               </Button>
             </Tooltip>
           )}
@@ -138,29 +136,33 @@ export function BotConfigCard() {
         {isConfigured ? (
           <Section flexDirection="column" alignItems="start" gap={0.5}>
             <Text text03 secondaryBody>
-              Your Discord bot token is configured.
+              {t("configuredHint")}
               {botConfig?.created_at && (
                 <>
                   {" "}
-                  Added {getFormattedDateTime(new Date(botConfig.created_at))}.
+                  {t("addedAt", {
+                    date:
+                      getFormattedDateTime(
+                        new Date(botConfig.created_at)
+                      ) ?? "",
+                  })}
                 </>
               )}
             </Text>
             <Text text03 secondaryBody>
-              To change the token, delete the current one and add a new one.
+              {t("changeTokenHint")}
             </Text>
           </Section>
         ) : (
           <Section flexDirection="column" alignItems="start" gap={0.75}>
             <Text text03 secondaryBody>
-              Enter your Discord bot token to enable the bot. You can get this
-              from the Discord Developer Portal.
+              {t("enterTokenPrompt")}
             </Text>
             <Section flexDirection="row" alignItems="end" gap={0.5}>
               <PasswordInputTypeIn
                 value={botToken}
                 onChange={(e) => setBotToken(e.target.value)}
-                placeholder="Enter bot token..."
+                placeholder={t("tokenPlaceholder")}
                 disabled={isSubmitting}
                 className="flex-1"
               />
@@ -168,7 +170,7 @@ export function BotConfigCard() {
                 disabled={isSubmitting || !botToken.trim()}
                 onClick={handleSaveToken}
               >
-                {isSubmitting ? "Saving..." : "Save Token"}
+                {isSubmitting ? t("savingToken") : t("saveToken")}
               </Button>
             </Section>
           </Section>

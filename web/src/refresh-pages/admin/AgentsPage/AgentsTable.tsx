@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Table, createTableColumns } from "@opal/components";
 import { Content, IllustrationContent } from "@opal/layouts";
 import SvgNoResult from "@opal/illustrations/no-result";
@@ -48,37 +49,56 @@ function toAgentRow(persona: Persona): AgentRow {
 // Column renderers
 // ---------------------------------------------------------------------------
 
-function renderCreatedByColumn(
-  _value: MinimalUserSnapshot | null,
-  row: AgentRow
-) {
+function CreatedByColumn({
+  row,
+}: {
+  row: AgentRow;
+}) {
+  const t = useTranslations("admin.adminAgents");
   return (
     <Content
       sizePreset="main-ui"
       variant="section"
       icon={SvgUser}
-      title={row.builtin_persona ? "System" : row.owner?.email ?? "\u2014"}
+      title={
+        row.builtin_persona ? t("createdBySystem") : row.owner?.email ?? "\u2014"
+      }
     />
   );
 }
 
-function getAccessTitle(row: AgentRow): string {
-  if (row.is_public) return "Public";
-  if (row.groups.length > 0 || row.users.length > 0) return "Shared";
-  return "Private";
+function renderCreatedByColumn(
+  _value: MinimalUserSnapshot | null,
+  row: AgentRow
+) {
+  return <CreatedByColumn row={row} />;
 }
 
-function renderAccessColumn(_isPublic: boolean, row: AgentRow) {
+function AccessColumn({ row }: { row: AgentRow }) {
+  const t = useTranslations("admin.adminAgents");
+  function getAccessTitle(row: AgentRow): string {
+    if (row.is_public) return t("accessPublic");
+    if (row.groups.length > 0 || row.users.length > 0) return t("accessShared");
+    return t("accessPrivate");
+  }
   return (
     <Content
       sizePreset="main-ui"
       variant="section"
       title={getAccessTitle(row)}
       description={
-        !row.is_listed ? "Unlisted" : row.is_featured ? "Featured" : undefined
+        !row.is_listed
+          ? t("accessUnlisted")
+          : row.is_featured
+            ? t("accessFeatured")
+            : undefined
       }
     />
   );
+}
+
+function renderAccessColumn(_isPublic: boolean, row: AgentRow) {
+  return <AccessColumn row={row} />;
 }
 
 // ---------------------------------------------------------------------------
@@ -87,7 +107,10 @@ function renderAccessColumn(_isPublic: boolean, row: AgentRow) {
 
 const tc = createTableColumns<AgentRow>();
 
-function buildColumns(onMutate: () => void) {
+function buildColumns(
+  onMutate: () => void,
+  t: ReturnType<typeof useTranslations>
+) {
   return [
     tc.qualifier({
       content: "icon",
@@ -100,7 +123,7 @@ function buildColumns(onMutate: () => void) {
       ),
     }),
     tc.column("name", {
-      header: "Name",
+      header: t("columnName"),
       weight: 25,
       cell: (value) => (
         <Text as="span" mainUiBody text05>
@@ -109,7 +132,7 @@ function buildColumns(onMutate: () => void) {
       ),
     }),
     tc.column("description", {
-      header: "Description",
+      header: t("columnDescription"),
       weight: 35,
       cell: (value) => (
         <Text as="span" mainUiBody text03>
@@ -118,12 +141,12 @@ function buildColumns(onMutate: () => void) {
       ),
     }),
     tc.column("owner", {
-      header: "Created By",
+      header: t("columnCreatedBy"),
       weight: 20,
       cell: renderCreatedByColumn,
     }),
     tc.column("is_public", {
-      header: "Access",
+      header: t("columnAccess"),
       weight: 12,
       cell: renderAccessColumn,
     }),
@@ -138,11 +161,12 @@ function buildColumns(onMutate: () => void) {
 // ---------------------------------------------------------------------------
 
 export default function AgentsTable() {
+  const t = useTranslations("admin.adminAgents");
   const [searchTerm, setSearchTerm] = useState("");
 
   const { agents, isLoading, refresh } = useAdminAgents();
 
-  const columns = useMemo(() => buildColumns(refresh), [refresh]);
+  const columns = useMemo(() => buildColumns(refresh, t), [refresh, t]);
 
   const nonBuiltinAgents = useMemo(
     () => agents.filter((p) => !p.builtin_persona),
@@ -166,7 +190,7 @@ export default function AgentsTable() {
       refresh();
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "Failed to update agent order"
+        err instanceof Error ? err.message : t("reorderFailed")
       );
       refresh();
     }
@@ -186,7 +210,7 @@ export default function AgentsTable() {
         <InputTypeIn
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search agents..."
+          placeholder={t("searchPlaceholder")}
           leftSearchIcon
         />
         <Section gap={0.25} flexDirection="row" justifyContent="start">
@@ -205,8 +229,8 @@ export default function AgentsTable() {
         emptyState={
           <IllustrationContent
             illustration={SvgNoResult}
-            title="No agents found"
-            description="No agents match the current search."
+            title={t("noAgentsFound")}
+            description={t("noAgentsFoundDescription")}
           />
         }
         footer={{}}

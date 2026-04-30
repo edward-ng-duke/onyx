@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Table, createTableColumns } from "@opal/components";
 import { Content } from "@opal/layouts";
 import { Button } from "@opal/components";
@@ -44,7 +45,8 @@ function renderNameColumn(email: string, row: UserRow) {
   );
 }
 
-function renderStatusColumn(value: UserStatus, row: UserRow) {
+function StatusColumn({ value, row }: { value: UserStatus; row: UserRow }) {
+  const t = useTranslations("admin.users");
   return (
     <div className="flex flex-col">
       <Text as="span" mainUiBody text03>
@@ -52,11 +54,15 @@ function renderStatusColumn(value: UserStatus, row: UserRow) {
       </Text>
       {row.is_scim_synced && (
         <Text as="span" secondaryBody text03>
-          SCIM synced
+          {t("scimSynced")}
         </Text>
       )}
     </div>
   );
+}
+
+function renderStatusColumn(value: UserStatus, row: UserRow) {
+  return <StatusColumn value={value} row={row} />;
 }
 
 function renderLastUpdatedColumn(value: string | null) {
@@ -73,7 +79,10 @@ function renderLastUpdatedColumn(value: string | null) {
 
 const tc = createTableColumns<UserRow>();
 
-function buildColumns(onMutate: () => void) {
+function buildColumns(
+  onMutate: () => void,
+  t: ReturnType<typeof useTranslations>
+) {
   return [
     tc.qualifier({
       content: "icon",
@@ -89,12 +98,12 @@ function buildColumns(onMutate: () => void) {
       },
     }),
     tc.column("email", {
-      header: "Name",
+      header: t("columnName"),
       weight: 22,
       cell: renderNameColumn,
     }),
     tc.column("groups", {
-      header: "Groups",
+      header: t("columnGroups"),
       weight: 24,
       enableSorting: false,
       cell: (value, row) => (
@@ -102,17 +111,17 @@ function buildColumns(onMutate: () => void) {
       ),
     }),
     tc.column("role", {
-      header: "Account Type",
+      header: t("columnAccountType"),
       weight: 16,
       cell: (_value, row) => <UserRoleCell user={row} onMutate={onMutate} />,
     }),
     tc.column("status", {
-      header: "Status",
+      header: t("columnStatus"),
       weight: 14,
       cell: renderStatusColumn,
     }),
     tc.column("updated_at", {
-      header: "Last Updated",
+      header: t("columnLastUpdated"),
       weight: 14,
       cell: renderLastUpdatedColumn,
     }),
@@ -141,6 +150,7 @@ export default function UsersTable({
   roleCounts,
   statusCounts,
 }: UsersTableProps) {
+  const t = useTranslations("admin.users");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRoles, setSelectedRoles] = useState<UserRole[]>([]);
   const [selectedGroups, setSelectedGroups] = useState<number[]>([]);
@@ -159,7 +169,7 @@ export default function UsersTable({
 
   const { users, isLoading, error, refresh } = useAdminUsers();
 
-  const columns = useMemo(() => buildColumns(refresh), [refresh]);
+  const columns = useMemo(() => buildColumns(refresh, t), [refresh, t]);
 
   // Client-side filtering
   const filteredUsers = useMemo(() => {
@@ -195,7 +205,7 @@ export default function UsersTable({
   if (error) {
     return (
       <Text as="p" secondaryBody text03>
-        Failed to load users. Please try refreshing the page.
+        {t("loadFailed")}
       </Text>
     );
   }
@@ -205,7 +215,7 @@ export default function UsersTable({
       <InputTypeIn
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search users..."
+        placeholder={t("searchUsersPlaceholder")}
         leftSearchIcon
       />
       <UserFilters
@@ -228,8 +238,8 @@ export default function UsersTable({
         emptyState={
           <IllustrationContent
             illustration={SvgNoResult}
-            title="No users found"
-            description="No users match the current filters."
+            title={t("noUsersFound")}
+            description={t("noUsersFoundDescription")}
           />
         }
         footer={{
@@ -238,14 +248,12 @@ export default function UsersTable({
               icon={SvgDownload}
               prominence="tertiary"
               size="sm"
-              tooltip="Download CSV"
-              aria-label="Download CSV"
+              tooltip={t("downloadCsv")}
+              aria-label={t("downloadCsv")}
               onClick={() => {
                 downloadUsersCsv().catch((err) => {
                   toast.error(
-                    err instanceof Error
-                      ? err.message
-                      : "Failed to download CSV"
+                    err instanceof Error ? err.message : t("downloadCsvFailed")
                   );
                 });
               }}

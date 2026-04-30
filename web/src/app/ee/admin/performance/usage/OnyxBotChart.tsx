@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { ThreeDotsLoader } from "@/components/Loading";
 import { getDatesList, useOnyxBotAnalytics } from "../lib";
 import { DateRangePickerValue } from "@/components/dateRangeSelectors/AdminDateRangeSelector";
@@ -11,6 +14,7 @@ export function OnyxBotChart({
 }: {
   timeRange: DateRangePickerValue;
 }) {
+  const t = useTranslations("admin.performance.onyxBot");
   const {
     data: onyxBotAnalyticsData,
     isLoading: isOnyxBotAnalyticsLoading,
@@ -31,7 +35,7 @@ export function OnyxBotChart({
   ) {
     chart = (
       <div className="h-80 text-red-600 text-bold flex flex-col">
-        <p className="m-auto">Failed to fetch feedback data...</p>
+        <p className="m-auto">{t("fetchFailed")}</p>
       </div>
     );
   } else {
@@ -68,8 +72,8 @@ export function OnyxBotChart({
 
   return (
     <CardSection className="mt-8">
-      <Title>Slack Channel</Title>
-      <Text as="p">Total Queries vs Auto Resolved</Text>
+      <Title>{t("title")}</Title>
+      <Text as="p">{t("description")}</Text>
       {chart}
     </CardSection>
   );

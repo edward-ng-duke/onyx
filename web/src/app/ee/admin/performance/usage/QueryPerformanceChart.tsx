@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { DateRangePickerValue } from "@/components/dateRangeSelectors/AdminDateRangeSelector";
 import { getDatesList, useQueryAnalytics, useUserAnalytics } from "../lib";
 import { ThreeDotsLoader } from "@/components/Loading";
@@ -13,6 +14,7 @@ export function QueryPerformanceChart({
 }: {
   timeRange: DateRangePickerValue;
 }) {
+  const t = useTranslations("admin.performance.queryPerformance");
   const {
     data: queryAnalyticsData,
     isLoading: isQueryAnalyticsLoading,
@@ -40,7 +42,7 @@ export function QueryPerformanceChart({
   ) {
     chart = (
       <div className="h-80 text-red-600 text-bold flex flex-col">
-        <p className="m-auto">Failed to fetch query data...</p>
+        <p className="m-auto">{t("fetchFailed")}</p>
       </div>
     );
   } else {
@@ -97,8 +99,8 @@ export function QueryPerformanceChart({
 
   return (
     <CardSection className="mt-8">
-      <Title>Usage</Title>
-      <Text as="p">Usage over time</Text>
+      <Title>{t("title")}</Title>
+      <Text as="p">{t("description")}</Text>
       {chart}
     </CardSection>
   );

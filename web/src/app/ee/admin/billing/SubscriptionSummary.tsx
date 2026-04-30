@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import { InfoItem } from "./InfoItem";
 import { statusToDisplay, BillingInformation } from "@/lib/billing";
 import { formatDateShort } from "@/lib/dateUtils";
@@ -10,22 +11,23 @@ interface SubscriptionSummaryProps {
 export function SubscriptionSummary({
   billingInformation,
 }: SubscriptionSummaryProps) {
+  const t = useTranslations("admin.billing");
   return (
     <div className="grid grid-cols-2 gap-4">
       <InfoItem
-        title="Subscription Status"
+        title={t("infoSubscriptionStatus")}
         value={statusToDisplay(billingInformation.status)}
       />
       <InfoItem
-        title="Seats"
+        title={t("infoSeats")}
         value={billingInformation.seats?.toString() ?? "—"}
       />
       <InfoItem
-        title="Billing Start"
+        title={t("infoBillingStart")}
         value={formatDateShort(billingInformation.current_period_start)}
       />
       <InfoItem
-        title="Billing End"
+        title={t("infoBillingEnd")}
         value={formatDateShort(billingInformation.current_period_end)}
       />
     </div>

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CircleAlert, Info } from "lucide-react";
 import { BillingInformation, BillingStatus } from "@/lib/billing/interfaces";
@@ -8,6 +9,7 @@ export function BillingAlerts({
 }: {
   billingInformation: BillingInformation;
 }) {
+  const t = useTranslations("admin.billing");
   const isTrialing = billingInformation.status === BillingStatus.TRIALING;
   const isCancelled = billingInformation.cancel_at_period_end;
   const isExpired = billingInformation.current_period_end
@@ -18,30 +20,28 @@ export function BillingAlerts({
   const messages: string[] = [];
 
   if (isExpired) {
-    messages.push(
-      "Your subscription has expired. Please resubscribe to continue using the service."
-    );
+    messages.push(t("alertExpired"));
   }
   if (isCancelled && !isExpired && billingInformation.current_period_end) {
     messages.push(
-      `Your subscription will cancel on ${new Date(
-        billingInformation.current_period_end
-      ).toLocaleDateString()}. You can resubscribe before this date to remain uninterrupted.`
+      t("alertCancelling", {
+        date: new Date(
+          billingInformation.current_period_end
+        ).toLocaleDateString(),
+      })
     );
   }
   if (isTrialing) {
     messages.push(
-      `You're currently on a trial. Your trial ends on ${
-        billingInformation.trial_end
+      t("alertTrialing", {
+        date: billingInformation.trial_end
           ? new Date(billingInformation.trial_end).toLocaleDateString()
-          : "N/A"
-      }.`
+          : "N/A",
+      })
     );
   }
   if (noPaymentMethod) {
-    messages.push(
-      "You currently have no payment method on file. Please add one to avoid service interruption."
-    );
+    messages.push(t("alertNoPaymentMethod"));
   }
 
   const variant = isExpired || noPaymentMethod ? "destructive" : "default";
@@ -58,8 +58,8 @@ export function BillingAlerts({
         )}
         <span>
           {variant === "destructive"
-            ? "Important Subscription Notice"
-            : "Subscription Notice"}
+            ? t("alertImportantTitle")
+            : t("alertNoticeTitle")}
         </span>
       </AlertTitle>
       <AlertDescription>

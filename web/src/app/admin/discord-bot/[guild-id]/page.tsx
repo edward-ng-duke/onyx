@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState, useEffect, useCallback, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@opal/utils";
 import { ThreeDotsLoader } from "@/components/Loading";
 import { ErrorCallout } from "@/components/ErrorCallout";
@@ -56,6 +57,7 @@ function GuildDetailContent({
   handleDisableAll: () => void;
   disabled: boolean;
 }) {
+  const t = useTranslations("admin.discordBot");
   const {
     data: guild,
     isLoading: guildLoading,
@@ -71,8 +73,8 @@ function GuildDetailContent({
   if (guildError || !guild) {
     return (
       <ErrorCallout
-        errorTitle="Failed to load server"
-        errorMsg={guildError?.info?.detail || "Server not found"}
+        errorTitle={t("loadServerFailedTitle")}
+        errorMsg={guildError?.info?.detail || t("serverNotFound")}
       />
     );
   }
@@ -82,16 +84,15 @@ function GuildDetailContent({
   return (
     <>
       {!isRegistered && (
-        <Callout type="notice" title="Waiting for Registration">
-          Use the !register command in your Discord server with the registration
-          key to complete setup.
+        <Callout type="notice" title={t("waitingForRegistrationTitle")}>
+          {t("waitingForRegistrationBody")}
         </Callout>
       )}
 
       <Card variant={disabled ? "disabled" : "primary"}>
         <ContentAction
-          title="Channel Configuration"
-          description="Run !sync-channels in Discord to update the channel list."
+          title={t("channelConfigTitle")}
+          description={t("channelConfigDescription")}
           sizePreset="main-content"
           variant="section"
           rightChildren={
@@ -108,14 +109,14 @@ function GuildDetailContent({
                   prominence="secondary"
                   onClick={handleEnableAll}
                 >
-                  Enable All
+                  {t("enableAll")}
                 </Button>
                 <Button
                   disabled={disabled}
                   prominence="secondary"
                   onClick={handleDisableAll}
                 >
-                  Disable All
+                  {t("disableAll")}
                 </Button>
               </Section>
             ) : undefined
@@ -124,15 +125,14 @@ function GuildDetailContent({
 
         {!isRegistered ? (
           <Text text03 secondaryBody>
-            Channel configuration will be available after the server is
-            registered.
+            {t("channelConfigUnavailable")}
           </Text>
         ) : channelsLoading ? (
           <ThreeDotsLoader />
         ) : channelsError ? (
           <ErrorCallout
-            errorTitle="Failed to load channels"
-            errorMsg={channelsError?.info?.detail || "Could not load channels"}
+            errorTitle={t("loadChannelsFailedTitle")}
+            errorMsg={channelsError?.info?.detail || t("couldNotLoadChannels")}
           />
         ) : (
           <DiscordChannelsTable
@@ -148,6 +148,7 @@ function GuildDetailContent({
 }
 
 export default function Page({ params }: Props) {
+  const t = useTranslations("admin.discordBot");
   const unwrappedParams = use(params);
   const guildId = Number(unwrappedParams["guild-id"]);
   const { data: guild, refreshGuild } = useDiscordGuild(guildId);
@@ -276,19 +277,22 @@ export default function Page({ params }: Props) {
       );
 
       if (failed > 0) {
-        toast.error(`Updated ${succeeded} channels, but ${failed} failed`);
+        toast.error(t("updatedSomeChannelsFailed", { succeeded, failed }));
         // Refresh to get actual server state when some updates failed
         refreshChannels();
       } else {
         toast.success(
-          `Updated ${succeeded} channel${succeeded !== 1 ? "s" : ""}`
+          t("updatedChannelsCount", {
+            count: succeeded,
+            plural: succeeded !== 1 ? "s" : "",
+          })
         );
         // Update original to match local (avoids flash from refresh)
         setOriginalChannels(localChannels);
       }
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "Failed to update channels"
+        err instanceof Error ? err.message : t("updateChannelsFailed")
       );
     } finally {
       setIsUpdating(false);
@@ -305,11 +309,11 @@ export default function Page({ params }: Props) {
       });
       refreshGuild();
       toast.success(
-        personaId ? "Default agent updated" : "Default agent cleared"
+        personaId ? t("defaultAgentUpdated") : t("defaultAgentCleared")
       );
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "Failed to update agent"
+        err instanceof Error ? err.message : t("updateAgentFailed")
       );
     } finally {
       setIsUpdating(false);
@@ -317,8 +321,10 @@ export default function Page({ params }: Props) {
   };
 
   const registeredText = guild?.registered_at
-    ? `Registered: ${new Date(guild.registered_at).toLocaleString()}`
-    : "Pending registration";
+    ? t("registeredAtPrefix", {
+        date: new Date(guild.registered_at).toLocaleString(),
+      })
+    : t("pendingRegistration");
 
   const isRegistered = !!guild?.guild_id;
   const isUpdateDisabled =
@@ -333,12 +339,12 @@ export default function Page({ params }: Props) {
     <SettingsLayouts.Root>
       <SettingsLayouts.Header
         icon={SvgServer}
-        title={guild?.guild_name || `Server #${guildId}`}
+        title={guild?.guild_name || t("fallbackServerName", { id: guildId })}
         description={registeredText}
         backButton
         rightChildren={
           <Button disabled={isUpdateDisabled} onClick={handleSaveChanges}>
-            Update Configuration
+            {t("updateConfiguration")}
           </Button>
         }
       />
@@ -346,8 +352,8 @@ export default function Page({ params }: Props) {
         {/* Default Persona Selector */}
         <Card variant={!guild?.enabled ? "disabled" : "primary"}>
           <ContentAction
-            title="Default Agent"
-            description="The agent used by the bot in all channels unless overridden."
+            title={t("defaultAgentTitle")}
+            description={t("defaultAgentDescription")}
             sizePreset="main-content"
             variant="section"
             rightChildren={
@@ -360,10 +366,10 @@ export default function Page({ params }: Props) {
                 }
                 disabled={isUpdating || !guild?.enabled || personasLoading}
               >
-                <InputSelect.Trigger placeholder="Select agent" />
+                <InputSelect.Trigger placeholder={t("selectAgentPlaceholder")} />
                 <InputSelect.Content>
                   <InputSelect.Item value="default">
-                    Default Agent
+                    {t("defaultAgentOption")}
                   </InputSelect.Item>
                   {agents.map((persona) => (
                     <InputSelect.Item
@@ -403,8 +409,8 @@ export default function Page({ params }: Props) {
         >
           <MessageCard
             variant="warning"
-            title="You have unsaved changes"
-            description="Click Update to save them."
+            title={t("unsavedChangesTitle")}
+            description={t("unsavedChangesDescription")}
           />
         </div>
       </SettingsLayouts.Body>

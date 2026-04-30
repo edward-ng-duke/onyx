@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import BillingInformationPage from "./BillingInformationPage";
 import { SvgCreditCard } from "@opal/icons";
@@ -16,12 +17,13 @@ export interface BillingInformation {
   payment_method_enabled: boolean;
 }
 
-export default function page() {
+export default async function page() {
+  const t = await getTranslations("admin.billing");
   return (
     <SettingsLayouts.Root>
       <SettingsLayouts.Header
         icon={SvgCreditCard}
-        title="Billing Information"
+        title={t("headerTitleEe")}
         divider
       />
       <SettingsLayouts.Body>

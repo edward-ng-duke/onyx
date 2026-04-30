@@ -3,6 +3,7 @@
 import * as Yup from "yup";
 import { Button } from "@opal/components";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import Modal from "@/refresh-components/Modal";
 import { Form, Formik } from "formik";
 import { SelectorFormField, TextFormField } from "@/components/Field";
@@ -30,6 +31,7 @@ export default function CreateRateLimitModal({
   forSpecificScope,
   forSpecificUserGroup,
 }: CreateRateLimitModalProps) {
+  const t = useTranslations("admin.tokenRateLimits");
   const [modalUserGroups, setModalUserGroups] = useState([]);
   const [shouldFetchUserGroups, setShouldFetchUserGroups] = useState(
     forSpecificScope === Scope.USER_GROUP
@@ -47,21 +49,21 @@ export default function CreateRateLimitModal({
         setModalUserGroups(options);
         setShouldFetchUserGroups(false);
       } catch (error) {
-        toast.error(`Failed to fetch user groups: ${error}`);
+        toast.error(t("fetchUserGroupsFailed", { error: String(error) }));
       }
     };
 
     if (shouldFetchUserGroups) {
       fetchData();
     }
-  }, [shouldFetchUserGroups]);
+  }, [shouldFetchUserGroups, t]);
 
   return (
     <Modal open={isOpen} onOpenChange={() => setIsOpen(false)}>
       <Modal.Content width="sm" height="sm">
         <Modal.Header
           icon={SvgSettings}
-          title="Create a Token Rate Limit"
+          title={t("modalTitle")}
           onClose={() => setIsOpen(false)}
         />
         <Formik
@@ -111,11 +113,11 @@ export default function CreateRateLimitModal({
                 {!forSpecificScope && (
                   <SelectorFormField
                     name="target_scope"
-                    label="Target Scope"
+                    label={t("labelTargetScope")}
                     options={[
-                      { name: "Global", value: Scope.GLOBAL },
-                      { name: "User", value: Scope.USER },
-                      { name: "User Group", value: Scope.USER_GROUP },
+                      { name: t("scopeGlobal"), value: Scope.GLOBAL },
+                      { name: t("scopeUser"), value: Scope.USER },
+                      { name: t("scopeUserGroup"), value: Scope.USER_GROUP },
                     ]}
                     includeDefault={false}
                     onSelect={(selected) => {
@@ -130,27 +132,27 @@ export default function CreateRateLimitModal({
                   values.target_scope === Scope.USER_GROUP && (
                     <SelectorFormField
                       name="user_group_id"
-                      label="User Group"
+                      label={t("labelUserGroup")}
                       options={modalUserGroups}
                       includeDefault={false}
                     />
                   )}
                 <TextFormField
                   name="period_hours"
-                  label="Time Window (Hours)"
+                  label={t("labelTimeWindow")}
                   type="number"
                   placeholder=""
                 />
                 <TextFormField
                   name="token_budget"
-                  label="Token Budget (Thousands)"
+                  label={t("labelTokenBudget")}
                   type="number"
                   placeholder=""
                 />
               </Modal.Body>
               <Modal.Footer>
                 <Button disabled={isSubmitting} type="submit">
-                  Create
+                  {t("createSubmit")}
                 </Button>
               </Modal.Footer>
             </Form>

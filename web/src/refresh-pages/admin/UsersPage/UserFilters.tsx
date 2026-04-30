@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { SvgCheck, SvgUser, SvgUserManage, SvgUsers } from "@opal/icons";
 import { SvgSlack } from "@opal/logos";
 import type { IconFunctionComponent } from "@opal/types";
@@ -92,6 +93,7 @@ export default function UserFilters({
   roleCounts,
   statusCounts,
 }: UserFiltersProps) {
+  const t = useTranslations("admin.users");
   const hasRoleFilter = selectedRoles.length > 0;
   const hasGroupFilter = selectedGroups.length > 0;
   const hasStatusFilter = selectedStatuses.length > 0;
@@ -128,7 +130,7 @@ export default function UserFilters({
         .slice(0, 2)
         .join(", ") +
       (selectedRoles.length > 2 ? `, +${selectedRoles.length - 2}` : "")
-    : "All Account Types";
+    : t("allAccountTypes");
 
   const groupLabel = hasGroupFilter
     ? groups
@@ -137,7 +139,7 @@ export default function UserFilters({
         .slice(0, 2)
         .join(", ") +
       (selectedGroups.length > 2 ? `, +${selectedGroups.length - 2}` : "")
-    : "All Groups";
+    : t("allGroups");
 
   const statusLabel = hasStatusFilter
     ? FILTERABLE_STATUSES.filter(([status]) =>
@@ -147,7 +149,7 @@ export default function UserFilters({
         .slice(0, 2)
         .join(", ") +
       (selectedStatuses.length > 2 ? `, +${selectedStatuses.length - 2}` : "")
-    : "All Status";
+    : t("allStatus");
 
   const filteredGroups = groupSearch
     ? groups.filter((g) =>
@@ -161,7 +163,7 @@ export default function UserFilters({
       <Popover>
         <Popover.Trigger asChild>
           <FilterButton
-            aria-label="Filter by role"
+            aria-label={t("filterByRole")}
             icon={SvgUsers}
             active={hasRoleFilter}
             onClear={() => onRolesChange([])}
@@ -177,7 +179,7 @@ export default function UserFilters({
               emphasized={!hasRoleFilter}
               onClick={() => onRolesChange([])}
             >
-              All Account Types
+              {t("allAccountTypes")}
             </LineItem>
             {FILTERABLE_ROLES.map(([role, label]) => {
               const isSelected = selectedRoles.includes(role);
@@ -210,7 +212,7 @@ export default function UserFilters({
       >
         <Popover.Trigger asChild>
           <FilterButton
-            aria-label="Filter by group"
+            aria-label={t("filterByGroup")}
             icon={SvgUsers}
             active={hasGroupFilter}
             onClear={() => onGroupsChange([])}
@@ -223,7 +225,7 @@ export default function UserFilters({
             <InputTypeIn
               value={groupSearch}
               onChange={(e) => setGroupSearch(e.target.value)}
-              placeholder="Search groups..."
+              placeholder={t("searchGroupsPlaceholder")}
               leftSearchIcon
               variant="internal"
             />
@@ -233,7 +235,7 @@ export default function UserFilters({
               emphasized={!hasGroupFilter}
               onClick={() => onGroupsChange([])}
             >
-              All Groups
+              {t("allGroups")}
             </LineItem>
             <ShadowDiv className="flex flex-col gap-1 max-h-[240px]">
               {filteredGroups.map((group) => {
@@ -253,7 +255,7 @@ export default function UserFilters({
               })}
               {filteredGroups.length === 0 && (
                 <Text as="span" secondaryBody text03 className="px-2 py-1.5">
-                  No groups found
+                  {t("noGroupsFound")}
                 </Text>
               )}
             </ShadowDiv>
@@ -265,7 +267,7 @@ export default function UserFilters({
       <Popover>
         <Popover.Trigger asChild>
           <FilterButton
-            aria-label="Filter by status"
+            aria-label={t("filterByStatus")}
             icon={SvgUsers}
             active={hasStatusFilter}
             onClear={() => onStatusesChange([])}
@@ -281,7 +283,7 @@ export default function UserFilters({
               emphasized={!hasStatusFilter}
               onClick={() => onStatusesChange([])}
             >
-              All Status
+              {t("allStatus")}
             </LineItem>
             {FILTERABLE_STATUSES.map(([status, label]) => {
               const isSelected = selectedStatuses.includes(status);

@@ -8,6 +8,7 @@ import IconButton from "@/refresh-components/buttons/IconButton";
 import Text from "@/refresh-components/texts/Text";
 import Link from "next/link";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
+import { useTranslations } from "next-intl";
 
 // ---------------------------------------------------------------------------
 // Stats cell — number + label + hover filter icon
@@ -20,6 +21,7 @@ type StatCellProps = {
 };
 
 function StatCell({ value, label, onFilter }: StatCellProps) {
+  const t = useTranslations("admin.users");
   const display = value === null ? "\u2014" : value.toLocaleString();
 
   return (
@@ -42,7 +44,7 @@ function StatCell({ value, label, onFilter }: StatCellProps) {
               <IconButton
                 tertiary
                 icon={SvgFilterPlus}
-                tooltip="Add Filter"
+                tooltip={t("addFilter")}
                 toolTipPosition="left"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -62,19 +64,20 @@ function StatCell({ value, label, onFilter }: StatCellProps) {
 // ---------------------------------------------------------------------------
 
 function ScimCard() {
+  const t = useTranslations("admin.users");
   return (
     <Card gap={0.5} padding={0.75}>
       <ContentAction
         icon={SvgUserSync}
-        title="SCIM Sync"
-        description="Users are synced from your identity provider."
+        title={t("scimSyncTitle")}
+        description={t("scimSyncDescription")}
         sizePreset="main-ui"
         variant="section"
         padding="fit"
         rightChildren={
           <Link href={ADMIN_ROUTES.SCIM.path}>
             <Button prominence="tertiary" rightIcon={SvgArrowUpRight} size="sm">
-              Manage
+              {t("scimManage")}
             </Button>
           </Link>
         }
@@ -106,6 +109,7 @@ export default function UsersSummary({
   onFilterInvites,
   onFilterRequests,
 }: UsersSummaryProps) {
+  const t = useTranslations("admin.users");
   const showRequests = requests !== null && requests > 0;
 
   const statsCard = (
@@ -113,18 +117,18 @@ export default function UsersSummary({
       <Section flexDirection="row" gap={0}>
         <StatCell
           value={activeUsers}
-          label="active users"
+          label={t("activeUsers")}
           onFilter={onFilterActive}
         />
         <StatCell
           value={pendingInvites}
-          label="pending invites"
+          label={t("pendingInvites")}
           onFilter={onFilterInvites}
         />
         {showRequests && (
           <StatCell
             value={requests}
-            label="requests to join"
+            label={t("requestsToJoin")}
             onFilter={onFilterRequests}
           />
         )}
@@ -152,14 +156,14 @@ export default function UsersSummary({
       <Card padding={0.5}>
         <StatCell
           value={activeUsers}
-          label="active users"
+          label={t("activeUsers")}
           onFilter={onFilterActive}
         />
       </Card>
       <Card padding={0.5}>
         <StatCell
           value={pendingInvites}
-          label="pending invites"
+          label={t("pendingInvites")}
           onFilter={onFilterInvites}
         />
       </Card>
@@ -167,7 +171,7 @@ export default function UsersSummary({
         <Card padding={0.5}>
           <StatCell
             value={requests}
-            label="requests to join"
+            label={t("requestsToJoin")}
             onFilter={onFilterRequests}
           />
         </Card>

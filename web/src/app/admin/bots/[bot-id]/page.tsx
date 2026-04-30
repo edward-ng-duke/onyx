@@ -1,6 +1,7 @@
 "use client";
 
 import { use } from "react";
+import { useTranslations } from "next-intl";
 import { ErrorCallout } from "@/components/ErrorCallout";
 import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
 import SlackChannelConfigsTable from "./SlackChannelConfigsTable";
@@ -11,6 +12,7 @@ import { SvgSlack } from "@opal/logos";
 import { getErrorMsg } from "@/lib/error";
 
 function SlackBotEditContent({ botId }: { botId: string }) {
+  const t = useTranslations("admin.bots");
   const {
     data: slackBot,
     isLoading: isSlackBotLoading,
@@ -32,10 +34,11 @@ function SlackBotEditContent({ botId }: { botId: string }) {
   if (slackBotError || !slackBot) {
     return (
       <ErrorCallout
-        errorTitle="Something went wrong :("
-        errorMsg={`Failed to fetch Slack Bot ${botId}: ${getErrorMsg(
-          slackBotError
-        )}`}
+        errorTitle={t("fetchSlackBotFailedTitle")}
+        errorMsg={t("fetchSlackBotFailedMsg", {
+          botId,
+          error: getErrorMsg(slackBotError),
+        })}
       />
     );
   }
@@ -43,10 +46,11 @@ function SlackBotEditContent({ botId }: { botId: string }) {
   if (slackChannelConfigsError || !slackChannelConfigs) {
     return (
       <ErrorCallout
-        errorTitle="Something went wrong :("
-        errorMsg={`Failed to fetch Slack Bot ${botId}: ${getErrorMsg(
-          slackChannelConfigsError
-        )}`}
+        errorTitle={t("fetchSlackBotFailedTitle")}
+        errorMsg={t("fetchSlackBotFailedMsg", {
+          botId,
+          error: getErrorMsg(slackChannelConfigsError),
+        })}
       />
     );
   }
@@ -75,12 +79,13 @@ export default function Page({
   params: Promise<{ "bot-id": string }>;
 }) {
   const unwrappedParams = use(params);
+  const t = useTranslations("admin.bots");
 
   return (
     <SettingsLayouts.Root>
       <SettingsLayouts.Header
         icon={SvgSlack}
-        title="Edit Slack Bot"
+        title={t("editSlackBotPageTitle")}
         backButton
         divider
       />

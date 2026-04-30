@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import useSWR from "swr";
+import { useTranslations } from "next-intl";
 import { SWR_KEYS } from "@/lib/swr-keys";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
@@ -15,9 +16,6 @@ import Text from "@/refresh-components/texts/Text";
 import InputSelect from "@/refresh-components/inputs/InputSelect";
 import Button from "@/refresh-components/buttons/Button";
 import { errorHandlingFetcher } from "@/lib/fetcher";
-
-const TOGGLE_DISABLED_MESSAGE =
-  "Changing the retrieval source is not currently possible for this instance of Onyx.";
 
 interface MigrationStatus {
   total_chunks_migrated: number;
@@ -36,6 +34,7 @@ function formatTimestamp(iso: string): string {
 }
 
 function MigrationStatusSection() {
+  const t = useTranslations("admin.documentIndexMigration");
   const { data, isLoading, error } = useSWR<MigrationStatus>(
     SWR_KEYS.opensearchMigrationStatus,
     errorHandlingFetcher
@@ -44,9 +43,9 @@ function MigrationStatusSection() {
   if (isLoading) {
     return (
       <Card>
-        <Text headingH3>Migration Status</Text>
+        <Text headingH3>{t("migrationStatus")}</Text>
         <Text mainUiBody text03>
-          Loading...
+          {t("loading")}
         </Text>
       </Card>
     );
@@ -55,9 +54,9 @@ function MigrationStatusSection() {
   if (error) {
     return (
       <Card>
-        <Text headingH3>Migration Status</Text>
+        <Text headingH3>{t("migrationStatus")}</Text>
         <Text mainUiBody text03>
-          Failed to load migration status.
+          {t("loadStatusFailed")}
         </Text>
       </Card>
     );
@@ -79,36 +78,37 @@ function MigrationStatusSection() {
 
   return (
     <Card>
-      <Text headingH3>Migration Status</Text>
+      <Text headingH3>{t("migrationStatus")}</Text>
 
       <ContentAction
-        title="Started"
+        title={t("started")}
         sizePreset="main-ui"
         variant="section"
         rightChildren={
           <Text mainUiBody>
-            {hasStarted ? formatTimestamp(data.created_at!) : "Not started"}
+            {hasStarted ? formatTimestamp(data.created_at!) : t("notStarted")}
           </Text>
         }
       />
 
       <ContentAction
-        title="Chunks Migrated"
+        title={t("chunksMigrated")}
         sizePreset="main-ui"
         variant="section"
         rightChildren={
           <Text mainUiBody>
             {progressPercentage !== null
-              ? `${totalChunksMigrated} (approx. progress ${Math.round(
-                  progressPercentage
-                )}%)`
+              ? t("chunksProgress", {
+                  count: totalChunksMigrated,
+                  percent: Math.round(progressPercentage),
+                })
               : String(totalChunksMigrated)}
           </Text>
         }
       />
 
       <ContentAction
-        title="Completed"
+        title={t("completed")}
         sizePreset="main-ui"
         variant="section"
         rightChildren={
@@ -116,8 +116,8 @@ function MigrationStatusSection() {
             {hasCompleted
               ? formatTimestamp(data.migration_completed_at!)
               : hasStarted
-                ? "In progress"
-                : "Not started"}
+                ? t("inProgress")
+                : t("notStarted")}
           </Text>
         }
       />
@@ -126,6 +126,7 @@ function MigrationStatusSection() {
 }
 
 function RetrievalSourceSection() {
+  const t = useTranslations("admin.documentIndexMigration");
   const { data, isLoading, error, mutate } = useSWR<RetrievalStatus>(
     SWR_KEYS.opensearchMigrationRetrieval,
     errorHandlingFetcher
@@ -163,9 +164,9 @@ function RetrievalSourceSection() {
   if (isLoading) {
     return (
       <Card>
-        <Text headingH3>Retrieval Source</Text>
+        <Text headingH3>{t("retrievalSource")}</Text>
         <Text mainUiBody text03>
-          Loading...
+          {t("loading")}
         </Text>
       </Card>
     );
@@ -174,9 +175,9 @@ function RetrievalSourceSection() {
   if (error) {
     return (
       <Card>
-        <Text headingH3>Retrieval Source</Text>
+        <Text headingH3>{t("retrievalSource")}</Text>
         <Text mainUiBody text03>
-          Failed to load retrieval settings.
+          {t("loadRetrievalFailed")}
         </Text>
       </Card>
     );
@@ -185,8 +186,8 @@ function RetrievalSourceSection() {
   return (
     <Card>
       <Content
-        title="Retrieval Source"
-        description="Controls which document index is used for retrieval."
+        title={t("retrievalSource")}
+        description={t("retrievalSourceDescription")}
         sizePreset="main-ui"
         variant="section"
       />
@@ -196,16 +197,20 @@ function RetrievalSourceSection() {
         onValueChange={setSelectedSource}
         disabled={updating || togglingDisabled}
       >
-        <InputSelect.Trigger placeholder="Select retrieval source" />
+        <InputSelect.Trigger
+          placeholder={t("selectRetrievalSourcePlaceholder")}
+        />
         <InputSelect.Content>
-          <InputSelect.Item value="vespa">Vespa</InputSelect.Item>
-          <InputSelect.Item value="opensearch">OpenSearch</InputSelect.Item>
+          <InputSelect.Item value="vespa">{t("vespa")}</InputSelect.Item>
+          <InputSelect.Item value="opensearch">
+            {t("opensearch")}
+          </InputSelect.Item>
         </InputSelect.Content>
       </InputSelect>
 
       {togglingDisabled && (
         <Text mainUiBody text03>
-          {TOGGLE_DISABLED_MESSAGE}
+          {t("togglingDisabled")}
         </Text>
       )}
 
@@ -216,7 +221,7 @@ function RetrievalSourceSection() {
           onClick={handleUpdate}
           disabled={updating}
         >
-          {updating ? "Updating..." : "Update Settings"}
+          {updating ? t("updating") : t("updateSettings")}
         </Button>
       )}
     </Card>
@@ -225,12 +230,13 @@ function RetrievalSourceSection() {
 
 export default function Page() {
   const { title } = useAdminRouteI18n(route);
+  const t = useTranslations("admin.documentIndexMigration");
   return (
     <SettingsLayouts.Root>
       <SettingsLayouts.Header
         icon={route.icon}
         title={title}
-        description="Monitor the migration from Vespa to OpenSearch and control the active retrieval source."
+        description={t("headerDescription")}
         divider
       />
       <SettingsLayouts.Body>

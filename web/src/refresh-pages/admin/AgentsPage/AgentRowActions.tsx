@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@opal/components";
 // TODO(@raunakab): migrate to Opal LineItemButton once it supports danger variant
 import LineItem from "@/refresh-components/buttons/LineItem";
@@ -55,6 +56,7 @@ export default function AgentRowActions({
   agent,
   onMutate,
 }: AgentRowActionsProps) {
+  const t = useTranslations("admin.adminAgents");
   const router = useRouter();
   const { isAdmin, isCurator } = useUser();
   const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
@@ -73,10 +75,10 @@ export default function AgentRowActions({
     try {
       await action();
       onMutate();
-      toast.success(`${agent.name} updated successfully.`);
+      toast.success(t("updateSuccess", { name: agent.name }));
       close();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "An error occurred");
+      toast.error(err instanceof Error ? err.message : t("updateError"));
     } finally {
       setIsSubmitting(false);
     }
@@ -100,7 +102,7 @@ export default function AgentRowActions({
       );
 
       if (shareError) {
-        toast.error(`Failed to share agent: ${shareError}`);
+        toast.error(t("shareFailed", { error: shareError }));
         return;
       }
 
@@ -110,7 +112,7 @@ export default function AgentRowActions({
           isFeatured
         );
         if (featuredError) {
-          toast.error(`Failed to update featured status: ${featuredError}`);
+          toast.error(t("shareFeaturedFailed", { error: featuredError }));
           refreshAgent();
           return;
         }
@@ -126,6 +128,8 @@ export default function AgentRowActions({
       canUpdateFeaturedStatus,
       refreshAgent,
       onMutate,
+      t,
+      shareModal,
     ]
   );
 
@@ -153,7 +157,7 @@ export default function AgentRowActions({
             <Button
               prominence="tertiary"
               icon={SvgEdit}
-              tooltip="Edit Agent"
+              tooltip={t("editAgent")}
               onClick={() =>
                 router.push(
                   `/app/agents/edit/${
@@ -168,7 +172,7 @@ export default function AgentRowActions({
           <Button
             prominence="tertiary"
             icon={SvgEyeOff}
-            tooltip="Re-list Agent"
+            tooltip={t("relistAgent")}
             onClick={() =>
               handleAction(
                 () => toggleAgentListed(agent.id, agent.is_listed),
@@ -188,7 +192,7 @@ export default function AgentRowActions({
               icon={SvgStar}
               interaction={featuredOpen ? "hover" : "rest"}
               tooltip={
-                agent.is_featured ? "Remove Featured" : "Set as Featured"
+                agent.is_featured ? t("removeFeatured") : t("setAsFeatured")
               }
               onClick={() => {
                 setPopoverOpen(false);
@@ -228,7 +232,7 @@ export default function AgentRowActions({
                     }
                   }}
                 >
-                  {agent.is_listed ? "Unlist Agent" : "List Agent"}
+                  {agent.is_listed ? t("unlistAgent") : t("listAgent")}
                 </LineItem>,
                 <LineItem
                   key="share"
@@ -238,7 +242,7 @@ export default function AgentRowActions({
                     shareModal.toggle(true);
                   }}
                 >
-                  Share
+                  {t("share")}
                 </LineItem>,
                 isPaidEnterpriseFeaturesEnabled ? (
                   <LineItem
@@ -249,7 +253,7 @@ export default function AgentRowActions({
                       router.push(`/ee/agents/stats/${agent.id}` as Route);
                     }}
                   >
-                    Stats
+                    {t("stats")}
                   </LineItem>
                 ) : undefined,
                 !agent.builtin_persona ? null : undefined,
@@ -263,7 +267,7 @@ export default function AgentRowActions({
                       setDeleteOpen(true);
                     }}
                   >
-                    Delete
+                    {t("delete")}
                   </LineItem>
                 ) : undefined,
               ]}
@@ -275,7 +279,7 @@ export default function AgentRowActions({
       {deleteOpen && (
         <ConfirmationModalLayout
           icon={SvgTrash}
-          title="Delete Agent"
+          title={t("deleteAgentTitle")}
           onClose={isSubmitting ? undefined : () => setDeleteOpen(false)}
           submit={
             <Button
@@ -288,16 +292,16 @@ export default function AgentRowActions({
                 );
               }}
             >
-              Delete
+              {t("delete")}
             </Button>
           }
         >
           <Text as="p" text03>
-            Are you sure you want to delete{" "}
+            {t("deleteAgentBodyPrefix")}{" "}
             <Text as="span" text05>
               {agent.name}
             </Text>
-            ? This action cannot be undone.
+            {t("deleteAgentBodySuffix")}
           </Text>
         </ConfirmationModalLayout>
       )}
@@ -307,8 +311,8 @@ export default function AgentRowActions({
           icon={agent.is_featured ? SvgStarOff : SvgStar}
           title={
             agent.is_featured
-              ? `Remove ${agent.name} from Featured`
-              : `Feature ${agent.name}`
+              ? t("removeFeaturedTitle", { name: agent.name })
+              : t("featureTitle", { name: agent.name })
           }
           onClose={isSubmitting ? undefined : () => setFeaturedOpen(false)}
           submit={
@@ -321,18 +325,18 @@ export default function AgentRowActions({
                 );
               }}
             >
-              {agent.is_featured ? "Unfeature" : "Feature"}
+              {agent.is_featured ? t("unfeatureSubmit") : t("featureSubmit")}
             </Button>
           }
         >
           <div className="flex flex-col gap-2">
             <Text as="p" text03>
               {agent.is_featured
-                ? `This will remove ${agent.name} from the featured section on top of the explore agents list. New users will no longer see it pinned to their sidebar, but existing pins are unaffected.`
-                : "Featured agents appear at the top of the explore agents list and are automatically pinned to the sidebar for new users with access. Use this to highlight recommended agents across your organization."}
+                ? t("featuredBodyRemove", { name: agent.name })
+                : t("featuredBodyAdd")}
             </Text>
             <Text as="p" text03>
-              This does not change who can access this agent.
+              {t("doesNotChangeAccess")}
             </Text>
           </div>
         </ConfirmationModalLayout>
@@ -341,7 +345,7 @@ export default function AgentRowActions({
       {unlistOpen && (
         <ConfirmationModalLayout
           icon={SvgEyeOff}
-          title={markdown(`Unlist *${agent.name}*`)}
+          title={markdown(t("unlistTitle", { name: agent.name }))}
           onClose={isSubmitting ? undefined : () => setUnlistOpen(false)}
           submit={
             <Button
@@ -353,18 +357,16 @@ export default function AgentRowActions({
                 );
               }}
             >
-              Unlist
+              {t("unlistSubmit")}
             </Button>
           }
         >
           <div className="flex flex-col gap-2">
             <Text as="p" text03>
-              Unlisted agents don&apos;t appear in the explore agents list but
-              remain accessible via direct link, and to users who have
-              previously used or pinned them.
+              {t("unlistBody")}
             </Text>
             <Text as="p" text03>
-              This does not change who can access this agent.
+              {t("doesNotChangeAccess")}
             </Text>
           </div>
         </ConfirmationModalLayout>

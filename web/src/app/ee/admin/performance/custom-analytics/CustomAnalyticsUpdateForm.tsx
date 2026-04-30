@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Label, SubLabel } from "@/components/Field";
 import { toast } from "@/hooks/useToast";
 import { SettingsContext } from "@/providers/SettingsProvider";
@@ -11,6 +12,7 @@ import InputTextArea from "@/refresh-components/inputs/InputTextArea";
 import Spacer from "@/refresh-components/Spacer";
 
 export function CustomAnalyticsUpdateForm() {
+  const t = useTranslations("admin.performance.customAnalytics");
   const settings = useContext(SettingsContext);
   const customAnalyticsScript = settings?.customAnalyticsScript;
 
@@ -19,7 +21,7 @@ export function CustomAnalyticsUpdateForm() {
   const [secretKey, setSecretKey] = useState<string>("");
 
   if (!settings) {
-    return <Callout type="danger" title="Failed to fetch settings"></Callout>;
+    return <Callout type="danger" title={t("settingsLoadFailed")}></Callout>;
   }
 
   return (
@@ -42,28 +44,19 @@ export function CustomAnalyticsUpdateForm() {
             }
           );
           if (response.ok) {
-            toast.success("Custom analytics script updated successfully!");
+            toast.success(t("updateSuccess"));
           } else {
             const errorMsg = (await response.json()).detail;
-            toast.error(
-              `Failed to update custom analytics script: "${errorMsg}"`
-            );
+            toast.error(t("updateFailed", { error: errorMsg }));
           }
           setSecretKey("");
         }}
       >
         <div className="mb-4">
-          <Label>Script</Label>
-          <Text as="p">
-            Specify the Javascript that should run on page load in order to
-            initialize your custom tracking/analytics.
-          </Text>
+          <Label>{t("scriptLabel")}</Label>
+          <Text as="p">{t("scriptHelp")}</Text>
           <Spacer rem={0.75} />
-          <Text as="p">
-            {markdown(
-              "Do not include the `<script></script>` tags. If you upload a script below but you are not receiving any events in your analytics platform, try removing all extra whitespace before each line of JavaScript."
-            )}
-          </Text>
+          <Text as="p">{markdown(t("scriptHelpDetail"))}</Text>
           <Spacer rem={0.5} />
           <InputTextArea
             value={newCustomAnalyticsScript}
@@ -73,13 +66,12 @@ export function CustomAnalyticsUpdateForm() {
           />
         </div>
 
-        <Label>Secret Key</Label>
+        <Label>{t("secretKeyLabel")}</Label>
         <SubLabel>
           <>
-            For security reasons, you must provide a secret key to update this
-            script. This should be the value of the{" "}
-            <i>CUSTOM_ANALYTICS_SECRET_KEY</i> environment variable set when
-            initially setting up Onyx.
+            {t("secretKeyHelpPrefix")}
+            <i>CUSTOM_ANALYTICS_SECRET_KEY</i>
+            {t("secretKeyHelpSuffix")}
           </>
         </SubLabel>
         <input
@@ -96,7 +88,7 @@ export function CustomAnalyticsUpdateForm() {
           onChange={(e) => setSecretKey(e.target.value)}
         />
         <Spacer rem={1} />
-        <Button type="submit">Update</Button>
+        <Button type="submit">{t("submitButton")}</Button>
       </form>
     </div>
   );

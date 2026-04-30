@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@opal/components";
 import { SvgUsers, SvgAlertTriangle } from "@opal/icons";
 import Modal, { BasicModalFooter } from "@/refresh-components/Modal";
@@ -33,6 +34,7 @@ export default function InviteUsersModal({
   open,
   onOpenChange,
 }: InviteUsersModalProps) {
+  const t = useTranslations("admin.users");
   const [chips, setChips] = useState<ChipItem[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -109,7 +111,7 @@ export default function InviteUsersModal({
     const validEmails = allChips.filter((c) => !c.error).map((c) => c.label);
 
     if (validEmails.length === 0) {
-      toast.error("Please add at least one valid email address");
+      toast.error(t("inviteModalNoValidEmails"));
       return;
     }
 
@@ -117,24 +119,29 @@ export default function InviteUsersModal({
     try {
       await inviteUsers(validEmails);
       toast.success(
-        `Invited ${validEmails.length} user${validEmails.length > 1 ? "s" : ""}`
+        t("inviteModalSuccess", {
+          count: validEmails.length,
+          plural: validEmails.length > 1 ? "s" : "",
+        })
       );
       handleClose();
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "Failed to invite users"
+        err instanceof Error ? err.message : t("inviteModalFailed")
       );
     } finally {
       setIsSubmitting(false);
     }
   }
 
+  const tCommon = useTranslations("common.actions");
+
   return (
     <Modal open={open} onOpenChange={handleOpenChange}>
       <Modal.Content width="sm" height="fit">
         <Modal.Header
           icon={SvgUsers}
-          title="Invite Users"
+          title={t("inviteUsers")}
           onClose={isSubmitting ? undefined : handleClose}
         />
 
@@ -145,7 +152,7 @@ export default function InviteUsersModal({
             onAdd={addEmail}
             value={inputValue}
             onChange={setInputValue}
-            placeholder="Add an email and press enter"
+            placeholder={t("inviteModalEmailPlaceholder")}
             layout="stacked"
           />
           {chips.some((c) => c.error) && (
@@ -155,7 +162,7 @@ export default function InviteUsersModal({
                 className="text-status-warning-05 shrink-0"
               />
               <Text secondaryBody text03>
-                Some email addresses are invalid and will be skipped.
+                {t("inviteModalInvalidWarning")}
               </Text>
             </div>
           )}
@@ -169,7 +176,7 @@ export default function InviteUsersModal({
                 prominence="tertiary"
                 onClick={handleClose}
               >
-                Cancel
+                {tCommon("cancel")}
               </Button>
             }
             submit={
@@ -181,7 +188,7 @@ export default function InviteUsersModal({
                 }
                 onClick={handleInvite}
               >
-                Invite
+                {t("inviteModalSubmit")}
               </Button>
             }
           />
