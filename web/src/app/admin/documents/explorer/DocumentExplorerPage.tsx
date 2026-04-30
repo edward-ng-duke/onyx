@@ -2,6 +2,7 @@
 
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
+import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
 import { Explorer } from "./Explorer";
 import { Connector } from "@/lib/connectors/connectors";
 import { DocumentSetSummary } from "@/lib/types";
@@ -19,9 +20,10 @@ export default function DocumentExplorerPage({
   connectors,
   documentSets,
 }: DocumentExplorerPageProps) {
+  const { title } = useAdminRouteI18n(route);
   return (
     <SettingsLayouts.Root>
-      <SettingsLayouts.Header icon={route.icon} title={route.title} divider />
+      <SettingsLayouts.Header icon={route.icon} title={title} divider />
 
       <SettingsLayouts.Body>
         <Explorer

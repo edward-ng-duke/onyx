@@ -38,5 +38,137 @@
       "status": "状态",
       "actions": "操作"
     }
+  },
+  "admin": {
+    "routes": {
+      "indexingStatus": {
+        "label": "已配置 Connector",
+        "title": "已配置 Connector"
+      },
+      "addConnector": {
+        "label": "新增 Connector",
+        "title": "新增 Connector"
+      },
+      "documentSets": {
+        "label": "文档集",
+        "title": "文档集"
+      },
+      "documentExplorer": {
+        "label": "文档浏览器",
+        "title": "文档浏览器"
+      },
+      "documentFeedback": {
+        "label": "反馈",
+        "title": "文档反馈"
+      },
+      "agents": {
+        "label": "Agent",
+        "title": "Agent"
+      },
+      "slackBots": {
+        "label": "Slack 集成",
+        "title": "Slack 集成"
+      },
+      "discordBots": {
+        "label": "Discord 集成",
+        "title": "Discord 集成"
+      },
+      "mcpActions": {
+        "label": "MCP Actions",
+        "title": "MCP Actions"
+      },
+      "openapiActions": {
+        "label": "OpenAPI 工具",
+        "title": "OpenAPI 工具"
+      },
+      "standardAnswers": {
+        "label": "标准回复",
+        "title": "标准回复"
+      },
+      "groups": {
+        "label": "用户组",
+        "title": "管理用户组"
+      },
+      "configurationChatPreferences": {
+        "label": "聊天偏好",
+        "title": "聊天偏好"
+      },
+      "configurationLlm": {
+        "label": "语言模型",
+        "title": "语言模型"
+      },
+      "configurationWebSearch": {
+        "label": "联网搜索",
+        "title": "联网搜索"
+      },
+      "configurationImageGeneration": {
+        "label": "图像生成",
+        "title": "图像生成"
+      },
+      "configurationVoice": {
+        "label": "语音",
+        "title": "语音"
+      },
+      "configurationCodeInterpreter": {
+        "label": "代码解释器",
+        "title": "代码解释器"
+      },
+      "configurationSearch": {
+        "label": "索引设置",
+        "title": "索引设置"
+      },
+      "configurationDocumentProcessing": {
+        "label": "文档处理",
+        "title": "文档处理"
+      },
+      "users": {
+        "label": "用户",
+        "title": "用户与请求"
+      },
+      "serviceAccounts": {
+        "label": "服务账号",
+        "title": "服务账号"
+      },
+      "tokenRateLimits": {
+        "label": "费用上限",
+        "title": "费用上限"
+      },
+      "performanceUsage": {
+        "label": "用量统计",
+        "title": "用量统计"
+      },
+      "performanceQueryHistory": {
+        "label": "查询历史",
+        "title": "查询历史"
+      },
+      "performanceCustomAnalytics": {
+        "label": "自定义分析",
+        "title": "自定义分析"
+      },
+      "theme": {
+        "label": "外观与主题",
+        "title": "外观与主题"
+      },
+      "billing": {
+        "label": "套餐与账单",
+        "title": "套餐与账单"
+      },
+      "documentIndexMigration": {
+        "label": "文档索引迁移",
+        "title": "文档索引迁移"
+      },
+      "hooks": {
+        "label": "Hook 扩展",
+        "title": "Hook 扩展"
+      },
+      "scim": {
+        "label": "SCIM",
+        "title": "SCIM"
+      },
+      "debug": {
+        "label": "调试日志",
+        "title": "调试日志"
+      }
+    }
   }
 }

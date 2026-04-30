@@ -7,6 +7,7 @@ import { SlackBotTable } from "./SlackBotTable";
 import { useSlackBots } from "./[bot-id]/hooks";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
+import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
 import CreateButton from "@/refresh-components/buttons/CreateButton";
 import { DOCS_ADMINS_PATH } from "@/lib/constants";
 
@@ -77,9 +78,10 @@ function Main() {
 }
 
 export default function Page() {
+  const { title } = useAdminRouteI18n(route);
   return (
     <SettingsLayouts.Root>
-      <SettingsLayouts.Header icon={route.icon} title={route.title} divider />
+      <SettingsLayouts.Header icon={route.icon} title={title} divider />
       <SettingsLayouts.Body>
         <InstantSSRAutoRefresh />
         <Main />

@@ -21,6 +21,7 @@ import CardSection from "@/components/admin/CardSection";
 import { ErrorCallout } from "@/components/ErrorCallout";
 import { useToastFromQuery } from "@/hooks/useToast";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
+import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
 
 const route = ADMIN_ROUTES.INDEX_SETTINGS;
 
@@ -148,9 +149,10 @@ function Main() {
 }
 
 export default function Page() {
+  const { title } = useAdminRouteI18n(route);
   return (
     <SettingsLayouts.Root>
-      <SettingsLayouts.Header title={route.title} icon={route.icon} divider />
+      <SettingsLayouts.Header title={title} icon={route.icon} divider />
       <SettingsLayouts.Body>
         <Main />
       </SettingsLayouts.Body>

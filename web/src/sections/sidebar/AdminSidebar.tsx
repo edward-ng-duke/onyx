@@ -27,10 +27,15 @@ import {
   useLicense,
   hasActiveSubscription,
 } from "@/lib/billing";
-import { ADMIN_ROUTES, sidebarItem } from "@/lib/admin-routes";
+import {
+  ADMIN_ROUTES,
+  AdminRouteEntry,
+  sidebarItem,
+} from "@/lib/admin-routes";
 import useFilter from "@/hooks/useFilter";
 import { IconFunctionComponent } from "@opal/types";
 import AccountPopover from "@/sections/sidebar/AccountPopover";
+import { useTranslations } from "next-intl";
 
 const SECTIONS = {
   UNLABELED: "",
@@ -58,21 +63,27 @@ function buildItems(
   settings: CombinedSettings | null,
   customAnalyticsEnabled: boolean,
   hasSubscription: boolean,
-  hooksEnabled: boolean
+  hooksEnabled: boolean,
+  routeLabel: (route: AdminRouteEntry) => string
 ): SidebarItemEntry[] {
   const vectorDbEnabled = settings?.settings.vector_db_enabled !== false;
   const items: SidebarItemEntry[] = [];
 
-  const add = (section: string, route: Parameters<typeof sidebarItem>[0]) => {
-    items.push({ ...sidebarItem(route), section });
+  const localizedItem = (route: AdminRouteEntry) => ({
+    ...sidebarItem(route),
+    name: routeLabel(route),
+  });
+
+  const add = (section: string, route: AdminRouteEntry) => {
+    items.push({ ...localizedItem(route), section });
   };
 
   const addDisabled = (
     section: string,
-    route: Parameters<typeof sidebarItem>[0],
+    route: AdminRouteEntry,
     isDisabled: boolean
   ) => {
-    items.push({ ...sidebarItem(route), section, disabled: isDisabled });
+    items.push({ ...localizedItem(route), section, disabled: isDisabled });
   };
 
   // 1. No header — core configuration (admin only)
@@ -105,7 +116,7 @@ function buildItems(
     add(SECTIONS.DOCUMENTS_AND_KNOWLEDGE, ADMIN_ROUTES.DOCUMENT_SETS);
     if (!isCurator && !enableCloud) {
       items.push({
-        ...sidebarItem(ADMIN_ROUTES.INDEX_SETTINGS),
+        ...localizedItem(ADMIN_ROUTES.INDEX_SETTINGS),
         section: SECTIONS.DOCUMENTS_AND_KNOWLEDGE,
         error: settings?.settings.needs_reindexing,
       });
@@ -232,6 +243,15 @@ function AdminSidebarInner({
   const hooksEnabled =
     enableEnterprise && (settings?.settings.hooks_enabled ?? false);
 
+  const tRoutes = useTranslations("admin.routes");
+  const routeLabel = useCallback(
+    (route: AdminRouteEntry) =>
+      route.sidebarLabelKey
+        ? tRoutes(`${route.sidebarLabelKey}.label`)
+        : route.sidebarLabel,
+    [tRoutes]
+  );
+
   const allItems = buildItems(
     isCurator,
     enableCloudSS,
@@ -239,7 +259,8 @@ function AdminSidebarInner({
     settings,
     customAnalyticsEnabled,
     hasSubscriptionOrLicense,
-    hooksEnabled
+    hooksEnabled,
+    routeLabel
   );
 
   const itemExtractor = useCallback((item: SidebarItemEntry) => item.name, []);

@@ -28,6 +28,7 @@ import SourceTile from "@/components/SourceTile";
 import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
 import Text from "@/refresh-components/texts/Text";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
+import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
 
 const route = ADMIN_ROUTES.ADD_CONNECTOR;
 
@@ -120,6 +121,7 @@ function SourceTileTooltipWrapper({
 }
 
 export default function Page() {
+  const { title } = useAdminRouteI18n(route);
   const sources = useMemo(() => listSourceMetadata(), []);
 
   const [rawSearchTerm, setSearchTerm] = useState("");
@@ -247,7 +249,7 @@ export default function Page() {
     <SettingsLayouts.Root width="full">
       <SettingsLayouts.Header
         icon={route.icon}
-        title={route.title}
+        title={title}
         rightChildren={
           <Button href="/admin/indexing/status">See Connectors</Button>
         }

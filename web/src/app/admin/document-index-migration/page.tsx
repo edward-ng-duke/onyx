@@ -5,6 +5,7 @@ import useSWR from "swr";
 import { SWR_KEYS } from "@/lib/swr-keys";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
+import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
 
 const route = ADMIN_ROUTES.INDEX_MIGRATION;
 
@@ -223,11 +224,12 @@ function RetrievalSourceSection() {
 }
 
 export default function Page() {
+  const { title } = useAdminRouteI18n(route);
   return (
     <SettingsLayouts.Root>
       <SettingsLayouts.Header
         icon={route.icon}
-        title={route.title}
+        title={title}
         description="Monitor the migration from Vespa to OpenSearch and control the active retrieval source."
         divider
       />

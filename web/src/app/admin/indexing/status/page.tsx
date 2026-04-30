@@ -5,6 +5,7 @@ import { SearchAndFilterControls } from "./SearchAndFilterControls";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import Link from "next/link";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
+import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
 import { Text } from "@opal/components";
 import { markdown } from "@opal/utils";
 import Spacer from "@/refresh-components/Spacer";
@@ -216,11 +217,13 @@ export default function Status() {
     },
   });
 
+  const { title } = useAdminRouteI18n(route);
+
   return (
     <SettingsLayouts.Root width="full">
       <SettingsLayouts.Header
         icon={route.icon}
-        title={route.title}
+        title={title}
         rightChildren={
           <Button href="/admin/add-connector">Add Connector</Button>
         }

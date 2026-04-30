@@ -20,6 +20,7 @@ import CreateButton from "@/refresh-components/buttons/CreateButton";
 import { SvgGlobe, SvgUser, SvgUsers } from "@opal/icons";
 import { Section } from "@/layouts/general-layouts";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
+import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
 
 const route = ADMIN_ROUTES.TOKEN_RATE_LIMITS;
 const GLOBAL_TOKEN_FETCH_URL = SWR_KEYS.globalTokenRateLimits;
@@ -210,9 +211,10 @@ function Main() {
 }
 
 export default function Page() {
+  const { title } = useAdminRouteI18n(route);
   return (
     <SettingsLayouts.Root>
-      <SettingsLayouts.Header title={route.title} icon={route.icon} divider />
+      <SettingsLayouts.Header title={title} icon={route.icon} divider />
       <SettingsLayouts.Body>
         <Main />
       </SettingsLayouts.Body>

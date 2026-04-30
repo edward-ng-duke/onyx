@@ -22,6 +22,7 @@ import { deleteDocumentSet } from "./lib";
 import { toast } from "@/hooks/useToast";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
+import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
 import {
   FiAlertTriangle,
   FiCheckCircle,
@@ -413,9 +414,10 @@ function Main() {
 }
 
 export default function Page() {
+  const { title } = useAdminRouteI18n(route);
   return (
     <SettingsLayouts.Root>
-      <SettingsLayouts.Header icon={route.icon} title={route.title} divider />
+      <SettingsLayouts.Header icon={route.icon} title={title} divider />
       <SettingsLayouts.Body>
         <Main />
       </SettingsLayouts.Body>

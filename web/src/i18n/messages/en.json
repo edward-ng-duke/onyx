@@ -38,5 +38,137 @@
       "status": "Status",
       "actions": "Actions"
     }
+  },
+  "admin": {
+    "routes": {
+      "indexingStatus": {
+        "label": "Existing Connectors",
+        "title": "Existing Connectors"
+      },
+      "addConnector": {
+        "label": "Add Connector",
+        "title": "Add Connector"
+      },
+      "documentSets": {
+        "label": "Document Sets",
+        "title": "Document Sets"
+      },
+      "documentExplorer": {
+        "label": "Explorer",
+        "title": "Document Explorer"
+      },
+      "documentFeedback": {
+        "label": "Feedback",
+        "title": "Document Feedback"
+      },
+      "agents": {
+        "label": "Agents",
+        "title": "Agents"
+      },
+      "slackBots": {
+        "label": "Slack Integration",
+        "title": "Slack Integration"
+      },
+      "discordBots": {
+        "label": "Discord Integration",
+        "title": "Discord Integration"
+      },
+      "mcpActions": {
+        "label": "MCP Actions",
+        "title": "MCP Actions"
+      },
+      "openapiActions": {
+        "label": "OpenAPI Actions",
+        "title": "OpenAPI Actions"
+      },
+      "standardAnswers": {
+        "label": "Standard Answers",
+        "title": "Standard Answers"
+      },
+      "groups": {
+        "label": "Groups",
+        "title": "Manage User Groups"
+      },
+      "configurationChatPreferences": {
+        "label": "Chat Preferences",
+        "title": "Chat Preferences"
+      },
+      "configurationLlm": {
+        "label": "Language Models",
+        "title": "Language Models"
+      },
+      "configurationWebSearch": {
+        "label": "Web Search",
+        "title": "Web Search"
+      },
+      "configurationImageGeneration": {
+        "label": "Image Generation",
+        "title": "Image Generation"
+      },
+      "configurationVoice": {
+        "label": "Voice",
+        "title": "Voice"
+      },
+      "configurationCodeInterpreter": {
+        "label": "Code Interpreter",
+        "title": "Code Interpreter"
+      },
+      "configurationSearch": {
+        "label": "Index Settings",
+        "title": "Index Settings"
+      },
+      "configurationDocumentProcessing": {
+        "label": "Document Processing",
+        "title": "Document Processing"
+      },
+      "users": {
+        "label": "Users",
+        "title": "Users & Requests"
+      },
+      "serviceAccounts": {
+        "label": "Service Accounts",
+        "title": "Service Accounts"
+      },
+      "tokenRateLimits": {
+        "label": "Spending Limits",
+        "title": "Spending Limits"
+      },
+      "performanceUsage": {
+        "label": "Usage Statistics",
+        "title": "Usage Statistics"
+      },
+      "performanceQueryHistory": {
+        "label": "Query History",
+        "title": "Query History"
+      },
+      "performanceCustomAnalytics": {
+        "label": "Custom Analytics",
+        "title": "Custom Analytics"
+      },
+      "theme": {
+        "label": "Appearance & Theming",
+        "title": "Appearance & Theming"
+      },
+      "billing": {
+        "label": "Plans & Billing",
+        "title": "Plans & Billing"
+      },
+      "documentIndexMigration": {
+        "label": "Document Index Migration",
+        "title": "Document Index Migration"
+      },
+      "hooks": {
+        "label": "Hook Extensions",
+        "title": "Hook Extensions"
+      },
+      "scim": {
+        "label": "SCIM",
+        "title": "SCIM"
+      },
+      "debug": {
+        "label": "Debug Logs",
+        "title": "Debug Logs"
+      }
+    }
   }
 }
