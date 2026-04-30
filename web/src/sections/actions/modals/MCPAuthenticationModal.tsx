@@ -109,6 +109,8 @@ export default function MCPAuthenticationModal({
   mutateMcpServers,
 }: MCPAuthenticationModalProps) {
   const { isOpen, toggle } = useModal();
+  const t = useTranslations("sections.actions.mcp");
+  const tCommon = useTranslations("common");
   const tToast = useTranslations("toasts.admin.actions.mcp");
   const tValMcpAuth = useTranslations("validation.mcpAuth");
   const validationSchema = useMemo(
@@ -351,10 +353,10 @@ export default function MCPAuthenticationModal({
           icon={SvgArrowExchange}
           title={
             mcpServer
-              ? markdown(`Authenticate *${mcpServer.name}*`)
-              : "Authenticate MCP Server"
+              ? markdown(t("authTitleNamed", { name: mcpServer.name }))
+              : t("authTitleFallback")
           }
-          description="Authenticate your connection to start using the MCP server."
+          description={t("authenticatePrompt")}
         />
 
         <Formik<MCPAuthFormValues>
@@ -370,7 +372,6 @@ export default function MCPAuthenticationModal({
             errors,
             touched,
             isValid,
-            dirty,
           }) => {
             // Auto-populate transport based on URL
             useEffect(() => {
@@ -395,7 +396,7 @@ export default function MCPAuthenticationModal({
                             : "idle"
                       }
                     >
-                      <FormField.Label>Authentication Method</FormField.Label>
+                      <FormField.Label>{t("authMethod")}</FormField.Label>
                       <FormField.Control asChild>
                         <InputSelect
                           value={values.auth_type}
@@ -424,35 +425,35 @@ export default function MCPAuthenticationModal({
                           }}
                         >
                           <InputSelect.Trigger
-                            placeholder="Select method"
+                            placeholder={t("authMethodPlaceholder")}
                             data-testid="mcp-auth-method-select"
                           />
                           <InputSelect.Content>
                             <InputSelect.Item
                               value={MCPAuthenticationType.OAUTH}
-                              description="Each user need to authenticate via OAuth with their own credentials."
+                              description={t("oauthDesc")}
                             >
-                              OAuth
+                              {t("oauthOption")}
                             </InputSelect.Item>
                             {isOAuthEnabled && (
                               <InputSelect.Item
                                 value={MCPAuthenticationType.PT_OAUTH}
-                                description="Forward the user's OAuth access token used to authenticate Onyx."
+                                description={t("passthroughDesc")}
                               >
-                                OAuth Pass-through
+                                {t("oauthPassthroughOption")}
                               </InputSelect.Item>
                             )}
                             <InputSelect.Item
                               value={MCPAuthenticationType.API_TOKEN}
-                              description="Use per-user individual API key or organization-wide shared API key."
+                              description={t("apiKeyDesc")}
                             >
-                              API Key
+                              {t("apiKeyOption")}
                             </InputSelect.Item>
                             <InputSelect.Item
                               value={MCPAuthenticationType.NONE}
-                              description="Not Recommended"
+                              description={t("notRecommended")}
                             >
-                              None
+                              {t("noneOption")}
                             </InputSelect.Item>
                           </InputSelect.Content>
                         </InputSelect>
@@ -480,7 +481,9 @@ export default function MCPAuthenticationModal({
                               : "idle"
                         }
                       >
-                        <FormField.Label optional>Client ID</FormField.Label>
+                        <FormField.Label optional>
+                          {t("clientId")}
+                        </FormField.Label>
                         <FormField.Control asChild>
                           <InputTypeIn
                             name="oauth_client_id"
@@ -509,7 +512,7 @@ export default function MCPAuthenticationModal({
                         }
                       >
                         <FormField.Label optional>
-                          Client Secret
+                          {t("clientSecret")}
                         </FormField.Label>
                         <FormField.Control asChild>
                           <PasswordInputTypeIn
@@ -530,14 +533,10 @@ export default function MCPAuthenticationModal({
                       {/* Info Text */}
                       <div className="flex flex-col gap-2">
                         <Text as="p" text03 secondaryBody>
-                          Client ID and secret are optional if the server
-                          connection supports Dynamic Client Registration (DCR).
+                          {t("clientCredentialsDcrInfo")}
                         </Text>
                         <Text as="p" text03 secondaryBody>
-                          If your server does not support DCR, you need register
-                          your Onyx instance with the server provider to obtain
-                          these credentials first. Make sure to grant Onyx
-                          necessary scopes/permissions for your actions.
+                          {t("clientCredentialsRegisterInfo")}
                         </Text>
 
                         {/* Redirect URI */}
@@ -548,9 +547,9 @@ export default function MCPAuthenticationModal({
                             secondaryBody
                             className="whitespace-nowrap"
                           >
-                            Use{" "}
+                            {t("useRedirectUriPrefix")}{" "}
                             <span className="font-secondary-action">
-                              redirect URI
+                              {t("redirectUriLabel")}
                             </span>
                             :
                           </Text>
@@ -563,7 +562,7 @@ export default function MCPAuthenticationModal({
                           </Text>
                           <CopyIconButton
                             getCopyText={() => redirectUri}
-                            tooltip="Copy redirect URI"
+                            tooltip={t("copyRedirectUriTooltip")}
                             prominence="tertiary"
                             size="sm"
                           />
@@ -590,10 +589,10 @@ export default function MCPAuthenticationModal({
                       >
                         <Tabs.List>
                           <Tabs.Trigger value="per-user">
-                            Individual Key (Per User)
+                            {t("individualKeyTab")}
                           </Tabs.Trigger>
                           <Tabs.Trigger value="admin">
-                            Shared Key (Admin)
+                            {t("sharedKeyTab")}
                           </Tabs.Trigger>
                         </Tabs.List>
 
@@ -618,20 +617,20 @@ export default function MCPAuthenticationModal({
                                     : "idle"
                               }
                             >
-                              <FormField.Label>API Key</FormField.Label>
+                              <FormField.Label>
+                                {t("apiKeyLabel")}
+                              </FormField.Label>
                               <FormField.Control asChild>
                                 <PasswordInputTypeIn
                                   name="api_token"
                                   value={values.api_token}
                                   onChange={handleChange}
-                                  placeholder="Shared API key for your organization"
+                                  placeholder={t("apiKeyPlaceholder")}
                                   showClearButton={false}
                                 />
                               </FormField.Control>
                               <FormField.Description>
-                                Do not use your personal API key. Make sure this
-                                key is appropriate to share with everyone in
-                                your organization.
+                                {t("apiKeyAdminWarning")}
                               </FormField.Description>
                               <FormField.Message
                                 messages={{
@@ -646,14 +645,14 @@ export default function MCPAuthenticationModal({
                   )}
                   {values.auth_type === MCPAuthenticationType.NONE && (
                     <MessageCard
-                      title="No authentication for this MCP server"
-                      description="No authentication will be used for this connection. Make sure you trust this server. You are responsible for actions taken with this connection."
+                      title={t("noAuthTitle")}
+                      description={t("noAuthDescription")}
                     />
                   )}
                   {values.auth_type === MCPAuthenticationType.PT_OAUTH && (
                     <MessageCard
-                      title="Use pass-through for services with shared identity provider."
-                      description="Onyx will forward the user's OAuth access token directly to the server as an Authorization header. Make sure the server supports authentication with the same provider."
+                      title={t("passthroughTitle")}
+                      description={t("passthroughDescription")}
                     />
                   )}
                 </Modal.Body>
@@ -664,14 +663,14 @@ export default function MCPAuthenticationModal({
                     type="button"
                     onClick={() => toggle(false)}
                   >
-                    Cancel
+                    {tCommon("actions.cancel")}
                   </Button>
                   <Button
                     disabled={!isValid || isSubmitting}
                     type="submit"
                     data-testid="mcp-auth-connect-button"
                   >
-                    {isSubmitting ? "Connecting..." : "Connect"}
+                    {isSubmitting ? t("connectingButton") : t("connectButton")}
                   </Button>
                 </Modal.Footer>
               </Form>
