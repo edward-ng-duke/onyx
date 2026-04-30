@@ -1,4 +1,5 @@
 import { UserPersonalization } from "@/lib/types";
+import type { Locale } from "../../next-intl.config";
 
 export async function setUserDefaultModel(
   model: string | null
@@ -27,4 +28,11 @@ export async function updateUserPersonalization(
     },
     body: JSON.stringify(personalization),
   });
+}
+
+/**
+ * Persist the user's preferred UI language to the backend.
+ */
+export async function setLanguage(language: Locale): Promise<Response> {
+  return updateUserPersonalization({ language });
 }

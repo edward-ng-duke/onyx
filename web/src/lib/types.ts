@@ -50,6 +50,7 @@ export interface UserPersonalization {
   use_memories: boolean;
   enable_memory_tool: boolean;
   user_preferences: string;
+  language?: "en" | "zh";
 }
 
 export enum AccountType {
