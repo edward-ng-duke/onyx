@@ -112,7 +112,7 @@ shell-api: ## Open a bash shell inside the api_server container
 	$(COMPOSE) exec api_server bash
 
 shell-db: ## Open a psql shell inside the relational_db container
-	docker exec -it onyx-relational_db-1 psql -U postgres
+	$(COMPOSE) exec relational_db psql -U postgres
 
 migrate: ## Run alembic migrations inside api_server (upgrade head)
 	$(COMPOSE) exec api_server alembic upgrade head
