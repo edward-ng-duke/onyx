@@ -45,6 +45,7 @@ function OpenRouterModalInternals({
   existingLlmProvider,
   isOnboarding,
 }: OpenRouterModalInternalsProps) {
+  const t = useTranslations("modals.llmConfig.openRouter");
   const formikProps = useFormikContext<OpenRouterModalValues>();
 
   const isFetchDisabled =
@@ -71,8 +72,8 @@ function OpenRouterModalInternals({
   return (
     <>
       <APIBaseField
-        subDescription="Paste your OpenRouter-compatible endpoint URL or use OpenRouter API directly."
-        placeholder="Your OpenRouter base URL"
+        subDescription={t("endpointDescription")}
+        placeholder={t("endpointPlaceholder")}
       />
 
       <APIKeyField providerName="OpenRouter" />

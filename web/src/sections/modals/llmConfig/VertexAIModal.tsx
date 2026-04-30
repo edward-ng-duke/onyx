@@ -42,6 +42,8 @@ export default function VertexAIModal({
   const tToast = useTranslations("toasts.admin.llm");
   const tValLlm = useTranslations("validation.llm");
   const tValImageGen = useTranslations("validation.imageGen");
+  const t = useTranslations("modals.llmConfig.vertexAI");
+  const tShared = useTranslations("modals.llmConfig.shared");
   const isOnboarding = variant === "onboarding";
   const { mutate } = useSWRConfig();
 
@@ -136,8 +138,8 @@ export default function VertexAIModal({
       <InputPadder>
         <InputVertical
           withLabel="custom_config.vertex_location"
-          title="Google Cloud Region Name"
-          subDescription="Region where your Google Vertex AI models are hosted. See full list of regions supported at Google Cloud."
+          title={t("regionTitle")}
+          subDescription={t("regionDescription")}
         >
           <InputTypeInField
             name="custom_config.vertex_location"
@@ -149,8 +151,8 @@ export default function VertexAIModal({
       <InputPadder>
         <InputVertical
           withLabel="custom_config.vertex_credentials"
-          title="API Key"
-          subDescription="Attach your API key JSON from Google Cloud to access your models."
+          title={tShared("apiKey")}
+          subDescription={t("apiKeyDescription")}
         >
           <FileUploadFormField
             name="custom_config.vertex_credentials"

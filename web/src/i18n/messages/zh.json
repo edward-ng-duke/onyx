@@ -2582,6 +2582,15 @@
         "endpointDescription": "粘贴你的 OpenAI 兼容端点 URL。[了解更多](https://docs.litellm.ai/docs/providers/openai_compatible)",
         "apiKeyDescription": "如果你的模型提供方需要身份验证，请粘贴 API Key。",
         "providerCardDescription": "通过 OpenAI 兼容端点连接其他云或自托管模型。"
+      },
+      "openRouter": {
+        "endpointDescription": "粘贴你的 OpenRouter 兼容端点 URL，或直接使用 OpenRouter API。",
+        "endpointPlaceholder": "你的 OpenRouter 基础 URL"
+      },
+      "vertexAI": {
+        "regionTitle": "Google Cloud 区域名称",
+        "regionDescription": "你的 Google Vertex AI 模型托管所在的区域。完整支持区域列表见 Google Cloud。",
+        "apiKeyDescription": "附加来自 Google Cloud 的 API Key JSON 以访问你的模型。"
       }
     }
   },
