@@ -62,6 +62,7 @@ import Text from "@/refresh-components/texts/Text";
 import { SvgKey, SvgAlertCircle } from "@opal/icons";
 import { Tooltip } from "@opal/components";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export interface AdvancedConfig {
   refreshFreq: number;
@@ -131,6 +132,7 @@ export default function AddConnector({
 }: {
   connector: ConfigurableSources;
 }) {
+  const t = useTranslations("admin.connectors.add");
   const [currentPageUrl, setCurrentPageUrl] = useState<string | null>(null);
   const [oauthUrl, setOauthUrl] = useState<string | null>(null);
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -503,15 +505,13 @@ export default function AddConnector({
                     tooltip={
                       <div className="flex flex-col gap-2">
                         <Text as="p" textLight05>
-                          A federated search option is available for this
-                          connector. It will result in greater latency and
-                          reduced search quality.
+                          {t("federatedAvailable")}
                         </Text>
                         <Link
                           href={`/admin/connectors/${connector}?mode=federated`}
                           className="text-action-link-04 hover:underline text-sm"
                         >
-                          Use federated version instead →
+                          {t("useFederatedInstead")}
                         </Link>
                       </div>
                     }
@@ -531,7 +531,7 @@ export default function AddConnector({
           {formStep == 0 && (
             <CardSection>
               <Text as="p" headingH3 className="pb-2">
-                Select a credential
+                {t("selectCredential")}
               </Text>
 
               {connector == ValidSources.Gmail ? (
@@ -578,7 +578,7 @@ export default function AddConnector({
                           }
                         }}
                       >
-                        Create New
+                        {t("createNew")}
                       </Button>
                       {/* Button to sign in via OAuth */}
                       {oauthSupportedSources.includes(connector) &&
@@ -590,10 +590,10 @@ export default function AddConnector({
                             hidden={!isAuthorizeVisible}
                           >
                             {isAuthorizing
-                              ? "Authorizing..."
-                              : `Authorize with ${getSourceDisplayName(
-                                  connector
-                                )}`}
+                              ? t("authorizing")
+                              : t("authorizeWith", {
+                                  name: getSourceDisplayName(connector) ?? "",
+                                })}
                           </Button>
                         )}
                     </div>
@@ -607,9 +607,9 @@ export default function AddConnector({
                       <Modal.Content>
                         <Modal.Header
                           icon={SvgKey}
-                          title={`Create a ${getSourceDisplayName(
-                            connector
-                          )} credential`}
+                          title={t("createCredentialModalTitle", {
+                            name: getSourceDisplayName(connector) ?? "",
+                          })}
                           onClose={() => setCreateCredentialFormToggle(false)}
                         />
                         <Modal.Body>

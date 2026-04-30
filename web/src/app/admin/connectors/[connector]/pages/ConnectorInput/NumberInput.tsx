@@ -1,5 +1,6 @@
 import { Label, SubLabel } from "@/components/Field";
 import { ErrorMessage, useField } from "formik";
+import { useTranslations } from "next-intl";
 
 export default function NumberInput({
   label,
@@ -15,6 +16,7 @@ export default function NumberInput({
   showNeverIfZero?: boolean;
 }) {
   const [field, meta, helpers] = useField(name);
+  const t = useTranslations("admin.connectors.shared");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // If the input is empty, set the value to undefined or null
@@ -31,7 +33,9 @@ export default function NumberInput({
       <Label>
         <>
           {label}
-          {optional && <span className="text-text-500 ml-1">(optional)</span>}
+          {optional && (
+            <span className="text-text-500 ml-1">{t("optional")}</span>
+          )}
         </>
       </Label>
       {description && <SubLabel>{description}</SubLabel>}

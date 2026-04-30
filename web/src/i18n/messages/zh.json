@@ -579,6 +579,78 @@
         "body": "**{label}** 系列模型将不再用于语音转文字和文字转语音，并不再作为你的默认。会话历史将会保留。",
         "connectAnother": "请连接其他 Provider 以继续使用语音。"
       }
+    },
+    "connectors": {
+      "shared": {
+        "optional": "（可选）"
+      },
+      "list": {
+        "searchPlaceholder": "搜索 Connector",
+        "popular": "热门",
+        "seeConnectors": "查看 Connector",
+        "federatedConfiguredTitle": "Federated Connector 已配置。",
+        "federatedConfiguredBody": "点击以编辑已有 Connector。",
+        "slackExistingTitle": "已存在 Slack 凭据。",
+        "slackExistingBody": "点击以管理你的 Slack Connector。"
+      },
+      "add": {
+        "invalidConnector": "‘{name}’ 不是有效的 Connector 类型！",
+        "goHome": "返回首页",
+        "federatedAvailable": "此 Connector 支持 Federated 搜索。该方式延迟更高，搜索质量更低。",
+        "useFederatedInstead": "改用 Federated 版本 →",
+        "selectCredential": "选择凭据",
+        "createNew": "新建",
+        "authorizing": "授权中…",
+        "authorizeWith": "使用 {name} 授权",
+        "createCredentialModalTitle": "创建 {name} 凭据",
+        "previous": "上一步",
+        "createConnector": "创建 Connector",
+        "advanced": "高级",
+        "advancedConfiguration": "高级配置",
+        "pruneFreqLabel": "清理频率（小时）",
+        "pruneFreqDescription": "对照数据源检查全部文档，删除已不存在的项。注意：此过程会检查每一份文档，提高频率请谨慎。默认 {hours} 小时（{days} 天）。支持小数小时（例如 0.1 小时 = 6 分钟）。输入 0 可禁用此 Connector 的清理。",
+        "refreshFreqLabel": "刷新频率（分钟）",
+        "refreshFreqDescription": "我们从数据源拉取新文档的频率（分钟）。输入 0 则不再拉取此 Connector 的新文档。",
+        "indexingStartLabel": "索引起始日期",
+        "indexingStartSubtext": "早于此日期的文档将不会被拉取",
+        "connectorNameLabel": "Connector 名称",
+        "connectorNameSubtext": "Connector 的描述性名称。",
+        "noTabsToDisplay": "无可显示的标签页。",
+        "selectAnOption": "选择一项",
+        "enterPlaceholder": "请输入 {label}"
+      },
+      "oauth": {
+        "processing": "处理中…",
+        "pleaseWaitSetup": "请稍候，我们正在完成设置。",
+        "pleaseWaitAuthorization": "请稍候，我们正在完成授权。",
+        "fetchingAccessibleSites": "请稍候，正在获取你可访问的站点列表。",
+        "callbackDefaultTitle": "使用第三方服务授权",
+        "finalizeDefaultTitle": "完成第三方服务授权",
+        "authorizeWith": "使用 {name} 授权",
+        "finalizeWith": "完成 {name} 授权",
+        "improperlyFormedAuthorization": "OAuth 授权请求格式有误。",
+        "improperlyFormedFinalize": "OAuth 完成请求格式有误。",
+        "invalidCredentialId": "凭据 id 无效或缺失。",
+        "missingCode": "缺少授权码。",
+        "missingState": "缺少 state 参数。",
+        "sourceTypeDoesNotExist": "指定的 Connector 数据源类型 {type} 不存在。",
+        "sourceTypeInvalid": "{type} 不是有效的数据源类型。",
+        "selectConfluenceSite": "选择 Confluence 站点",
+        "somethingWentWrong": "哎呀，出错了！",
+        "finalizeFailed": "OAuth 完成过程出错，请重试。",
+        "oauthFailed": "OAuth 过程出错，请重试。",
+        "submitting": "提交中…",
+        "errorDuringSubmission": "提交时出错。",
+        "submissionFailed": "提交过程出错，请重试。",
+        "confluenceFinalized": "Confluence 授权已完成。",
+        "success": "成功！",
+        "successWithFinalize": "你已成功使用 {name} 完成授权。还需要额外步骤来完成凭据配置。",
+        "successSimple": "你已成功使用 {name} 完成授权。",
+        "clickHerePrefix": "点击 ",
+        "clickHereLink": "此处",
+        "clickHereSuffix": " 继续。",
+        "authorizationFinalizedPrefix": "授权已完成。点击 "
+      }
     }
   },
   "nav": {

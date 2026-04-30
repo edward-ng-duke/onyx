@@ -15,6 +15,7 @@ import { Content, InputVertical } from "@opal/layouts";
 import CheckboxField from "@/refresh-components/form/LabeledCheckboxField";
 import InputTextAreaField from "@/refresh-components/form/InputTextAreaField";
 import Text from "@/refresh-components/texts/Text";
+import { useTranslations } from "next-intl";
 
 // Define a general type for form values
 type FormValues = Record<string, any>;
@@ -33,6 +34,7 @@ const TabsField: FC<TabsFieldProps> = ({
   currentCredential,
 }) => {
   const { setFieldValue } = useFormikContext<FormValues>();
+  const t = useTranslations("admin.connectors.add");
 
   const resolvedLabel =
     typeof tabField.label === "function"
@@ -57,7 +59,7 @@ const TabsField: FC<TabsFieldProps> = ({
       {/* Ensure there's at least one tab before rendering */}
       {tabField.tabs.length === 0 ? (
         <Text text03 secondaryBody>
-          No tabs to display.
+          {t("noTabsToDisplay")}
         </Text>
       ) : (
         <Tabs

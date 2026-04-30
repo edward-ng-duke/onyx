@@ -579,6 +579,78 @@
         "body": "**{label}** models will no longer be used for speech-to-text or text-to-speech, and it will no longer be your default. Session history will be preserved.",
         "connectAnother": "Connect another provider to continue using voice."
       }
+    },
+    "connectors": {
+      "shared": {
+        "optional": "(optional)"
+      },
+      "list": {
+        "searchPlaceholder": "Search Connectors",
+        "popular": "Popular",
+        "seeConnectors": "See Connectors",
+        "federatedConfiguredTitle": "Federated connector already configured.",
+        "federatedConfiguredBody": "Click to edit the existing connector.",
+        "slackExistingTitle": "Existing Slack credentials found.",
+        "slackExistingBody": "Click to manage your Slack connector."
+      },
+      "add": {
+        "invalidConnector": "‘{name}’ is not a valid Connector Type!",
+        "goHome": "Go home",
+        "federatedAvailable": "A federated search option is available for this connector. It will result in greater latency and reduced search quality.",
+        "useFederatedInstead": "Use federated version instead →",
+        "selectCredential": "Select a credential",
+        "createNew": "Create New",
+        "authorizing": "Authorizing...",
+        "authorizeWith": "Authorize with {name}",
+        "createCredentialModalTitle": "Create a {name} credential",
+        "previous": "Previous",
+        "createConnector": "Create Connector",
+        "advanced": "Advanced",
+        "advancedConfiguration": "Advanced Configuration",
+        "pruneFreqLabel": "Prune Frequency (hours)",
+        "pruneFreqDescription": "Checks all documents against the source to delete those that no longer exist. Note: This process checks every document, so be cautious when increasing frequency. Default is {hours} hours ({days} days). Decimal hours are supported (e.g., 0.1 hours = 6 minutes). Enter 0 to disable pruning for this connector.",
+        "refreshFreqLabel": "Refresh Frequency (minutes)",
+        "refreshFreqDescription": "This is how frequently we pull new documents from the source (in minutes). If you input 0, we will never pull new documents for this connector.",
+        "indexingStartLabel": "Indexing Start Date",
+        "indexingStartSubtext": "Documents prior to this date will not be pulled in",
+        "connectorNameLabel": "Connector Name",
+        "connectorNameSubtext": "A descriptive name for the connector.",
+        "noTabsToDisplay": "No tabs to display.",
+        "selectAnOption": "Select an option",
+        "enterPlaceholder": "Enter {label}"
+      },
+      "oauth": {
+        "processing": "Processing...",
+        "pleaseWaitSetup": "Please wait while we complete the setup.",
+        "pleaseWaitAuthorization": "Please wait while we complete authorization.",
+        "fetchingAccessibleSites": "Please wait while we retrieve a list of your accessible sites.",
+        "callbackDefaultTitle": "Authorize with Third-Party service",
+        "finalizeDefaultTitle": "Finalize Authorization with Third-Party service",
+        "authorizeWith": "Authorize with {name}",
+        "finalizeWith": "Finalize Authorization with {name}",
+        "improperlyFormedAuthorization": "Improperly formed OAuth authorization request.",
+        "improperlyFormedFinalize": "Improperly formed OAuth finalization request.",
+        "invalidCredentialId": "Invalid or missing credential id.",
+        "missingCode": "Missing authorization code.",
+        "missingState": "Missing state parameter.",
+        "sourceTypeDoesNotExist": "The specified connector source type {type} does not exist.",
+        "sourceTypeInvalid": "{type} is not a valid source type.",
+        "selectConfluenceSite": "Select a Confluence site",
+        "somethingWentWrong": "Oops, something went wrong!",
+        "finalizeFailed": "An error occurred during the OAuth finalization process. Please try again.",
+        "oauthFailed": "An error occurred during the OAuth process. Please try again.",
+        "submitting": "Submitting...",
+        "errorDuringSubmission": "Error during submission.",
+        "submissionFailed": "An error occurred during the submission process. Please try again.",
+        "confluenceFinalized": "Confluence authorization finalized.",
+        "success": "Success!",
+        "successWithFinalize": "Your authorization with {name} completed successfully. Additional steps are required to complete credential setup.",
+        "successSimple": "Your authorization with {name} completed successfully.",
+        "clickHerePrefix": "Click ",
+        "clickHereLink": "here",
+        "clickHereSuffix": " to continue.",
+        "authorizationFinalizedPrefix": "Authorization finalized. Click "
+      }
     }
   },
   "nav": {
