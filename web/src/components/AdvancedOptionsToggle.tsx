@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Button from "@/refresh-components/buttons/Button";
 import { cn } from "@opal/utils";
 import { SvgChevronRight } from "@opal/icons";
@@ -12,6 +13,7 @@ export function AdvancedOptionsToggle({
   setShowAdvancedOptions,
   title,
 }: AdvancedOptionsToggleProps) {
+  const t = useTranslations("components.advancedOptionsToggle");
   return (
     // TODO(@raunakab): migrate to opal Button once className/iconClassName is resolved
     <Button
@@ -24,7 +26,7 @@ export function AdvancedOptionsToggle({
       onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
       className="mr-auto"
     >
-      {title || "Advanced Options"}
+      {title || t("advancedOptions")}
     </Button>
   );
 }

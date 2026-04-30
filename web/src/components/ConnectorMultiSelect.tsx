@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { ConnectorStatus } from "@/lib/types";
 import { ConnectorTitle } from "@/components/admin/connectors/ConnectorTitle";
 import { Label } from "@opal/layouts";
@@ -28,9 +29,11 @@ export const ConnectorMultiSelect = ({
   selectedIds,
   onChange,
   disabled = false,
-  placeholder = "Search connectors...",
+  placeholder,
   showError = false,
 }: ConnectorMultiSelectProps) => {
+  const t = useTranslations("components.connectorMultiSelect");
+  const resolvedPlaceholder = placeholder ?? t("searchPlaceholder");
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -103,8 +106,8 @@ export const ConnectorMultiSelect = ({
   };
 
   const effectivePlaceholder = allConnectorsSelected
-    ? "All connectors selected"
-    : placeholder;
+    ? t("allSelected")
+    : resolvedPlaceholder;
 
   const isInputDisabled = disabled;
 
@@ -117,8 +120,7 @@ export const ConnectorMultiSelect = ({
       )}
 
       <Text as="p" mainUiMuted text03>
-        All documents indexed by the selected connectors will be part of this
-        document set.
+        {t("description")}
       </Text>
       <div className="relative">
         <InputTypeIn
@@ -148,18 +150,17 @@ export const ConnectorMultiSelect = ({
             {allConnectorsSelected ? (
               <div className="py-4 px-3">
                 <Text as="p" text03 className="text-center text-xs">
-                  All available connectors have been selected. Remove connectors
-                  below to add different ones.
+                  {t("allSelectedHelp")}
                 </Text>
               </div>
             ) : filteredUnselectedConnectors.length === 0 ? (
               <div className="py-4 px-3">
                 <Text as="p" text03 className="text-center text-xs">
                   {searchQuery
-                    ? "No matching connectors found"
+                    ? t("noMatching")
                     : connectors.length === 0
-                      ? "No private connectors available. Create a private connector first."
-                      : "No more connectors available"}
+                      ? t("noPrivate")
+                      : t("noMore")}
                 </Text>
               </div>
             ) : (
@@ -210,8 +211,8 @@ export const ConnectorMultiSelect = ({
                   prominence="tertiary"
                   size="sm"
                   type="button"
-                  aria-label="Remove connector"
-                  tooltip="Remove connector"
+                  aria-label={t("removeConnector")}
+                  tooltip={t("removeConnector")}
                   onClick={() => removeConnector(connector.cc_pair_id)}
                   icon={SvgX}
                 />
@@ -221,7 +222,7 @@ export const ConnectorMultiSelect = ({
         </div>
       ) : (
         <div className="mt-3 p-3 border border-dashed border-border-02 rounded-12 bg-background-neutral-01 text-text-03 text-xs">
-          No connectors selected. Search and select connectors above.
+          {t("noneSelected")}
         </div>
       )}
 

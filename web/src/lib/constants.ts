@@ -97,12 +97,20 @@ export const MAX_CHARACTERS_PERSONA_DESCRIPTION = 5000000;
 export const MAX_CHARACTERS_AGENT_DESCRIPTION = 500;
 export const MAX_STARTER_MESSAGES = 4;
 export const MAX_CHARACTERS_STARTER_MESSAGE = 200;
-export const STARTER_MESSAGES_EXAMPLES = [
-  "Give me an overview of some documents.",
-  "Find the latest sales report.",
-  "Compile a list of our engineering goals for this quarter.",
-  "Summarize my goals for today.",
-];
+/**
+ * Translation keys for the starter-message placeholder examples shown in
+ * the agent editor. The actual strings live under
+ * `agents.editor.starterExamples.*` in the i18n messages files.
+ *
+ * The length of this array also drives the maximum number of starter slots
+ * rendered in the agent editor.
+ */
+export const STARTER_MESSAGE_EXAMPLE_KEYS = [
+  "starterExample1",
+  "starterExample2",
+  "starterExample3",
+  "starterExample4",
+] as const;
 
 //Credential form data key constants
 export const CREDENTIAL_NAME = "name";

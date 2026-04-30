@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import type { ProjectFile } from "@/app/app/projects/projectsService";
 import { UserFileStatus } from "@/app/app/projects/projectsService";
 import { isImageFile } from "@/lib/utils";
@@ -17,6 +18,7 @@ interface RemovableProps {
 }
 
 function Removable({ onRemove, children }: RemovableProps) {
+  const t = useTranslations("sections.fileCard");
   if (!onRemove) {
     return <>{children}</>;
   }
@@ -37,8 +39,8 @@ function Removable({ onRemove, children }: RemovableProps) {
                 e.stopPropagation();
                 onRemove();
               }}
-              title="Remove"
-              aria-label="Remove"
+              title={t("remove")}
+              aria-label={t("remove")}
               className={cn(
                 "h-4 w-4",
                 "flex items-center justify-center",
@@ -135,6 +137,7 @@ export function FileCard({
   onFileClick,
   compactImages = false,
 }: FileCardProps) {
+  const t = useTranslations("sections.fileCard");
   const typeLabel = useMemo(() => {
     const name = String(file.name || "");
     const lastDotIndex = name.lastIndexOf(".");
@@ -192,8 +195,8 @@ export function FileCard({
             description={
               isProcessing
                 ? file.status === UserFileStatus.UPLOADING
-                  ? "Uploading..."
-                  : "Processing..."
+                  ? t("uploading")
+                  : t("processing")
                 : typeLabel
             }
           />

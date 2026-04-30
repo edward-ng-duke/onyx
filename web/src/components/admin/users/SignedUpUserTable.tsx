@@ -7,6 +7,7 @@ import {
   USER_ROLE_LABELS,
 } from "@/lib/types";
 import { ReactNode, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import CenteredPageSelector from "./CenteredPageSelector";
 import { toast } from "@/hooks/useToast";
 import {
@@ -68,6 +69,7 @@ export default function SignedUpUserTable({
   onTotalItemsChange,
   onLoadingChange,
 }: SignedUpUserTableProps) {
+  const t = useTranslations("components.signedUpUserTable");
   const [filters, setFilters] = useState<{
     is_active?: boolean;
     roles?: UserRole[];
@@ -107,12 +109,7 @@ export default function SignedUpUserTable({
   }, [pageOfUsers, totalItems, onTotalItemsChange]);
 
   if (error) {
-    return (
-      <ErrorCallout
-        errorTitle="Error loading users"
-        errorMsg={error?.message}
-      />
-    );
+    return <ErrorCallout errorTitle={t("loadError")} errorMsg={error?.message} />;
   }
 
   const handlePopup = (message: string, type: "success" | "error") => {
@@ -125,9 +122,9 @@ export default function SignedUpUserTable({
   };
 
   const onRoleChangeSuccess = () =>
-    handlePopup("User role updated successfully!", "success");
+    handlePopup(t("roleUpdateSuccess"), "success");
   const onRoleChangeError = (errorMsg: string) =>
-    handlePopup(`Unable to update user role - ${errorMsg}`, "error");
+    handlePopup(t("roleUpdateError", { error: errorMsg }), "error");
 
   const toggleRole = (roleEnum: UserRole) => {
     setFilters((prev) => {
@@ -179,9 +176,9 @@ export default function SignedUpUserTable({
             <InputSelect.Trigger />
 
             <InputSelect.Content>
-              <InputSelect.Item value="all">All Status</InputSelect.Item>
-              <InputSelect.Item value="true">Active</InputSelect.Item>
-              <InputSelect.Item value="false">Inactive</InputSelect.Item>
+              <InputSelect.Item value="all">{t("allStatus")}</InputSelect.Item>
+              <InputSelect.Item value="true">{t("active")}</InputSelect.Item>
+              <InputSelect.Item value="false">{t("inactive")}</InputSelect.Item>
             </InputSelect.Content>
           </InputSelect>
 
@@ -189,8 +186,8 @@ export default function SignedUpUserTable({
             <SelectTrigger className="w-[260px] h-[34px] bg-neutral">
               <SelectValue>
                 {filters.roles?.length
-                  ? `${filters.roles.length} role(s) selected`
-                  : "All Roles"}
+                  ? t("rolesSelected", { count: filters.roles.length })
+                  : t("allRoles")}
               </SelectValue>
             </SelectTrigger>
             <SelectContent className="bg-background-tint-00">
@@ -235,7 +232,7 @@ export default function SignedUpUserTable({
 
   const renderUserRoleDropdown = (user: User) => {
     if (user.role === UserRole.SLACK_USER) {
-      return <p className="ml-2">Slack User</p>;
+      return <p className="ml-2">{t("slackUser")}</p>;
     }
     return (
       <UserRoleDropdown
@@ -269,7 +266,7 @@ export default function SignedUpUserTable({
                 className={buttonClassName}
               >
                 <LogOut className="mr-2 h-4 w-4" />
-                <span>Leave Organization</span>
+                <span>{t("leaveOrganization")}</span>
               </LeaveOrganizationButton>
             ) : (
               <>
@@ -280,7 +277,7 @@ export default function SignedUpUserTable({
                     className={buttonClassName}
                   >
                     <UserMinus className="mr-2 h-4 w-4" />
-                    <span>Delete User</span>
+                    <span>{t("deleteUser")}</span>
                   </DeleteUserButton>
                 )}
                 <DeactivateUserButton
@@ -290,7 +287,7 @@ export default function SignedUpUserTable({
                   className={buttonClassName}
                 >
                   {/*<UserX className="mr-2 h-4 w-4" />*/}
-                  {user.is_active ? "Deactivate User" : "Activate User"}
+                  {user.is_active ? t("deactivateUser") : t("activateUser")}
                 </DeactivateUserButton>
               </>
             )}
@@ -301,7 +298,7 @@ export default function SignedUpUserTable({
                 onClick={() => handleResetPassword(user)}
                 leftIcon={SvgKey}
               >
-                Reset Password
+                {t("resetPassword")}
               </Button>
             )}
           </div>
@@ -337,12 +334,12 @@ export default function SignedUpUserTable({
       <Table className="overflow-visible">
         <TableHeader>
           <TableRow>
-            <TableHead>Email</TableHead>
-            <TableHead className="text-center">Role</TableHead>
-            <TableHead className="text-center">Status</TableHead>
+            <TableHead>{t("email")}</TableHead>
+            <TableHead className="text-center">{t("role")}</TableHead>
+            <TableHead className="text-center">{t("status")}</TableHead>
             <TableHead>
               <div className="flex">
-                <div className="ml-auto">Actions</div>
+                <div className="ml-auto">{t("actions")}</div>
               </div>
             </TableHead>
           </TableRow>
@@ -362,8 +359,8 @@ export default function SignedUpUserTable({
                 <TableCell colSpan={4} className="text-center">
                   <p className="pt-4 pb-4">
                     {filters.roles?.length || filters.is_active !== undefined
-                      ? "No users found matching your filters"
-                      : `No users found matching "${q}"`}
+                      ? t("noUsersFiltered")
+                      : t("noUsersMatching", { query: q })}
                   </p>
                 </TableCell>
               </TableRow>
@@ -375,7 +372,7 @@ export default function SignedUpUserTable({
                     {renderUserRoleDropdown(user)}
                   </TableCell>
                   <TableCell className="text-center w-[140px]">
-                    <i>{user.is_active ? "Active" : "Inactive"}</i>
+                    <i>{user.is_active ? t("active") : t("inactive")}</i>
                   </TableCell>
                   <TableCell className="text-right  w-[300px] ">
                     {renderActionButtons(user)}

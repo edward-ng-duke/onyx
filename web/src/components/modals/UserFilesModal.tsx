@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
 import { ProjectFile } from "@/providers/ProjectsContext";
 import { formatRelativeTime } from "@/app/app/components/projects/project_utils";
@@ -37,14 +38,17 @@ function getIcon(
   return SvgFileText;
 }
 
-function getDescription(file: ProjectFile): string {
-  const s = String(file.status || "");
-  const typeLabel = getFileExtension(file.name);
-  if (s === UserFileStatus.PROCESSING) return "Processing...";
-  if (s === UserFileStatus.UPLOADING) return "Uploading...";
-  if (s === UserFileStatus.DELETING) return "Deleting...";
-  if (s === UserFileStatus.COMPLETED) return typeLabel;
-  return file.status ?? typeLabel;
+function useFileStatusDescription() {
+  const t = useTranslations("components.userFilesModal");
+  return (file: ProjectFile): string => {
+    const s = String(file.status || "");
+    const typeLabel = getFileExtension(file.name);
+    if (s === UserFileStatus.PROCESSING) return t("statusProcessing");
+    if (s === UserFileStatus.UPLOADING) return t("statusUploading");
+    if (s === UserFileStatus.DELETING) return t("statusDeleting");
+    if (s === UserFileStatus.COMPLETED) return typeLabel;
+    return file.status ?? typeLabel;
+  };
 }
 
 interface FileAttachmentProps {
@@ -62,6 +66,7 @@ function FileAttachment({
   onView,
   onDelete,
 }: FileAttachmentProps) {
+  const getDescription = useFileStatusDescription();
   const isProcessing =
     String(file.status) === UserFileStatus.PROCESSING ||
     String(file.status) === UserFileStatus.UPLOADING ||
@@ -117,6 +122,8 @@ export default function UserFilesModal({
   onPickRecent,
   onUnpickRecent,
 }: UserFilesModalProps) {
+  const t = useTranslations("components.userFilesModal");
+  const tCommon = useTranslations("common.actions");
   const { isOpen, toggle } = useModal();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(
     () => new Set(selectedFileIds || [])
@@ -181,7 +188,7 @@ export default function UserFilesModal({
             <Section flexDirection="row" gap={0.5}>
               <InputTypeIn
                 ref={searchInputRef}
-                placeholder="Search files..."
+                placeholder={t("searchPlaceholder")}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 leftSearchIcon
@@ -197,7 +204,7 @@ export default function UserFilesModal({
                   secondary={false}
                   internal
                 >
-                  Add Files
+                  {t("addFiles")}
                 </CreateButton>
               )}
             </Section>
@@ -210,7 +217,7 @@ export default function UserFilesModal({
           >
             {/* File display section */}
             {filtered.length === 0 ? (
-              <Text text03>No files found</Text>
+              <Text text03>{t("noFilesFound")}</Text>
             ) : (
               <ScrollIndicatorDiv className="p-2 gap-2 max-h-[70vh]">
                 {filtered.map((projectFle) => {
@@ -253,7 +260,9 @@ export default function UserFilesModal({
                 {!query.trim() && !showOnlySelected && (
                   <TextSeparator
                     count={recentFiles.length}
-                    text={recentFiles.length === 1 ? "File" : "Files"}
+                    text={
+                      recentFiles.length === 1 ? t("fileLabel") : t("filesLabel")
+                    }
                   />
                 )}
               </ScrollIndicatorDiv>
@@ -265,8 +274,9 @@ export default function UserFilesModal({
             {onPickRecent && (
               <Section flexDirection="row" justifyContent="start" gap={0.5}>
                 <Text as="p" text03>
-                  {selectedCount} {selectedCount === 1 ? "file" : "files"}{" "}
-                  selected
+                  {selectedCount === 1
+                    ? t("selectedSingular", { count: selectedCount })
+                    : t("selectedPlural", { count: selectedCount })}
                 </Text>
                 <Button
                   icon={SvgEye}
@@ -287,7 +297,7 @@ export default function UserFilesModal({
 
             {/* Right side: Done button */}
             <Button prominence="secondary" onClick={() => toggle(false)}>
-              Done
+              {tCommon("done")}
             </Button>
           </Modal.Footer>
         </Modal.Content>

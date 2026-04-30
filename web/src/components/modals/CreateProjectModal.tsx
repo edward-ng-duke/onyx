@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@opal/components";
 import { useProjectsContext } from "@/providers/ProjectsContext";
 import { useKeyPress } from "@/hooks/useKeyPress";
@@ -19,6 +20,8 @@ interface CreateProjectModalProps {
 export default function CreateProjectModal({
   initialProjectName,
 }: CreateProjectModalProps) {
+  const t = useTranslations("components.createProjectModal");
+  const tCommon = useTranslations("common.actions");
   const { createProject } = useProjectsContext();
   const modal = useModal();
   const route = useAppRouter();
@@ -38,7 +41,7 @@ export default function CreateProjectModal({
       route({ projectId: newProject.id });
       modal.toggle(false);
     } catch (e) {
-      toast.error(`Failed to create the project ${name}`);
+      toast.error(t("createFailed", { name }));
     }
   }
 
@@ -50,26 +53,26 @@ export default function CreateProjectModal({
         <Modal.Content width="sm">
           <Modal.Header
             icon={SvgFolderPlus}
-            title="Create New Project"
-            description="Use projects to organize your files and chats in one place, and add custom instructions for ongoing work."
+            title={t("title")}
+            description={t("description")}
             onClose={() => modal.toggle(false)}
           />
           <Modal.Body>
-            <InputVertical title="Project Name" withLabel>
+            <InputVertical title={t("projectName")} withLabel>
               <InputTypeIn
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
-                placeholder="What are you working on?"
+                placeholder={t("placeholder")}
                 showClearButton
               />
             </InputVertical>
           </Modal.Body>
           <Modal.Footer>
             <Button prominence="secondary" onClick={() => modal.toggle(false)}>
-              Cancel
+              {tCommon("cancel")}
             </Button>
             <Button disabled={!projectName.trim()} onClick={handleSubmit}>
-              Create Project
+              {t("submit")}
             </Button>
           </Modal.Footer>
         </Modal.Content>

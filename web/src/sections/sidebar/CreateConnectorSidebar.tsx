@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { useFormContext } from "@/components/context/FormContext";
 import { credentialTemplates } from "@/lib/connectors/credentials";
 import Text from "@/refresh-components/texts/Text";
@@ -5,19 +6,30 @@ import StepSidebar from "@/sections/sidebar/StepSidebarWrapper";
 import { useUser } from "@/providers/UserProvider";
 import { SvgSettings } from "@opal/icons";
 
+const STEP_CREDENTIAL = "Credential";
+const STEP_CONNECTOR = "Connector";
+const STEP_ADVANCED = "Advanced (optional)";
+
 export default function Sidebar() {
+  const t = useTranslations("sections.createConnectorSidebar");
   const { formStep, setFormStep, connector, allowAdvanced, allowCreate } =
     useFormContext();
   const noCredential = credentialTemplates[connector] == null;
 
   const { isAdmin } = useUser();
-  const buttonName = isAdmin ? "Admin Page" : "Curator Page";
+  const buttonName = isAdmin ? t("adminPage") : t("curatorPage");
 
   const settingSteps = [
-    ...(!noCredential ? ["Credential"] : []),
-    "Connector",
-    ...(connector == "file" ? [] : ["Advanced (optional)"]),
+    ...(!noCredential ? [STEP_CREDENTIAL] : []),
+    STEP_CONNECTOR,
+    ...(connector == "file" ? [] : [STEP_ADVANCED]),
   ];
+
+  const stepLabel = (step: string) => {
+    if (step === STEP_CREDENTIAL) return t("stepCredential");
+    if (step === STEP_CONNECTOR) return t("stepConnector");
+    return t("stepAdvanced");
+  };
 
   return (
     <StepSidebar
@@ -31,8 +43,8 @@ export default function Sidebar() {
         )}
         {settingSteps.map((step, index) => {
           const allowed =
-            (step == "Connector" && allowCreate) ||
-            (step == "Advanced (optional)" && allowAdvanced) ||
+            (step == STEP_CONNECTOR && allowCreate) ||
+            (step == STEP_ADVANCED && allowAdvanced) ||
             index <= formStep;
 
           return (
@@ -59,7 +71,7 @@ export default function Sidebar() {
                 </div>
               </div>
               <Text as="p" text04={index <= formStep} text02={index > formStep}>
-                {step}
+                {stepLabel(step)}
               </Text>
             </div>
           );

@@ -45,6 +45,7 @@ function FileLineItem({
   onPickRecent,
   onFileClick,
 }: FileLineItemProps) {
+  const t = useTranslations("ui.filePicker");
   const showLoader = useMemo(
     () =>
       String(projectFile.status) === UserFileStatus.PROCESSING ||
@@ -79,7 +80,7 @@ function FileLineItem({
           <IconButton
             icon={SvgExternalLink}
             onClick={noProp(() => onFileClick(projectFile))}
-            tooltip="View File"
+            tooltip={t("viewFile")}
             disabled={disableActionButton}
             internal
             className="hidden group-hover/LineItem:flex"
@@ -115,6 +116,7 @@ function FilePickerPopoverContents({
   triggerUploadPicker,
   openRecentFilesModal,
 }: FilePickerPopoverContentsProps) {
+  const t = useTranslations("ui.filePicker");
   // These are the "quick" files that we show. Essentially "speed dial", but for files.
   // The rest of the files will be hidden behind the "All Recent Files" button, should there be more files left to show!
   const hasFiles = recentFiles.length > 0;
@@ -128,10 +130,10 @@ function FilePickerPopoverContents({
         <LineItem
           key="upload-files"
           icon={SvgUploadSquare}
-          description="Upload a file from your device"
+          description={t("uploadDescription")}
           onClick={triggerUploadPicker}
         >
-          Upload Files
+          {t("uploadFiles")}
         </LineItem>,
 
         // Separator
@@ -141,7 +143,7 @@ function FilePickerPopoverContents({
         hasFiles && (
           <div key="recent-files" className="pt-1">
             <Text as="p" text02 secondaryBody className="py-1 px-3">
-              Recent Files
+              {t("recentFiles")}
             </Text>
           </div>
         ),
@@ -159,7 +161,7 @@ function FilePickerPopoverContents({
         // Rest of the files
         shouldShowMoreFilesButton && (
           <LineItem icon={SvgMoreHorizontal} onClick={openRecentFilesModal}>
-            All Recent Files
+            {t("allRecentFiles")}
           </LineItem>
         ),
       ]}
@@ -185,6 +187,7 @@ export default function FilePickerPopover({
   selectedFileIds,
 }: FilePickerPopoverProps) {
   const tToast = useTranslations("toasts.files");
+  const t = useTranslations("ui.filePicker");
   const { allRecentFiles } = useProjectsContext();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const recentFilesModal = useCreateModal();
@@ -226,18 +229,20 @@ export default function FilePickerPopover({
               f.id === file.id ? { ...f, status: lastStatus } : f
             )
           );
-          let projects = result.project_names.join(", ");
-          let assistants = result.assistant_names.join(", ");
-          let message = "Cannot delete file. It is associated with";
-          if (projects) {
-            message += ` projects: ${projects}`;
-          }
-          if (projects && assistants) {
-            message += " and ";
-          }
-          if (assistants) {
-            message += `assistants: ${assistants}`;
-          }
+          const projects = result.project_names.join(", ");
+          const assistants = result.assistant_names.join(", ");
+          let kind: "both" | "projects" | "assistants" | undefined;
+          if (projects && assistants) kind = "both";
+          else if (projects) kind = "projects";
+          else if (assistants) kind = "assistants";
+          const message =
+            kind === "both"
+              ? t("cannotDeleteBoth", { projects, assistants })
+              : kind === "projects"
+                ? t("cannotDeleteProjects", { projects })
+                : kind === "assistants"
+                  ? t("cannotDeleteAssistants", { assistants })
+                  : t("cannotDeleteGeneric");
 
           toast.error(message);
         }
@@ -266,8 +271,8 @@ export default function FilePickerPopover({
 
       <recentFilesModal.Provider>
         <UserFilesModal
-          title="Recent Files"
-          description="Upload files or pick from your recent files."
+          title={t("recentFiles")}
+          description={t("modalDescription")}
           recentFiles={recentFilesSnapshot}
           onPickRecent={(file) => {
             onPickRecent && onPickRecent(file);

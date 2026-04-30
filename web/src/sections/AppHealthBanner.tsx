@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { errorHandlingFetcher, RedirectError } from "@/lib/fetcher";
 import useSWR from "swr";
 import { SWR_KEYS } from "@/lib/swr-keys";
@@ -17,6 +18,7 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { getExtensionContext } from "@/lib/extension/utils";
 
 export default function AppHealthBanner() {
+  const t = useTranslations("sections.appHealthBanner");
   const router = useRouter();
   const { error } = useSWR(SWR_KEYS.health, errorHandlingFetcher);
   const [expired, setExpired] = useState(false);
@@ -198,14 +200,12 @@ export default function AppHealthBanner() {
     return (
       <Modal open>
         <Modal.Content width="sm" height="sm">
-          <Modal.Header icon={SvgLogOut} title="You Have Been Logged Out" />
+          <Modal.Header icon={SvgLogOut} title={t("loggedOutTitle")} />
           <Modal.Body>
-            <p className="text-sm">
-              Your session has expired. Please log in again to continue.
-            </p>
+            <p className="text-sm">{t("loggedOutDescription")}</p>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={handleLogin}>Log In</Button>
+            <Button onClick={handleLogin}>{t("logIn")}</Button>
           </Modal.Footer>
         </Modal.Content>
       </Modal>
@@ -223,8 +223,8 @@ export default function AppHealthBanner() {
       <div className="fixed top-0 left-0 z-[101] w-full bg-status-error-01 p-3">
         <Content
           icon={SvgAlertTriangle}
-          title="The backend is currently unavailable"
-          description="If this is your initial setup or you just updated your Onyx deployment, this is likely because the backend is still starting up. Give it a minute or two, and then refresh the page. If that does not work, make sure the backend is setup and/or contact an administrator."
+          title={t("backendUnavailableTitle")}
+          description={t("backendUnavailableDescription")}
           sizePreset="main-content"
           variant="section"
         />

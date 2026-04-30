@@ -26,7 +26,7 @@ import LLMSelector from "@/components/llm/LLMSelector";
 import { parseLlmDescriptor, structureValue } from "@/lib/llmConfig/utils";
 import { useLLMProviders } from "@/hooks/useLLMProviders";
 import {
-  STARTER_MESSAGES_EXAMPLES,
+  STARTER_MESSAGE_EXAMPLE_KEYS,
   MAX_CHARACTERS_STARTER_MESSAGE,
   MAX_CHARACTERS_AGENT_DESCRIPTION,
 } from "@/lib/constants";
@@ -438,7 +438,7 @@ function MCPServerCard({
 
 function StarterMessages() {
   const t = useTranslations("agents.editor");
-  const max_starters = STARTER_MESSAGES_EXAMPLES.length;
+  const max_starters = STARTER_MESSAGE_EXAMPLE_KEYS.length;
 
   const { values } = useFormikContext<{
     starter_messages: string[];
@@ -468,7 +468,9 @@ function StarterMessages() {
               key={`starter_messages.${i}`}
               name={`starter_messages.${i}`}
               placeholder={
-                STARTER_MESSAGES_EXAMPLES[i] || t("starterPlaceholder")
+                STARTER_MESSAGE_EXAMPLE_KEYS[i]
+                  ? t(STARTER_MESSAGE_EXAMPLE_KEYS[i])
+                  : t("starterPlaceholder")
               }
               onRemove={() => arrayHelpers.remove(i)}
             />
@@ -606,7 +608,7 @@ export default function AgentEditorPage({
     // Prompts
     instructions: existingAgent?.system_prompt ?? "",
     starter_messages: Array.from(
-      { length: STARTER_MESSAGES_EXAMPLES.length },
+      { length: STARTER_MESSAGE_EXAMPLE_KEYS.length },
       (_, i) => existingAgent?.starter_messages?.[i]?.message ?? ""
     ),
 

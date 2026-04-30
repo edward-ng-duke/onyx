@@ -1551,6 +1551,10 @@
       "startNewChat": "开始新对话",
       "sharedOn": "分享于 {date}",
       "sharedBy": "分享人：{owner}"
+    },
+    "greetings": {
+      "howCanIHelp": "需要我帮什么忙？",
+      "letsGetStarted": "我们开始吧。"
     }
   },
   "settings": {
@@ -1795,7 +1799,11 @@
       "deleteModalBodyAccess": "正在使用此 Agent 的用户将无法再访问它。删除后无法恢复。",
       "deleteModalBodyConfirm": "确定要删除此 Agent 吗？",
       "userFilesTitle": "用户文件",
-      "userFilesDescription": "为此 Agent 选中的全部文件"
+      "userFilesDescription": "为此 Agent 选中的全部文件",
+      "starterExample1": "给我一份文档概览。",
+      "starterExample2": "查找最新的销售报告。",
+      "starterExample3": "整理本季度的工程目标。",
+      "starterExample4": "总结一下今天的目标。"
     }
   },
   "toasts": {
@@ -2306,6 +2314,174 @@
       "placeholderLike": "您喜欢这次回答的哪些方面？",
       "placeholderDislike": "您对这次回答有哪些不满意？",
       "submitting": "提交中…"
+    }
+  },
+  "sections": {
+    "createConnectorSidebar": {
+      "adminPage": "管理员页面",
+      "curatorPage": "管理者页面",
+      "stepCredential": "凭据",
+      "stepConnector": "Connector",
+      "stepAdvanced": "高级（可选）"
+    },
+    "agentCard": {
+      "viewStats": "查看 Agent 统计",
+      "editAgent": "编辑 Agent",
+      "shareAgent": "分享 Agent",
+      "pin": "固定到侧边栏",
+      "unpin": "从侧边栏取消固定",
+      "actionCount": "{count, plural, one {# 个动作} other {# 个动作}}",
+      "noActions": "无动作",
+      "startChat": "开始对话"
+    },
+    "agentsFilters": {
+      "everyone": "全部",
+      "byUser": "由 {email}",
+      "peopleCount": "{count} 人",
+      "allActions": "全部动作",
+      "selectedCount": "已选 {count} 项",
+      "createdByPlaceholder": "创建者…",
+      "filterActionsPlaceholder": "筛选动作…",
+      "me": "我",
+      "mcpServerFallback": "MCP Server {id}"
+    },
+    "fileCard": {
+      "remove": "移除",
+      "uploading": "上传中…",
+      "processing": "处理中…"
+    },
+    "appHealthBanner": {
+      "loggedOutTitle": "你已退出登录",
+      "loggedOutDescription": "登录已过期，请重新登录后继续。",
+      "logIn": "登录",
+      "backendUnavailableTitle": "后端服务当前不可用",
+      "backendUnavailableDescription": "如果这是首次部署或刚刚升级了 Onyx，通常是后端仍在启动。请等待一两分钟后刷新页面。若仍未恢复，请确认后端已正确部署或联系管理员。"
+    }
+  },
+  "components": {
+    "advancedOptionsToggle": {
+      "advancedOptions": "高级选项"
+    },
+    "groupsMultiSelect": {
+      "label": "用户组",
+      "subtext": "选择可访问该资源的用户组",
+      "emptyMessage": "暂无可用用户组，请先创建一个用户组。"
+    },
+    "connectorMultiSelect": {
+      "searchPlaceholder": "搜索 Connector…",
+      "allSelected": "已选择全部 Connector",
+      "description": "选定 Connector 索引的全部文档都将归入该文档集。",
+      "allSelectedHelp": "已选择所有可用 Connector。移除下方的 Connector 以替换。",
+      "noMatching": "未找到匹配的 Connector",
+      "noPrivate": "暂无私有 Connector，请先创建一个私有 Connector。",
+      "noMore": "没有更多可选 Connector",
+      "removeConnector": "移除 Connector",
+      "noneSelected": "尚未选择 Connector，请在上方搜索并选择。"
+    },
+    "field": {
+      "hidePassword": "隐藏密码",
+      "showPassword": "显示密码",
+      "validatingFile": "正在校验文件…",
+      "fileSelectionError": "文件选择错误",
+      "noFileTypeDefinition": "未找到字段 {name} 的文件类型定义",
+      "unknownError": "未知错误",
+      "validationError": "校验错误",
+      "addNew": "新增",
+      "selectPlaceholder": "请选择…",
+      "none": "无",
+      "markdown": "Markdown",
+      "markdownPlaceholder": "在此输入 Markdown…",
+      "write": "编辑",
+      "preview": "预览",
+      "optionalSuffix": "（可选）",
+      "optionalLower": "（可选）"
+    },
+    "createProjectModal": {
+      "title": "新建项目",
+      "description": "用项目把相关文件、聊天与自定义指令集中管理，让长期工作更有条理。",
+      "projectName": "项目名称",
+      "placeholder": "你正在做什么？",
+      "submit": "创建项目",
+      "createFailed": "创建项目 {name} 失败"
+    },
+    "userFilesModal": {
+      "statusProcessing": "处理中…",
+      "statusUploading": "上传中…",
+      "statusDeleting": "删除中…",
+      "searchPlaceholder": "搜索文件…",
+      "addFiles": "添加文件",
+      "noFilesFound": "未找到文件",
+      "fileLabel": "个文件",
+      "filesLabel": "个文件",
+      "selectedSingular": "已选择 {count} 个文件",
+      "selectedPlural": "已选择 {count} 个文件"
+    },
+    "resetPasswordModal": {
+      "title": "重置密码",
+      "confirmDescription": "确认要重置 {email} 的密码吗？",
+      "newPasswordLabel": "新密码：",
+      "communicateSecurely": "请通过安全方式将此密码告知用户。",
+      "resetting": "重置中",
+      "resetButton": "重置密码",
+      "resetSuccess": "密码已重置",
+      "resetFailed": "密码重置失败",
+      "resetError": "重置密码时出错"
+    },
+    "signedUpUserTable": {
+      "loadError": "加载用户失败",
+      "roleUpdateSuccess": "用户角色已更新！",
+      "roleUpdateError": "更新用户角色失败 - {error}",
+      "allStatus": "全部状态",
+      "active": "活跃",
+      "inactive": "未激活",
+      "rolesSelected": "已选 {count} 个角色",
+      "allRoles": "全部角色",
+      "slackUser": "Slack 用户",
+      "leaveOrganization": "离开组织",
+      "deleteUser": "删除用户",
+      "deactivateUser": "停用用户",
+      "activateUser": "启用用户",
+      "resetPassword": "重置密码",
+      "email": "邮箱",
+      "role": "角色",
+      "status": "状态",
+      "actions": "操作",
+      "noUsersFiltered": "未找到符合筛选条件的用户",
+      "noUsersMatching": "未找到匹配 \"{query}\" 的用户"
+    },
+    "pendingUsersTable": {
+      "emptyState": "申请加入的用户将出现在这里",
+      "loadError": "加载待审用户失败",
+      "approveFailed": "批准用户加入请求失败",
+      "joinRequest": "加入请求",
+      "approve": "批准",
+      "approveAction": "批准加入请求的人",
+      "approveDetails": "{email} 申请加入团队。批准后将作为成员加入。",
+      "email": "邮箱",
+      "actions": "操作",
+      "acceptJoinRequest": "接受加入请求",
+      "noPendingMatching": "未找到匹配 \"{query}\" 的待审用户"
+    },
+    "invitedUserTable": {
+      "emptyState": "已邀请的用户将出现在这里",
+      "loadError": "加载用户失败",
+      "email": "邮箱",
+      "actions": "操作",
+      "noMatching": "未找到匹配 \"{query}\" 的用户"
+    }
+  },
+  "ui": {
+    "filePicker": {
+      "viewFile": "查看文件",
+      "uploadFiles": "上传文件",
+      "uploadDescription": "从本地设备上传文件",
+      "recentFiles": "最近文件",
+      "allRecentFiles": "全部最近文件",
+      "modalDescription": "上传文件或从最近文件中选择。",
+      "cannotDeleteGeneric": "无法删除文件，已关联其他资源。",
+      "cannotDeleteProjects": "无法删除文件，已关联以下项目：{projects}",
+      "cannotDeleteAssistants": "无法删除文件，已关联以下助手：{assistants}",
+      "cannotDeleteBoth": "无法删除文件，已关联以下项目：{projects} 以及助手：{assistants}"
     }
   }
 }

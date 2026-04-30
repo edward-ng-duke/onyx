@@ -27,6 +27,7 @@
  */
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { FilterButton, LineItemButton } from "@opal/components";
 import { SvgActions, SvgUser } from "@opal/icons";
 import Popover, { PopoverMenu } from "@/refresh-components/Popover";
@@ -93,6 +94,7 @@ interface UseAgentsFiltersReturn<T extends MinimalPersonaSnapshot> {
 export function useAgentsFilters<T extends MinimalPersonaSnapshot>(
   agents: T[]
 ): UseAgentsFiltersReturn<T> {
+  const t = useTranslations("sections.agentsFilters");
   const { user } = useUser();
   const { mcpData } = useMcpServers();
   const { tools: allTools } = useAvailableTools();
@@ -194,7 +196,7 @@ export function useAgentsFilters<T extends MinimalPersonaSnapshot>(
       .map((id) => ({
         type: "mcp_server" as const,
         mcpServerId: id,
-        name: mcpServerNames.get(id) ?? `MCP Server ${id}`,
+        name: mcpServerNames.get(id) ?? t("mcpServerFallback", { id }),
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -204,7 +206,7 @@ export function useAgentsFilters<T extends MinimalPersonaSnapshot>(
       .sort((a, b) => a.name.localeCompare(b.name));
 
     return [...systemItems, ...mcpItems, ...otherItems];
-  }, [allTools, mcpServerNames]);
+  }, [allTools, mcpServerNames, t]);
 
   const actionsFilter = useFilter(uniqueActions, (a) => a.name);
 
@@ -226,24 +228,24 @@ export function useAgentsFilters<T extends MinimalPersonaSnapshot>(
   // -- Filter button labels --------------------------------------------------
 
   const creatorFilterButtonText = useMemo(() => {
-    if (selectedCreatorIds.size === 0) return "Everyone";
+    if (selectedCreatorIds.size === 0) return t("everyone");
     if (selectedCreatorIds.size === 1) {
       const selectedId = Array.from(selectedCreatorIds)[0];
       const creator = uniqueCreators.find((c) => c.id === selectedId);
-      return creator ? `By ${creator.email}` : "Everyone";
+      return creator ? t("byUser", { email: creator.email }) : t("everyone");
     }
-    return `${selectedCreatorIds.size} people`;
-  }, [selectedCreatorIds, uniqueCreators]);
+    return t("peopleCount", { count: selectedCreatorIds.size });
+  }, [selectedCreatorIds, uniqueCreators, t]);
 
   const actionsFilterButtonText = useMemo(() => {
-    if (selectedActionKeys.size === 0) return "All Actions";
+    if (selectedActionKeys.size === 0) return t("allActions");
     if (selectedActionKeys.size === 1) {
       const key = Array.from(selectedActionKeys)[0];
       const item = uniqueActions.find((a) => actionFilterKey(a) === key);
-      return item?.name ?? "All Actions";
+      return item?.name ?? t("allActions");
     }
-    return `${selectedActionKeys.size} selected`;
-  }, [selectedActionKeys, uniqueActions]);
+    return t("selectedCount", { count: selectedActionKeys.size });
+  }, [selectedActionKeys, uniqueActions, t]);
 
   // -- Filtered agents -------------------------------------------------------
 
@@ -297,7 +299,7 @@ export function useAgentsFilters<T extends MinimalPersonaSnapshot>(
             {[
               <InputTypeIn
                 key="created-by"
-                placeholder="Created by..."
+                placeholder={t("createdByPlaceholder")}
                 variant="internal"
                 leftSearchIcon
                 value={creatorFilter.query}
@@ -315,7 +317,7 @@ export function useAgentsFilters<T extends MinimalPersonaSnapshot>(
                     selectVariant="select-heavy"
                     icon={SvgUser}
                     title={creator.email}
-                    description={isCurrentUser ? "Me" : undefined}
+                    description={isCurrentUser ? t("me") : undefined}
                     state={isSelected ? "selected" : "empty"}
                     onClick={() => {
                       setSelectedCreatorIds((prev) => {
@@ -352,7 +354,7 @@ export function useAgentsFilters<T extends MinimalPersonaSnapshot>(
             {[
               <InputTypeIn
                 key="actions"
-                placeholder="Filter actions..."
+                placeholder={t("filterActionsPlaceholder")}
                 variant="internal"
                 leftSearchIcon
                 value={actionsFilter.query}
