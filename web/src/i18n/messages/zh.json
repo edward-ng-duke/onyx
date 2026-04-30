@@ -2592,6 +2592,64 @@
         "regionDescription": "你的 Google Vertex AI 模型托管所在的区域。完整支持区域列表见 Google Cloud。",
         "apiKeyDescription": "附加来自 Google Cloud 的 API Key JSON 以访问你的模型。"
       }
+    },
+    "shareAgent": {
+      "header": "分享智能体",
+      "usersAndGroupsTab": "用户与群组",
+      "yourOrganizationTab": "你的组织",
+      "addUsersAndGroupsPlaceholder": "添加用户和群组",
+      "addGroupsPlaceholder": "添加群组",
+      "userDirectoryRestrictedTooltip": "你的管理员已限制用户目录访问。请联系管理员以将此智能体分享给其他用户。",
+      "youSuffix": "你",
+      "owner": "所有者",
+      "publicTitle": "此智能体已对你的组织公开。",
+      "publicDescription": "你组织内的所有人都可访问此智能体。",
+      "publishTitle": "发布此智能体",
+      "publishDescription": "让你的组织内所有人都能使用此智能体。",
+      "featureTitle": "推荐此智能体",
+      "featureDescription": "在「探索智能体」列表顶部显示，并自动固定到拥有访问权限的新用户的侧边栏。",
+      "addLabelsPlaceholder": "添加标签...",
+      "labelsHelp": "添加标签与分类，帮助他人更好地发现此智能体。",
+      "copyLink": "复制链接"
+    },
+    "shareChat": {
+      "chatShared": "对话已分享",
+      "shareThisChat": "分享此对话",
+      "shareDescription": "此对话中现有及未来的所有消息都会被分享。",
+      "private": "私有",
+      "privateDescription": "仅你本人可访问此对话。",
+      "organization": "你的组织",
+      "organizationDescription": "你组织内的任何人都可查看此对话。",
+      "copyLinkTooltip": "复制链接",
+      "createShareLink": "创建分享链接",
+      "makePrivate": "设为私有",
+      "copyLink": "复制链接"
+    },
+    "agentViewer": {
+      "fold": "收起",
+      "expand": "展开",
+      "featured": "推荐",
+      "publicToOrg": "对你的组织公开",
+      "knowledge": "知识库",
+      "noKnowledge": "暂无知识库",
+      "actionsTools": "操作与工具",
+      "noActions": "暂无操作",
+      "moreInfo": "更多信息",
+      "instructions": "指令",
+      "defaultModel": "默认模型",
+      "defaultModelDescription": "Onyx 将在你的对话中默认使用此模型。",
+      "knowledgeCutoff": "知识截止日期",
+      "knowledgeCutoffDescription": "最后更新日期早于此日期的文档将被忽略。",
+      "overwritePrompts": "覆盖系统提示词",
+      "overwritePromptsDescription": "移除包含有用说明（例如 “You can use Markdown tables”）的基础系统提示词。这可能会影响回答质量。",
+      "promptReminders": "提示词提醒",
+      "conversationStarters": "对话开场白"
+    },
+    "preview": {
+      "fullExceptionTrace": "完整异常堆栈",
+      "pdfViewer": "PDF 查看器",
+      "unsupportedDescription": "此文件格式不支持预览。",
+      "downloadFile": "下载文件"
     }
   },
   "sections": {

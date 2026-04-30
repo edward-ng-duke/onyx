@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";
 import { FullPersona } from "@/app/admin/agents/interfaces";
@@ -48,6 +49,7 @@ interface ViewerMCPServerCardProps {
 }
 
 function ViewerMCPServerCard({ server, tools }: ViewerMCPServerCardProps) {
+  const t = useTranslations("modals.agentViewer");
   const [expanded, setExpanded] = useState(true);
   const serverIcon = getActionIcon(server.server_url, server.name);
 
@@ -88,7 +90,7 @@ function ViewerMCPServerCard({ server, tools }: ViewerMCPServerCardProps) {
             rightIcon={expanded ? SvgFold : SvgExpand}
             onClick={() => setExpanded((prev) => !prev)}
           >
-            {expanded ? "Fold" : "Expand"}
+            {expanded ? t("fold") : t("expand")}
           </Button>
         }
       />
@@ -169,6 +171,7 @@ export interface AgentViewerModalProps {
   agent: FullPersona;
 }
 export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
+  const t = useTranslations("modals.agentViewer");
   const agentViewerModal = useModal();
   const router = useRouter();
   const { allRecentFiles } = useProjectsContext();
@@ -251,7 +254,7 @@ export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
             {agent.is_featured && (
               <Content
                 icon={SvgStar}
-                title="Featured"
+                title={t("featured")}
                 sizePreset="main-ui"
                 variant="body"
                 width="fit"
@@ -268,7 +271,7 @@ export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
             {agent.is_public && (
               <Content
                 icon={SvgOrganization}
-                title="Public to your organization"
+                title={t("publicToOrg")}
                 sizePreset="main-ui"
                 variant="body"
                 color="muted"
@@ -284,7 +287,7 @@ export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
           <Divider paddingParallel="fit" paddingPerpendicular="fit" />
           <Section gap={0.5} alignItems="start">
             <Content
-              title="Knowledge"
+              title={t("knowledge")}
               sizePreset="main-content"
               variant="section"
             />
@@ -306,13 +309,13 @@ export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
                 })}
               </Section>
             ) : (
-              <EmptyMessageCard sizePreset="main-ui" title="No Knowledge" />
+              <EmptyMessageCard sizePreset="main-ui" title={t("noKnowledge")} />
             )}
           </Section>
 
           {/* Actions & Tools */}
           <SimpleCollapsible>
-            <SimpleCollapsible.Header title="Actions & Tools" />
+            <SimpleCollapsible.Header title={t("actionsTools")} />
             <SimpleCollapsible.Content>
               {hasActions ? (
                 <Section gap={0.5} alignItems="start">
@@ -328,7 +331,7 @@ export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
                   ))}
                 </Section>
               ) : (
-                <EmptyMessageCard sizePreset="main-ui" title="No Actions" />
+                <EmptyMessageCard sizePreset="main-ui" title={t("noActions")} />
               )}
             </SimpleCollapsible.Content>
           </SimpleCollapsible>
@@ -336,12 +339,12 @@ export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
           {/* More Info (Collapsible) */}
           <Divider paddingParallel="fit" paddingPerpendicular="fit" />
           <SimpleCollapsible>
-            <SimpleCollapsible.Header title="More Info" />
+            <SimpleCollapsible.Header title={t("moreInfo")} />
             <SimpleCollapsible.Content>
               <Section gap={0.5} alignItems="start">
                 {agent.system_prompt && (
                   <Content
-                    title="Instructions"
+                    title={t("instructions")}
                     description={agent.system_prompt}
                     sizePreset="main-ui"
                     variant="section"
@@ -349,16 +352,16 @@ export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
                 )}
                 {defaultModel && (
                   <InputHorizontal
-                    title="Default Model"
-                    description="This model will be used by Onyx by default in your chats."
+                    title={t("defaultModel")}
+                    description={t("defaultModelDescription")}
                   >
                     <Text>{defaultModel}</Text>
                   </InputHorizontal>
                 )}
                 {agent.search_start_date && (
                   <InputHorizontal
-                    title="Knowledge Cutoff Date"
-                    description="Documents with a last-updated date prior to this will be ignored."
+                    title={t("knowledgeCutoff")}
+                    description={t("knowledgeCutoffDescription")}
                   >
                     <Text mainUiMono>
                       {formatMmDdYyyy(agent.search_start_date)}
@@ -366,8 +369,8 @@ export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
                   </InputHorizontal>
                 )}
                 <InputHorizontal
-                  title="Overwrite System Prompts"
-                  description='Remove the base system prompt which includes useful instructions (e.g. "You can use Markdown tables"). This may affect response quality.'
+                  title={t("overwritePrompts")}
+                  description={t("overwritePromptsDescription")}
                 >
                   <Switch disabled checked={agent.replace_base_system_prompt} />
                 </InputHorizontal>
@@ -380,7 +383,7 @@ export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
             <>
               <Divider paddingParallel="fit" paddingPerpendicular="fit" />
               <Content
-                title="Prompt Reminders"
+                title={t("promptReminders")}
                 description={agent.task_prompt}
                 sizePreset="main-content"
                 variant="section"
@@ -393,7 +396,7 @@ export default function AgentViewerModal({ agent }: AgentViewerModalProps) {
             <>
               <Divider paddingParallel="fit" paddingPerpendicular="fit" />
               <Content
-                title="Conversation Starters"
+                title={t("conversationStarters")}
                 sizePreset="main-content"
                 variant="section"
               />

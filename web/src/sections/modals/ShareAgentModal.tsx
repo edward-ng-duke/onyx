@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import Modal, { BasicModalFooter } from "@/refresh-components/Modal";
 import {
   SvgLink,
@@ -32,8 +33,8 @@ import { useLabels } from "@/lib/hooks";
 import { PersonaLabel } from "@/app/admin/agents/interfaces";
 import { FetchError } from "@/lib/fetcher";
 
-const YOUR_ORGANIZATION_TAB = "Your Organization";
-const USERS_AND_GROUPS_TAB = "Users & Groups";
+const YOUR_ORGANIZATION_TAB = "your-organization";
+const USERS_AND_GROUPS_TAB = "users-and-groups";
 
 // ============================================================================
 // Types
@@ -56,6 +57,8 @@ interface ShareAgentFormContentProps {
 }
 
 function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
+  const t = useTranslations("modals.shareAgent");
+  const tCommon = useTranslations("common.actions");
   const { values, setFieldValue, handleSubmit, dirty, isSubmitting } =
     useFormikContext<ShareAgentFormValues>();
   const { data: usersData, error: usersError } = useShareableUsers({
@@ -202,7 +205,11 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
 
   return (
     <Modal.Content width="sm" height="lg">
-      <Modal.Header icon={SvgShare} title="Share Agent" onClose={handleClose} />
+      <Modal.Header
+        icon={SvgShare}
+        title={t("header")}
+        onClose={handleClose}
+      />
 
       <Modal.Body padding={0.5}>
         <Card variant="borderless" padding={0.5}>
@@ -213,13 +220,13 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
           >
             <Tabs.List>
               <Tabs.Trigger icon={SvgUsers} value={USERS_AND_GROUPS_TAB}>
-                {USERS_AND_GROUPS_TAB}
+                {t("usersAndGroupsTab")}
               </Tabs.Trigger>
               <Tabs.Trigger
                 icon={SvgOrganization}
                 value={YOUR_ORGANIZATION_TAB}
               >
-                {YOUR_ORGANIZATION_TAB}
+                {t("yourOrganizationTab")}
               </Tabs.Trigger>
             </Tabs.List>
 
@@ -229,7 +236,7 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
                   disabled={comboBoxDisabled}
                   tooltip={
                     comboBoxDisabled
-                      ? "Your administrator has restricted the user directory. Contact an admin to share this agent with other users."
+                      ? t("userDirectoryRestrictedTooltip")
                       : undefined
                   }
                   tooltipSide="bottom"
@@ -238,8 +245,8 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
                     <InputComboBox
                       placeholder={
                         userDirectoryRestricted
-                          ? "Add groups"
-                          : "Add users and groups"
+                          ? t("addGroupsPlaceholder")
+                          : t("addUsersAndGroupsPlaceholder")
                       }
                       value=""
                       onChange={() => {}}
@@ -261,7 +268,7 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
                         <LineItem
                           key={`user-${user.id}`}
                           icon={SvgUser}
-                          description={isCurrentUser ? "You" : undefined}
+                          description={isCurrentUser ? t("youSuffix") : undefined}
                           rightChildren={
                             isOwner || (isCurrentUser && !agentId) ? (
                               // Owner will always have the agent "shared" with it.
@@ -271,7 +278,7 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
                               // This user, during creation, is assumed to be the "owner".
                               // That is why the `(isCurrentUser && !agent)` condition exists.
                               <Text secondaryBody text03>
-                                Owner
+                                {t("owner")}
                               </Text>
                             ) : (
                               // For all other cases (including for "self-unsharing"),
@@ -314,8 +321,8 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
                 <Section>
                   <MessageCard
                     icon={SvgOrganization}
-                    title="This agent is public to your organization."
-                    description="Everyone in your organization has access to this agent."
+                    title={t("publicTitle")}
+                    description={t("publicDescription")}
                   />
                 </Section>
               )}
@@ -324,8 +331,8 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
             <Tabs.Content value={YOUR_ORGANIZATION_TAB} padding={0.5}>
               <Section gap={1} alignItems="stretch">
                 <InputHorizontal
-                  title="Publish This Agent"
-                  description="Make this agent available to everyone in your organization."
+                  title={t("publishTitle")}
+                  description={t("publishDescription")}
                   withLabel
                 >
                   <SwitchField name="isPublic" />
@@ -336,8 +343,8 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
                     <div className="border-t border-border-02" />
 
                     <InputHorizontal
-                      title="Feature This Agent"
-                      description="Show this agent at the top of the explore agents list and automatically pin it to the sidebar for new users with access."
+                      title={t("featureTitle")}
+                      description={t("featureDescription")}
                       withLabel
                     >
                       <SwitchField name="isFeatured" />
@@ -351,12 +358,11 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
                   onAdd={addLabel}
                   value={labelInputValue}
                   onChange={setLabelInputValue}
-                  placeholder="Add labels..."
+                  placeholder={t("addLabelsPlaceholder")}
                   icon={SvgTag}
                 />
                 <Text secondaryBody text04>
-                  Add labels and categories to help people better discover this
-                  agent.
+                  {t("labelsHelp")}
                 </Text>
               </Section>
             </Tabs.Content>
@@ -373,7 +379,7 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
                 icon={SvgLink}
                 onClick={handleCopyLink}
               >
-                Copy Link
+                {t("copyLink")}
               </Button>
             ) : undefined
           }
@@ -383,7 +389,7 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
               prominence="secondary"
               onClick={handleClose}
             >
-              Cancel
+              {tCommon("cancel")}
             </Button>
           }
           submit={
@@ -391,7 +397,7 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
               disabled={!dirty || isSubmitting}
               onClick={() => handleSubmit()}
             >
-              Save
+              {tCommon("save")}
             </Button>
           }
         />

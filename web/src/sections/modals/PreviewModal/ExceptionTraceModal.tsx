@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Modal from "@/refresh-components/Modal";
 import { SvgAlertTriangle } from "@opal/icons";
 import { CodePreview } from "@/sections/modals/PreviewModal/variants/CodePreview";
@@ -15,12 +16,13 @@ export default function ExceptionTraceModal({
   exceptionTrace,
   language = "python",
 }: ExceptionTraceModalProps) {
+  const t = useTranslations("modals.preview");
   return (
     <Modal open onOpenChange={onOutsideClick}>
       <Modal.Content width="full" height="full">
         <Modal.Header
           icon={SvgAlertTriangle}
-          title="Full Exception Trace"
+          title={t("fullExceptionTrace")}
           onClose={onOutsideClick}
           height="fit"
         />
