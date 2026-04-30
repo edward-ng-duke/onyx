@@ -111,6 +111,7 @@ export default function OpenAICompatibleModal({
   onSuccess,
 }: LLMProviderFormProps) {
   const tToast = useTranslations("toasts.admin.llm");
+  const tValLlm = useTranslations("validation.llm");
   const isOnboarding = variant === "onboarding";
   const { mutate } = useSWRConfig();
 
@@ -122,7 +123,7 @@ export default function OpenAICompatibleModal({
     existingLlmProvider
   ) as OpenAICompatibleModalValues;
 
-  const validationSchema = buildValidationSchema(isOnboarding, {
+  const validationSchema = buildValidationSchema(isOnboarding, tValLlm, {
     apiBase: true,
   });
 

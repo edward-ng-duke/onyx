@@ -16,7 +16,7 @@ import { credentialTemplates } from "@/lib/connectors/credentials";
 import { errorHandlingFetcher } from "@/lib/fetcher";
 import Title from "@/components/ui/title";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, use } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, use } from "react";
 import useSWR, { mutate } from "swr";
 import {
   AdvancedConfigDisplay,
@@ -69,23 +69,28 @@ import { useUser } from "@/providers/UserProvider";
 import { useTranslations } from "next-intl";
 // synchronize these validations with the SQLAlchemy connector class until we have a
 // centralized schema for both frontend and backend
-const RefreshFrequencySchema = Yup.object().shape({
-  propertyValue: Yup.number()
-    .typeError("Property value must be a valid number")
-    .integer("Property value must be an integer")
-    .min(1, "Property value must be greater than or equal to 1 minute")
-    .required("Property value is required"),
-});
+function buildRefreshFrequencySchema(
+  tValConnectors: ReturnType<typeof useTranslations<"validation.connectors">>
+) {
+  return Yup.object().shape({
+    propertyValue: Yup.number()
+      .typeError(tValConnectors("propertyValueValidNumber"))
+      .integer(tValConnectors("propertyValueInteger"))
+      .min(1, tValConnectors("propertyValueMinMinute"))
+      .required(tValConnectors("propertyValueRequired")),
+  });
+}
 
-const PruneFrequencySchema = Yup.object().shape({
-  propertyValue: Yup.number()
-    .typeError("Property value must be a valid number")
-    .min(
-      0.083,
-      "Property value must be greater than or equal to 0.083 hours (5 minutes)"
-    )
-    .required("Property value is required"),
-});
+function buildPruneFrequencySchema(
+  tValConnectors: ReturnType<typeof useTranslations<"validation.connectors">>
+) {
+  return Yup.object().shape({
+    propertyValue: Yup.number()
+      .typeError(tValConnectors("propertyValueValidNumber"))
+      .min(0.083, tValConnectors("propertyValueMinHour"))
+      .required(tValConnectors("propertyValueRequired")),
+  });
+}
 
 const ITEMS_PER_PAGE = 8;
 const PAGES_PER_BATCH = 8;
@@ -94,6 +99,15 @@ function Main({ ccPairId }: { ccPairId: number }) {
   const router = useRouter();
   const { user } = useUser();
   const tT = useTranslations("toasts.admin.connectors");
+  const tValConnectors = useTranslations("validation.connectors");
+  const RefreshFrequencySchema = useMemo(
+    () => buildRefreshFrequencySchema(tValConnectors),
+    [tValConnectors]
+  );
+  const PruneFrequencySchema = useMemo(
+    () => buildPruneFrequencySchema(tValConnectors),
+    [tValConnectors]
+  );
 
   const {
     data: ccPair,

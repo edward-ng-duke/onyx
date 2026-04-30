@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import { useTranslations } from "next-intl";
 
 import { dictionaryType, formType } from "./types";
 import {
@@ -8,15 +9,33 @@ import {
 } from "@/lib/connectors/credentials";
 import { isTypedFileField } from "@/lib/connectors/fileTypes";
 
-export function createValidationSchema(json_values: Record<string, any>) {
+export function createValidationSchema(
+  json_values: Record<string, any>,
+  tValCredentials?: ReturnType<typeof useTranslations<"validation.credentials">>
+) {
+  const authMethodMessage = tValCredentials
+    ? tValCredentials("authMethodRequired")
+    : "Please select an authentication method";
+  const fileRequiredMsg = (name: string) =>
+    tValCredentials
+      ? tValCredentials("fileRequired", { name })
+      : `Please select a ${name} file`;
+  const fieldEmptyMsg = (name: string) =>
+    tValCredentials
+      ? tValCredentials("fieldEmpty", { name })
+      : `${name} cannot be empty`;
+  const pleaseEnterMsg = (name: string) =>
+    tValCredentials
+      ? tValCredentials("pleaseEnter", { name })
+      : `Please enter your ${name}`;
+
   const schemaFields: Record<string, Yup.AnySchema> = {};
   const template = json_values as CredentialTemplateWithAuth<any>;
   // multi‐auth templates
   if (template.authMethods && template.authMethods.length > 1) {
     // auth method selector
-    schemaFields["authentication_method"] = Yup.string().required(
-      "Please select an authentication method"
-    );
+    schemaFields["authentication_method"] =
+      Yup.string().required(authMethodMessage);
     // conditional rules per authMethod
     template.authMethods.forEach((method) => {
       Object.entries(method.fields).forEach(([key, def]) => {
@@ -30,8 +49,7 @@ export function createValidationSchema(json_values: Record<string, any>) {
           //TypedFile fields - use mixed schema instead of string (check before null check)
           schemaFields[key] = Yup.mixed().when("authentication_method", {
             is: method.value,
-            then: () =>
-              Yup.mixed().required(`Please select a ${displayName} file`),
+            then: () => Yup.mixed().required(fileRequiredMsg(displayName)),
             otherwise: () => Yup.mixed().notRequired(),
           });
         } else if (def === null) {
@@ -47,8 +65,8 @@ export function createValidationSchema(json_values: Record<string, any>) {
               is: method.value,
               then: (s) =>
                 s
-                  .min(1, `${displayName} cannot be empty`)
-                  .required(`Please enter your ${displayName}`),
+                  .min(1, fieldEmptyMsg(displayName))
+                  .required(pleaseEnterMsg(displayName)),
               otherwise: (s) => s.notRequired(),
             });
         }
@@ -68,9 +86,7 @@ export function createValidationSchema(json_values: Record<string, any>) {
         .transform((v, o) => (o === undefined ? false : v));
     } else if (isTypedFileField(key)) {
       // TypedFile fields - use mixed schema instead of string (check before null check)
-      schemaFields[key] = Yup.mixed().required(
-        `Please select a ${displayName} file`
-      );
+      schemaFields[key] = Yup.mixed().required(fileRequiredMsg(displayName));
     } else if (def === null) {
       schemaFields[key] = Yup.string()
         .trim()
@@ -80,8 +96,8 @@ export function createValidationSchema(json_values: Record<string, any>) {
     } else {
       schemaFields[key] = Yup.string()
         .trim()
-        .min(1, `${displayName} cannot be empty`)
-        .required(`Please enter your ${displayName}`);
+        .min(1, fieldEmptyMsg(displayName))
+        .required(pleaseEnterMsg(displayName));
     }
   }
 

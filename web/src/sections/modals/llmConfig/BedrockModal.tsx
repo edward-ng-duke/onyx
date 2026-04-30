@@ -267,6 +267,7 @@ export default function BedrockModal({
   onSuccess,
 }: LLMProviderFormProps) {
   const tToast = useTranslations("toasts.admin.llm");
+  const tValLlm = useTranslations("validation.llm");
   const isOnboarding = variant === "onboarding";
   const { mutate } = useSWRConfig();
 
@@ -295,10 +296,10 @@ export default function BedrockModal({
     },
   } as BedrockModalValues;
 
-  const validationSchema = buildValidationSchema(isOnboarding, {
+  const validationSchema = buildValidationSchema(isOnboarding, tValLlm, {
     extra: {
       custom_config: Yup.object({
-        AWS_REGION_NAME: Yup.string().required("AWS Region is required"),
+        AWS_REGION_NAME: Yup.string().required(tValLlm("awsRegionRequired")),
       }),
     },
   });

@@ -163,6 +163,7 @@ export default function OllamaModal({
   onSuccess,
 }: LLMProviderFormProps) {
   const tToast = useTranslations("toasts.admin.llm");
+  const tValLlm = useTranslations("validation.llm");
   const isOnboarding = variant === "onboarding";
   const { mutate } = useSWRConfig();
   const apiKey = existingLlmProvider?.custom_config?.OLLAMA_API_KEY;
@@ -186,18 +187,20 @@ export default function OllamaModal({
 
   const validationSchema = useMemo(
     () =>
-      buildValidationSchema(isOnboarding, {
+      buildValidationSchema(isOnboarding, tValLlm, {
         apiBase: tab === Tab.TAB_SELF_HOSTED,
         extra:
           tab === Tab.TAB_CLOUD
             ? {
                 custom_config: Yup.object({
-                  OLLAMA_API_KEY: Yup.string().required("API Key is required"),
+                  OLLAMA_API_KEY: Yup.string().required(
+                    tValLlm("ollamaApiKeyRequired")
+                  ),
                 }),
               }
             : undefined,
       }),
-    [tab, isOnboarding]
+    [tab, isOnboarding, tValLlm]
   );
 
   return (

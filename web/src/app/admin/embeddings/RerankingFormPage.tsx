@@ -5,6 +5,7 @@ import React, {
   useContext,
   useState,
 } from "react";
+import { useTranslations } from "next-intl";
 import { Formik, Form, FormikProps } from "formik";
 import * as Yup from "yup";
 import {
@@ -56,6 +57,8 @@ const RerankingDetailsForm = forwardRef<
 
     const combinedSettings = useContext(SettingsContext);
     const gpuEnabled = combinedSettings?.settings.gpu_enabled;
+    const tValShared = useTranslations("validation.shared");
+    const tValReranking = useTranslations("validation.reranking");
 
     // Define the validation schema
     const validationSchema = Yup.object().shape({
@@ -68,7 +71,7 @@ const RerankingDetailsForm = forwardRef<
         .nullable()
         .test(
           "required-if-cohere",
-          "API Key is required for Cohere reranking",
+          tValReranking("cohereApiKeyRequired"),
           function (value) {
             const { rerank_provider_type } = this.parent;
             return (
@@ -78,12 +81,12 @@ const RerankingDetailsForm = forwardRef<
           }
         ),
       rerank_api_url: Yup.string()
-        .url("Must be a valid URL")
-        .matches(/^https?:\/\//, "URL must start with http:// or https://")
+        .url(tValShared("validUrl"))
+        .matches(/^https?:\/\//, tValShared("urlMustStartWithHttp"))
         .nullable()
         .test(
           "required-if-litellm",
-          "API URL is required for LiteLLM reranking",
+          tValReranking("litellmApiUrlRequired"),
           function (value) {
             const { rerank_provider_type } = this.parent;
             return (

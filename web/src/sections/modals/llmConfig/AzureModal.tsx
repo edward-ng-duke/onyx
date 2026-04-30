@@ -108,6 +108,7 @@ export default function AzureModal({
   onSuccess,
 }: LLMProviderFormProps) {
   const tToast = useTranslations("toasts.admin.llm");
+  const tValLlm = useTranslations("validation.llm");
   const isOnboarding = variant === "onboarding";
   const { mutate } = useSWRConfig();
 
@@ -122,14 +123,14 @@ export default function AzureModal({
     target_uri: buildTargetUri(existingLlmProvider),
   } as AzureModalValues;
 
-  const validationSchema = buildValidationSchema(isOnboarding, {
+  const validationSchema = buildValidationSchema(isOnboarding, tValLlm, {
     apiKey: true,
     extra: {
       target_uri: Yup.string()
-        .required("Target URI is required")
+        .required(tValLlm("azureTargetUriRequired"))
         .test(
           "valid-target-uri",
-          "Target URI must be a valid URL with api-version query parameter and either a deployment name in the path or /openai/responses",
+          tValLlm("azureTargetUriValid"),
           (value) => (value ? isValidAzureTargetUri(value) : false)
         ),
     },

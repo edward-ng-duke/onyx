@@ -1121,21 +1121,22 @@ function ChatPreferencesSettings() {
 function AccountsAccessSettings() {
   const t = useTranslations("settings.accounts");
   const tToast = useTranslations("toasts.settings");
+  const tValPassword = useTranslations("validation.password");
   const { user, authTypeMetadata } = useUser();
   const authType = useAuthType();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   const passwordValidationSchema = Yup.object().shape({
-    currentPassword: Yup.string().required("Current password is required"),
+    currentPassword: Yup.string().required(tValPassword("currentRequired")),
     newPassword: Yup.string()
       .min(
         authTypeMetadata.passwordMinLength,
-        `Password must be at least ${authTypeMetadata.passwordMinLength} characters`
+        tValPassword("minLength", { min: authTypeMetadata.passwordMinLength })
       )
-      .required("New password is required"),
+      .required(tValPassword("newRequired")),
     confirmPassword: Yup.string()
-      .oneOf([Yup.ref("newPassword")], "Passwords do not match")
-      .required("Please confirm your new password"),
+      .oneOf([Yup.ref("newPassword")], tValPassword("doNotMatch"))
+      .required(tValPassword("confirmRequired")),
   });
 
   // PAT state

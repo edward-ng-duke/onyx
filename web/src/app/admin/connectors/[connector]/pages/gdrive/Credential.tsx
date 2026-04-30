@@ -430,6 +430,8 @@ export const DriveAuthSection = ({
 }: DriveCredentialSectionProps) => {
   const router = useRouter();
   const tT = useTranslations("toasts.admin.connectors");
+  const tValConnectors = useTranslations("validation.connectors");
+  const tValShared = useTranslations("validation.shared");
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [localServiceAccountData, setLocalServiceAccountData] = useState(
     serviceAccountKeyData
@@ -526,8 +528,8 @@ export const DriveAuthSection = ({
             }}
             validationSchema={Yup.object().shape({
               google_primary_admin: Yup.string()
-                .email("Must be a valid email")
-                .required("Required"),
+                .email(tValShared("validEmail"))
+                .required(tValConnectors("primaryAdminRequired")),
             })}
             onSubmit={async (values, formikHelpers) => {
               formikHelpers.setSubmitting(true);

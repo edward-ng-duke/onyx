@@ -32,6 +32,7 @@ const CHAR_LIMITS = {
 export default function ThemePage() {
   const settings = useContext(SettingsContext);
   const tT = useTranslations("toasts.admin.theme");
+  const tValTheme = useTranslations("validation.theme");
   const [selectedLogo, setSelectedLogo] = useState<File | null>(null);
   const [logoVersion, setLogoVersion] = useState(0);
   const appearanceSettingsRef = useRef<AppearanceThemeSettingsRef>(null);
@@ -70,7 +71,7 @@ export default function ThemePage() {
       .trim()
       .max(
         CHAR_LIMITS.application_name,
-        `Maximum ${CHAR_LIMITS.application_name} characters`
+        tValTheme("maxChars", { max: CHAR_LIMITS.application_name })
       )
       .nullable(),
     logo_display_style: Yup.string()
@@ -80,51 +81,53 @@ export default function ThemePage() {
     custom_greeting_message: Yup.string()
       .max(
         CHAR_LIMITS.custom_greeting_message,
-        `Maximum ${CHAR_LIMITS.custom_greeting_message} characters`
+        tValTheme("maxChars", { max: CHAR_LIMITS.custom_greeting_message })
       )
       .nullable(),
     custom_header_content: Yup.string()
       .max(
         CHAR_LIMITS.custom_header_content,
-        `Maximum ${CHAR_LIMITS.custom_header_content} characters`
+        tValTheme("maxChars", { max: CHAR_LIMITS.custom_header_content })
       )
       .nullable(),
     custom_lower_disclaimer_content: Yup.string()
       .max(
         CHAR_LIMITS.custom_lower_disclaimer_content,
-        `Maximum ${CHAR_LIMITS.custom_lower_disclaimer_content} characters`
+        tValTheme("maxChars", {
+          max: CHAR_LIMITS.custom_lower_disclaimer_content,
+        })
       )
       .nullable(),
     show_first_visit_notice: Yup.boolean().nullable(),
     custom_popup_header: Yup.string()
       .max(
         CHAR_LIMITS.custom_popup_header,
-        `Maximum ${CHAR_LIMITS.custom_popup_header} characters`
+        tValTheme("maxChars", { max: CHAR_LIMITS.custom_popup_header })
       )
       .when("show_first_visit_notice", {
         is: true,
-        then: (schema) => schema.required("Notice Header is required"),
+        then: (schema) => schema.required(tValTheme("noticeHeaderRequired")),
         otherwise: (schema) => schema.nullable(),
       }),
     custom_popup_content: Yup.string()
       .max(
         CHAR_LIMITS.custom_popup_content,
-        `Maximum ${CHAR_LIMITS.custom_popup_content} characters`
+        tValTheme("maxChars", { max: CHAR_LIMITS.custom_popup_content })
       )
       .when("show_first_visit_notice", {
         is: true,
-        then: (schema) => schema.required("Notice Content is required"),
+        then: (schema) => schema.required(tValTheme("noticeContentRequired")),
         otherwise: (schema) => schema.nullable(),
       }),
     enable_consent_screen: Yup.boolean().nullable(),
     consent_screen_prompt: Yup.string()
       .max(
         CHAR_LIMITS.consent_screen_prompt,
-        `Maximum ${CHAR_LIMITS.consent_screen_prompt} characters`
+        tValTheme("maxChars", { max: CHAR_LIMITS.consent_screen_prompt })
       )
       .when("enable_consent_screen", {
         is: true,
-        then: (schema) => schema.required("Notice Consent Prompt is required"),
+        then: (schema) => schema.required(tValTheme("noticeConsentRequired")),
         otherwise: (schema) => schema.nullable(),
       }),
   });

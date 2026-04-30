@@ -247,6 +247,7 @@ export default function CustomModal({
   onSuccess,
 }: LLMProviderFormProps) {
   const tToast = useTranslations("toasts.admin.llm");
+  const tValLlm = useTranslations("validation.llm");
   const isOnboarding = variant === "onboarding";
   const { mutate } = useSWRConfig();
 
@@ -287,7 +288,7 @@ export default function CustomModal({
   };
 
   const modelConfigurationSchema = Yup.object({
-    name: Yup.string().required("Model name is required"),
+    name: Yup.string().required(tValLlm("modelNameRequired")),
     max_input_tokens: Yup.number()
       .transform((value, originalValue) =>
         originalValue === "" || originalValue === undefined ? null : value
@@ -298,12 +299,12 @@ export default function CustomModal({
 
   const validationSchema = isOnboarding
     ? Yup.object().shape({
-        provider: Yup.string().required("Provider Name is required"),
+        provider: Yup.string().required(tValLlm("providerNameRequired")),
         model_configurations: Yup.array(modelConfigurationSchema),
       })
     : Yup.object().shape({
-        name: Yup.string().required("Display Name is required"),
-        provider: Yup.string().required("Provider Name is required"),
+        name: Yup.string().required(tValLlm("displayNameRequired")),
+        provider: Yup.string().required(tValLlm("providerNameRequired")),
         model_configurations: Yup.array(modelConfigurationSchema),
       });
 

@@ -491,6 +491,7 @@ export default function AgentEditorPage({
   const t = useTranslations("agents.editor");
   const tToast = useTranslations("toasts.agents");
   const tToastShared = useTranslations("toasts.shared");
+  const tValAgent = useTranslations("validation.agent");
   const router = useRouter();
   const appRouter = useAppRouter();
   const { refresh: refreshAgents } = useAgents();
@@ -717,11 +718,11 @@ export default function AgentEditorPage({
     icon_name: Yup.string().nullable(),
     remove_image: Yup.boolean().optional(),
     uploaded_image_id: Yup.string().nullable(),
-    name: Yup.string().required("Agent name is required."),
+    name: Yup.string().required(tValAgent("nameRequired")),
     description: Yup.string()
       .max(
         MAX_CHARACTERS_AGENT_DESCRIPTION,
-        `Description must be ${MAX_CHARACTERS_AGENT_DESCRIPTION} characters or less`
+        tValAgent("descriptionMax", { max: MAX_CHARACTERS_AGENT_DESCRIPTION })
       )
       .optional(),
 
@@ -730,7 +731,7 @@ export default function AgentEditorPage({
     starter_messages: Yup.array().of(
       Yup.string().max(
         MAX_CHARACTERS_STARTER_MESSAGE,
-        `Conversation starter must be ${MAX_CHARACTERS_STARTER_MESSAGE} characters or less`
+        tValAgent("starterMax", { max: MAX_CHARACTERS_STARTER_MESSAGE })
       )
     ),
 
@@ -750,7 +751,7 @@ export default function AgentEditorPage({
       .optional()
       .test(
         "knowledge-cutoff-date-not-in-future",
-        "Knowledge cutoff date must be today or earlier.",
+        tValAgent("knowledgeCutoffNotFuture"),
         (value) => !value || !isDateInFuture(value)
       ),
     replace_base_system_prompt: Yup.boolean(),

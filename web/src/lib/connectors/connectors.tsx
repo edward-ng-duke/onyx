@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import { useTranslations } from "next-intl";
 import { ConfigurableSources, ValidInputTypes, ValidSources } from "../types";
 import { AccessTypeGroupSelectorFormType } from "@/components/admin/connectors/AccessTypeGroupSelector";
 import { Credential } from "@/lib/connectors/credentials"; // Import Credential type
@@ -1828,13 +1829,21 @@ export function createConnectorInitialValues(
 }
 
 export function createConnectorValidationSchema(
-  connector: ConfigurableSources
+  connector: ConfigurableSources,
+  tValConnectors?: ReturnType<typeof useTranslations<"validation.connectors">>
 ): Yup.ObjectSchema<Record<string, any>> {
   const configuration = connectorConfigs[connector];
 
+  const accessTypeMessage = tValConnectors
+    ? tValConnectors("accessTypeRequired")
+    : "Access Type is required";
+  const connectorNameMessage = tValConnectors
+    ? tValConnectors("connectorNameRequired")
+    : "Connector Name is required";
+
   const object = Yup.object().shape({
-    access_type: Yup.string().required("Access Type is required"),
-    name: Yup.string().required("Connector Name is required"),
+    access_type: Yup.string().required(accessTypeMessage),
+    name: Yup.string().required(connectorNameMessage),
     ...[...configuration.values, ...configuration.advanced_values].reduce(
       (acc, field) => {
         let schema: any =
@@ -1851,7 +1860,12 @@ export function createConnectorValidationSchema(
                     : Yup.string();
 
         if (!field.optional) {
-          schema = schema.required(`${field.label} is required`);
+          const labelStr =
+            typeof field.label === "function" ? field.label(null) : field.label;
+          const message = tValConnectors
+            ? tValConnectors("fieldRequired", { label: labelStr })
+            : `${labelStr} is required`;
+          schema = schema.required(message);
         }
 
         acc[field.name] = schema;
@@ -1863,11 +1877,15 @@ export function createConnectorValidationSchema(
     indexingStart: Yup.string().nullable(),
     pruneFreq: Yup.number().min(
       0.083,
-      "Prune frequency must be at least 0.083 hours (5 minutes)"
+      tValConnectors
+        ? tValConnectors("pruneFreqMin")
+        : "Prune frequency must be at least 0.083 hours (5 minutes)"
     ),
     refreshFreq: Yup.number().min(
       1,
-      "Refresh frequency must be at least 1 minute"
+      tValConnectors
+        ? tValConnectors("refreshFreqMin")
+        : "Refresh frequency must be at least 1 minute"
     ),
   });
 

@@ -40,6 +40,8 @@ export default function VertexAIModal({
   onSuccess,
 }: LLMProviderFormProps) {
   const tToast = useTranslations("toasts.admin.llm");
+  const tValLlm = useTranslations("validation.llm");
+  const tValImageGen = useTranslations("validation.imageGen");
   const isOnboarding = variant === "onboarding";
   const { mutate } = useSWRConfig();
 
@@ -61,11 +63,11 @@ export default function VertexAIModal({
     },
   } as VertexAIModalValues;
 
-  const validationSchema = buildValidationSchema(isOnboarding, {
+  const validationSchema = buildValidationSchema(isOnboarding, tValLlm, {
     extra: {
       custom_config: Yup.object({
         vertex_credentials: Yup.string().required(
-          "Credentials file is required"
+          tValImageGen("credentialsRequired")
         ),
         vertex_location: Yup.string(),
       }),

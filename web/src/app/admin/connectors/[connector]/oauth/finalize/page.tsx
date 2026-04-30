@@ -57,6 +57,7 @@ export default function OAuthFinalizePage() {
   const searchParams = useSearchParams();
   const t = useTranslations("admin.connectors.oauth");
   const tCommon = useTranslations("common.actions");
+  const tValOAuth = useTranslations("validation.oauthFinalize");
 
   const [statusMessage, setStatusMessage] = useState(t("processing"));
   const [statusDetails, setStatusDetails] = useState(t("pleaseWaitSetup"));
@@ -152,17 +153,13 @@ export default function OAuthFinalizePage() {
             }}
             validationSchema={Yup.object().shape({
               credential_id: Yup.number().required(
-                "Credential ID is required."
+                tValOAuth("credentialIdRequired")
               ),
-              cloud_id: Yup.string().required(
-                "You must select a Confluence site (id not found)."
-              ),
+              cloud_id: Yup.string().required(tValOAuth("siteIdRequired")),
               cloud_name: Yup.string().required(
-                "You must select a Confluence site (name not found)."
+                tValOAuth("siteNameRequired")
               ),
-              cloud_url: Yup.string().required(
-                "You must select a Confluence site (url not found)."
-              ),
+              cloud_url: Yup.string().required(tValOAuth("siteUrlRequired")),
             })}
             validateOnMount
             onSubmit={async (values, formikHelpers) => {

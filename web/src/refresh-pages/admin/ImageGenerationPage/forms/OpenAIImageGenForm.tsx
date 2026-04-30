@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import * as Yup from "yup";
 import { FormikField } from "@/refresh-components/form/FormikField";
 import { FormField } from "@/refresh-components/form/FormField";
@@ -24,9 +25,6 @@ const initialValues: OpenAIFormValues = {
   api_key: "",
 };
 
-const validationSchema = Yup.object().shape({
-  api_key: Yup.string().required("API Key is required"),
-});
 
 function OpenAIFormFields(props: ImageGenFormChildProps<OpenAIFormValues>) {
   const {
@@ -134,6 +132,14 @@ function transformValues(
 
 export function OpenAIImageGenForm(props: ImageGenFormBaseProps) {
   const { imageProvider, existingConfig } = props;
+  const tValImageGen = useTranslations("validation.imageGen");
+  const validationSchema = useMemo(
+    () =>
+      Yup.object().shape({
+        api_key: Yup.string().required(tValImageGen("apiKeyRequired")),
+      }),
+    [tValImageGen]
+  );
 
   return (
     <ImageGenFormWrapper<OpenAIFormValues>

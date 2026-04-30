@@ -2158,5 +2158,154 @@
     "onboarding": {
       "saveNameFailed": "Failed to save name. Please try again."
     }
+  },
+  "validation": {
+    "shared": {
+      "required": "This field is required",
+      "validUrl": "Must be a valid URL",
+      "validEmail": "Must be a valid email",
+      "enterValidUrl": "Enter a valid URL",
+      "urlMustStartWithHttp": "URL must start with http:// or https://"
+    },
+    "connectors": {
+      "accessTypeRequired": "Access Type is required",
+      "connectorNameRequired": "Connector Name is required",
+      "fieldRequired": "{label} is required",
+      "propertyValueRequired": "Property value is required",
+      "propertyValueValidNumber": "Property value must be a valid number",
+      "propertyValueInteger": "Property value must be an integer",
+      "propertyValueMinMinute": "Property value must be greater than or equal to 1 minute",
+      "propertyValueMinHour": "Property value must be greater than or equal to 0.083 hours (5 minutes)",
+      "primaryAdminRequired": "Required",
+      "channelNameRequired": "Channel Name is required",
+      "pruneFreqMin": "Prune frequency must be at least 0.083 hours (5 minutes)",
+      "refreshFreqMin": "Refresh frequency must be at least 1 minute"
+    },
+    "embeddings": {
+      "modelNameRequired": "Model name is required",
+      "modelDimensionRequired": "Model dimension is required",
+      "providerTypeRequired": "Provider type is required",
+      "apiUrlRequired": "API base URL is required",
+      "apiKeyRequired": "API Key is required",
+      "deploymentNameRequired": "Deployment name is required",
+      "apiVersionRequired": "API Version is required"
+    },
+    "reranking": {
+      "urlMustStartWithHttp": "URL must start with http:// or https://",
+      "cohereApiKeyRequired": "API Key is required for Cohere reranking",
+      "litellmApiUrlRequired": "API URL is required for LiteLLM reranking"
+    },
+    "tokenRateLimits": {
+      "timeWindowRequired": "Time Window is a required field",
+      "timeWindowMin": "Time Window must be at least 1 hour",
+      "tokenBudgetRequired": "Token Budget is a required field",
+      "tokenBudgetMin": "Token Budget must be at least 1",
+      "targetScopeRequired": "Target Scope is a required field",
+      "userGroupRequired": "User Group is a required field"
+    },
+    "documentSet": {
+      "nameRequired": "Please enter a name for the set"
+    },
+    "standardAnswer": {
+      "keywordsRequired": "Keywords or pattern is required",
+      "answerRequired": "Answer is required",
+      "categoryMin": "At least one category is required"
+    },
+    "theme": {
+      "noticeHeaderRequired": "Notice Header is required",
+      "noticeContentRequired": "Notice Content is required",
+      "noticeConsentRequired": "Notice Consent Prompt is required",
+      "maxChars": "Maximum {max} characters"
+    },
+    "agent": {
+      "nameRequired": "Agent name is required.",
+      "descriptionMax": "Description must be {max} characters or less",
+      "starterMax": "Conversation starter must be {max} characters or less",
+      "knowledgeCutoffNotFuture": "Knowledge cutoff date must be today or earlier."
+    },
+    "password": {
+      "currentRequired": "Current password is required",
+      "newRequired": "New password is required",
+      "confirmRequired": "Please confirm your new password",
+      "minLength": "Password must be at least {min} characters",
+      "doNotMatch": "Passwords do not match"
+    },
+    "voice": {
+      "apiKeyRequired": "API key is required",
+      "targetUriRequired": "Target URI is required"
+    },
+    "imageGen": {
+      "apiKeyRequired": "API Key is required",
+      "credentialsRequired": "Credentials file is required",
+      "locationRequired": "Location is required",
+      "targetUriRequired": "Target URI is required",
+      "targetUriValid": "Target URI must be a valid URL with api-version and deployment name"
+    },
+    "hooks": {
+      "displayNameRequired": "Display name cannot be empty.",
+      "endpointUrlRequired": "Endpoint URL cannot be empty.",
+      "apiKeyRequired": "API key cannot be empty.",
+      "timeoutRequired": "Timeout is required.",
+      "timeoutRange": "Must be greater than 0 and at most {max} seconds."
+    },
+    "mcpServer": {
+      "nameRequired": "Server name is required",
+      "urlRequired": "Server URL is required"
+    },
+    "openApi": {
+      "definitionRequired": "OpenAPI schema definition is required"
+    },
+    "mcpAuth": {
+      "transportRequired": "Transport is required",
+      "authTypeRequired": "Authentication type is required",
+      "authPerformerRequired": "Authentication performer is required",
+      "apiTokenRequired": "API token is required"
+    },
+    "openApiAuth": {
+      "methodRequired": "Authentication method is required",
+      "authorizationUrlRequired": "Authorization URL is required",
+      "tokenUrlRequired": "Token URL is required",
+      "clientIdRequired": "Client ID is required",
+      "clientSecretRequired": "Client secret is required",
+      "headerKeyRequired": "Header key is required",
+      "headerValueRequired": "Header value is required",
+      "headersMin": "Add at least one authentication header"
+    },
+    "feedback": {
+      "feedbackRequired": "Feedback is required"
+    },
+    "llm": {
+      "displayNameRequired": "Display Name is required",
+      "providerNameRequired": "Provider Name is required",
+      "modelNameRequired": "Model name is required",
+      "apiKeyRequired": "API Key is required",
+      "apiBaseRequired": "API Base URL is required",
+      "awsRegionRequired": "AWS Region is required",
+      "ollamaApiKeyRequired": "API Key is required",
+      "azureTargetUriRequired": "Target URI is required",
+      "azureTargetUriValid": "Target URI must be a valid URL with api-version query parameter and either a deployment name in the path or /openai/responses"
+    },
+    "oauthFinalize": {
+      "credentialIdRequired": "Credential ID is required.",
+      "siteIdRequired": "You must select a Confluence site (id not found).",
+      "siteNameRequired": "You must select a Confluence site (name not found).",
+      "siteUrlRequired": "You must select a Confluence site (url not found)."
+    },
+    "credentials": {
+      "authMethodRequired": "Please select an authentication method",
+      "fileRequired": "Please select a {name} file",
+      "fieldEmpty": "{name} cannot be empty",
+      "pleaseEnter": "Please enter your {name}"
+    }
+  },
+  "modals": {
+    "feedback": {
+      "title": "Feedback",
+      "additionalDetails": "Provide Additional Details",
+      "optional": "optional",
+      "placeholderLike": "What did you like about this response?",
+      "placeholderDislike": "What did you dislike about this response?",
+      "submitting": "Submitting..."
+    }
   }
 }

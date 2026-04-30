@@ -50,10 +50,6 @@ interface OpenAPIActionFormValues {
   definition: string;
 }
 
-const validationSchema = Yup.object().shape({
-  definition: Yup.string().required("OpenAPI schema definition is required"),
-});
-
 function parseJsonWithTrailingCommas(jsonString: string) {
   // Regular expression to remove trailing commas before } or ]
   let cleanedJsonString = jsonString.replace(/,\s*([}\]])/g, "$1");
@@ -411,6 +407,14 @@ export default function AddOpenAPIActionModal({
 }: AddOpenAPIActionModalProps) {
   const { isOpen, toggle } = useModal();
   const tToast = useTranslations("toasts.admin.actions.openApi");
+  const tValOpenApi = useTranslations("validation.openApi");
+  const validationSchema = useMemo(
+    () =>
+      Yup.object().shape({
+        definition: Yup.string().required(tValOpenApi("definitionRequired")),
+      }),
+    [tValOpenApi]
+  );
 
   const handleModalClose = useCallback(
     (open: boolean) => {

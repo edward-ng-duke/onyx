@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import * as Yup from "yup";
 import { FormikField } from "@/refresh-components/form/FormikField";
 import { FormField } from "@/refresh-components/form/FormField";
@@ -31,16 +32,6 @@ const initialValues: AzureFormValues = {
   api_key: "",
 };
 
-const validationSchema = Yup.object().shape({
-  target_uri: Yup.string()
-    .required("Target URI is required")
-    .test(
-      "valid-target-uri",
-      "Target URI must be a valid URL with api-version and deployment name",
-      (value) => (value ? isValidAzureTargetUri(value) : false)
-    ),
-  api_key: Yup.string().required("API Key is required"),
-});
 
 function AzureFormFields(props: ImageGenFormChildProps<AzureFormValues>) {
   const {
@@ -233,6 +224,21 @@ function transformValues(
 
 export function AzureImageGenForm(props: ImageGenFormBaseProps) {
   const { imageProvider, existingConfig } = props;
+  const tValImageGen = useTranslations("validation.imageGen");
+  const validationSchema = useMemo(
+    () =>
+      Yup.object().shape({
+        target_uri: Yup.string()
+          .required(tValImageGen("targetUriRequired"))
+          .test(
+            "valid-target-uri",
+            tValImageGen("targetUriValid"),
+            (value) => (value ? isValidAzureTargetUri(value) : false)
+          ),
+        api_key: Yup.string().required(tValImageGen("apiKeyRequired")),
+      }),
+    [tValImageGen]
+  );
 
   return (
     <ImageGenFormWrapper<AzureFormValues>

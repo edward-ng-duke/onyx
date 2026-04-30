@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import Text from "@/refresh-components/texts/Text";
 import { Callout } from "@/components/ui/callout";
 import { Button } from "@opal/components";
@@ -37,6 +38,7 @@ export default function ProviderCreationModal({
   isAzure,
   updateCurrentModel,
 }: ProviderCreationModalProps) {
+  const tValEmbeddings = useTranslations("validation.embeddings");
   const useFileUpload =
     selectedProvider.provider_type == EmbeddingProvider.GOOGLE;
 
@@ -56,25 +58,25 @@ export default function ProviderCreationModal({
   };
 
   const validationSchema = Yup.object({
-    provider_type: Yup.string().required("Provider type is required"),
+    provider_type: Yup.string().required(tValEmbeddings("providerTypeRequired")),
     api_key:
       isProxy || isAzure
         ? Yup.string()
         : useFileUpload
           ? Yup.string()
-          : Yup.string().required("API Key is required"),
+          : Yup.string().required(tValEmbeddings("apiKeyRequired")),
     model_name: isProxy
-      ? Yup.string().required("Model name is required")
+      ? Yup.string().required(tValEmbeddings("modelNameRequired"))
       : Yup.string().nullable(),
     api_url:
       isProxy || isAzure
-        ? Yup.string().required("API URL is required")
+        ? Yup.string().required(tValEmbeddings("apiUrlRequired"))
         : Yup.string(),
     deployment_name: isAzure
-      ? Yup.string().required("Deployment name is required")
+      ? Yup.string().required(tValEmbeddings("deploymentNameRequired"))
       : Yup.string(),
     api_version: isAzure
-      ? Yup.string().required("API Version is required")
+      ? Yup.string().required(tValEmbeddings("apiVersionRequired"))
       : Yup.string(),
     custom_config: Yup.array().of(Yup.array().of(Yup.string()).length(2)),
   });

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Formik, Form, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import Modal from "@/refresh-components/Modal";
@@ -78,6 +79,8 @@ export default function OpenAPIAuthenticationModal({
   onSkip,
   entityName = null,
 }: OpenAPIAuthenticationModalProps) {
+  const tValShared = useTranslations("validation.shared");
+  const tValOpenApiAuth = useTranslations("validation.openApiAuth");
   const authType = useAuthType();
   const isOAuthEnabled =
     authType === AuthType.OIDC || authType === AuthType.GOOGLE_OAUTH;
@@ -151,19 +154,21 @@ export default function OpenAPIAuthenticationModal({
       Yup.object({
         authMethod: Yup.mixed<AuthMethod>()
           .oneOf(["oauth", "pt-oauth", "custom-header"])
-          .required("Authentication method is required"),
+          .required(tValOpenApiAuth("methodRequired")),
         authorizationUrl: Yup.string()
-          .url("Enter a valid URL")
+          .url(tValShared("enterValidUrl"))
           .when("authMethod", {
             is: "oauth",
-            then: (schema) => schema.required("Authorization URL is required"),
+            then: (schema) =>
+              schema.required(tValOpenApiAuth("authorizationUrlRequired")),
             otherwise: (schema) => schema.notRequired(),
           }),
         tokenUrl: Yup.string()
-          .url("Enter a valid URL")
+          .url(tValShared("enterValidUrl"))
           .when("authMethod", {
             is: "oauth",
-            then: (schema) => schema.required("Token URL is required"),
+            then: (schema) =>
+              schema.required(tValOpenApiAuth("tokenUrlRequired")),
             otherwise: (schema) => schema.notRequired(),
           }),
         clientId: Yup.string().when("authMethod", {
@@ -171,7 +176,7 @@ export default function OpenAPIAuthenticationModal({
           then: (schema) =>
             isEditingOAuthConfig
               ? schema.optional()
-              : schema.required("Client ID is required"),
+              : schema.required(tValOpenApiAuth("clientIdRequired")),
           otherwise: (schema) => schema.notRequired(),
         }),
         clientSecret: Yup.string().when("authMethod", {
@@ -179,7 +184,7 @@ export default function OpenAPIAuthenticationModal({
           then: (schema) =>
             isEditingOAuthConfig
               ? schema.optional()
-              : schema.required("Client secret is required"),
+              : schema.required(tValOpenApiAuth("clientSecretRequired")),
           otherwise: (schema) => schema.notRequired(),
         }),
         scopes: Yup.string().notRequired(),
@@ -189,11 +194,15 @@ export default function OpenAPIAuthenticationModal({
             Yup.array()
               .of(
                 Yup.object({
-                  key: Yup.string().required("Header key is required"),
-                  value: Yup.string().required("Header value is required"),
+                  key: Yup.string().required(
+                    tValOpenApiAuth("headerKeyRequired")
+                  ),
+                  value: Yup.string().required(
+                    tValOpenApiAuth("headerValueRequired")
+                  ),
                 })
               )
-              .min(1, "Add at least one authentication header"),
+              .min(1, tValOpenApiAuth("headersMin")),
           otherwise: () =>
             Yup.array().of(
               Yup.object({
@@ -203,7 +212,7 @@ export default function OpenAPIAuthenticationModal({
             ),
         }),
       }),
-    [isEditingOAuthConfig]
+    [isEditingOAuthConfig, tValOpenApiAuth, tValShared]
   );
 
   const computedInitialValues = useMemo<OpenAPIAuthFormValues>(() => {

@@ -8,6 +8,8 @@ import { SvgThumbsDown, SvgThumbsUp } from "@opal/icons";
 import Modal from "@/refresh-components/Modal";
 import { Formik } from "formik";
 import * as Yup from "yup";
+import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { InputVertical } from "@opal/layouts";
 import InputTextAreaField from "@/refresh-components/form/InputTextAreaField";
 
@@ -26,17 +28,24 @@ export default function FeedbackModal({
 }: FeedbackModalProps) {
   const modal = useModal();
   const { handleFeedbackChange } = useFeedbackController();
+  const t = useTranslations("modals.feedback");
+  const tCommon = useTranslations("common.actions");
+  const tValFeedback = useTranslations("validation.feedback");
 
   const initialValues: FeedbackFormValues = {
     additional_feedback: "",
   };
 
-  const validationSchema = Yup.object({
-    additional_feedback:
-      feedbackType === "dislike"
-        ? Yup.string().trim().required("Feedback is required")
-        : Yup.string().trim(),
-  });
+  const validationSchema = useMemo(
+    () =>
+      Yup.object({
+        additional_feedback:
+          feedbackType === "dislike"
+            ? Yup.string().trim().required(tValFeedback("feedbackRequired"))
+            : Yup.string().trim(),
+      }),
+    [feedbackType, tValFeedback]
+  );
 
   async function handleSubmit(values: FeedbackFormValues) {
     const feedbackText = values.additional_feedback;
@@ -60,7 +69,7 @@ export default function FeedbackModal({
         <Modal.Content width="sm">
           <Modal.Header
             icon={feedbackType === "like" ? SvgThumbsUp : SvgThumbsDown}
-            title="Feedback"
+            title={t("title")}
             onClose={() => modal.toggle(false)}
           />
           <Formik
@@ -78,12 +87,18 @@ export default function FeedbackModal({
                 <Modal.Body>
                   <InputVertical
                     withLabel="additional_feedback"
-                    title="Provide Additional Details"
-                    suffix={feedbackType === "like" ? "optional" : undefined}
+                    title={t("additionalDetails")}
+                    suffix={
+                      feedbackType === "like" ? t("optional") : undefined
+                    }
                   >
                     <InputTextAreaField
                       name="additional_feedback"
-                      placeholder={`What did you ${feedbackType} about this response?`}
+                      placeholder={
+                        feedbackType === "like"
+                          ? t("placeholderLike")
+                          : t("placeholderDislike")
+                      }
                     />
                   </InputVertical>
                 </Modal.Body>
@@ -94,7 +109,7 @@ export default function FeedbackModal({
                     onClick={() => modal.toggle(false)}
                     type="button"
                   >
-                    Cancel
+                    {tCommon("cancel")}
                   </Button>
                   <Button
                     disabled={
@@ -103,7 +118,7 @@ export default function FeedbackModal({
                     }
                     onClick={() => formikHandleSubmit()}
                   >
-                    {isSubmitting ? "Submitting..." : "Submit"}
+                    {isSubmitting ? t("submitting") : tCommon("submit")}
                   </Button>
                 </Modal.Footer>
               </>

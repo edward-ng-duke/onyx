@@ -28,6 +28,7 @@ export default function AnthropicModal({
   onSuccess,
 }: LLMProviderFormProps) {
   const tToast = useTranslations("toasts.admin.llm");
+  const tValLlm = useTranslations("validation.llm");
   const isOnboarding = variant === "onboarding";
   const { mutate } = useSWRConfig();
 
@@ -39,7 +40,7 @@ export default function AnthropicModal({
     existingLlmProvider
   );
 
-  const validationSchema = buildValidationSchema(isOnboarding, {
+  const validationSchema = buildValidationSchema(isOnboarding, tValLlm, {
     apiKey: true,
   });
 

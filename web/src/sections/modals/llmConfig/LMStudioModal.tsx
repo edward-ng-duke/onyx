@@ -116,6 +116,7 @@ export default function LMStudioModal({
   onSuccess,
 }: LLMProviderFormProps) {
   const tToast = useTranslations("toasts.admin.llm");
+  const tValLlm = useTranslations("validation.llm");
   const isOnboarding = variant === "onboarding";
   const { mutate } = useSWRConfig();
 
@@ -133,7 +134,7 @@ export default function LMStudioModal({
     },
   } as LMStudioModalValues;
 
-  const validationSchema = buildValidationSchema(isOnboarding, {
+  const validationSchema = buildValidationSchema(isOnboarding, tValLlm, {
     apiBase: true,
   });
 

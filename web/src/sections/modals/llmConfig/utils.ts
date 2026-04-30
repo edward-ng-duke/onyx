@@ -6,6 +6,7 @@ import {
 } from "@/interfaces/llm";
 import * as Yup from "yup";
 import { useWellKnownLLMProvider } from "@/hooks/useLLMProviders";
+import { useTranslations } from "next-intl";
 
 // ─── useInitialValues ─────────────────────────────────────────────────────
 
@@ -75,32 +76,33 @@ interface ValidationSchemaOptions {
  */
 export function buildValidationSchema(
   isOnboarding: boolean,
+  tValLlm: ReturnType<typeof useTranslations<"validation.llm">>,
   { apiKey, apiBase, extra }: ValidationSchemaOptions = {}
 ) {
   const providerFields: Yup.ObjectShape = {
     ...(apiKey && {
-      api_key: Yup.string().required("API Key is required"),
+      api_key: Yup.string().required(tValLlm("apiKeyRequired")),
     }),
     ...(apiBase && {
-      api_base: Yup.string().required("API Base URL is required"),
+      api_base: Yup.string().required(tValLlm("apiBaseRequired")),
     }),
     ...extra,
   };
 
   if (isOnboarding) {
     return Yup.object().shape({
-      test_model_name: Yup.string().required("Model name is required"),
+      test_model_name: Yup.string().required(tValLlm("modelNameRequired")),
       ...providerFields,
     });
   }
 
   return Yup.object({
-    name: Yup.string().required("Display Name is required"),
+    name: Yup.string().required(tValLlm("displayNameRequired")),
     is_public: Yup.boolean().required(),
     is_auto_mode: Yup.boolean().required(),
     groups: Yup.array().of(Yup.number()),
     personas: Yup.array().of(Yup.number()),
-    test_model_name: Yup.string().required("Model name is required"),
+    test_model_name: Yup.string().required(tValLlm("modelNameRequired")),
     ...providerFields,
   });
 }

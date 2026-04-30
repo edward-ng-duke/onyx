@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Formik, Form, useFormikContext } from "formik";
 import * as Yup from "yup";
 import { Button, LinkButton, Text } from "@opal/components";
@@ -76,18 +77,23 @@ function buildInitialValues(
   };
 }
 
-function buildValidationSchema(isEdit: boolean) {
+function buildValidationSchema(
+  isEdit: boolean,
+  tValHooks: ReturnType<typeof useTranslations<"validation.hooks">>
+) {
   return Yup.object().shape({
-    name: Yup.string().trim().required("Display name cannot be empty."),
-    endpoint_url: Yup.string().trim().required("Endpoint URL cannot be empty."),
+    name: Yup.string().trim().required(tValHooks("displayNameRequired")),
+    endpoint_url: Yup.string()
+      .trim()
+      .required(tValHooks("endpointUrlRequired")),
     api_key: isEdit
       ? Yup.string()
-      : Yup.string().trim().required("API key cannot be empty."),
+      : Yup.string().trim().required(tValHooks("apiKeyRequired")),
     timeout_seconds: Yup.string()
-      .required("Timeout is required.")
+      .required(tValHooks("timeoutRequired"))
       .test(
         "valid-timeout",
-        `Must be greater than 0 and at most ${MAX_TIMEOUT_SECONDS} seconds.`,
+        tValHooks("timeoutRange", { max: MAX_TIMEOUT_SECONDS }),
         (val) => {
           const num = parseFloat(val ?? "");
           return !isNaN(num) && num > 0 && num <= MAX_TIMEOUT_SECONDS;
@@ -157,11 +163,12 @@ export default function HookFormModal({
   onSuccess,
 }: HookFormModalProps) {
   const isEdit = !!hook;
+  const tValHooks = useTranslations("validation.hooks");
   const [isConnected, setIsConnected] = useState(false);
   const [apiKeyCleared, setApiKeyCleared] = useState(false);
 
   const initialValues = buildInitialValues(hook, spec);
-  const validationSchema = buildValidationSchema(isEdit);
+  const validationSchema = buildValidationSchema(isEdit, tValHooks);
 
   function handleClose() {
     onOpenChange(false);

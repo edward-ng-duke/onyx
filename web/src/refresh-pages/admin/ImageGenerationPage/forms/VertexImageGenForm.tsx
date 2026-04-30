@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import * as Yup from "yup";
 import { FormikField } from "@/refresh-components/form/FormikField";
 import { FormField } from "@/refresh-components/form/FormField";
@@ -33,12 +35,6 @@ const initialValues: VertexImageGenFormValues = {
   },
 };
 
-const validationSchema = Yup.object().shape({
-  custom_config: Yup.object().shape({
-    vertex_credentials: Yup.string().required("Credentials file is required"),
-    vertex_location: Yup.string().required("Location is required"),
-  }),
-});
 
 function getInitialValuesFromCredentials(
   credentials: ImageGenerationCredentials,
@@ -169,6 +165,21 @@ function VertexFormFields(
 
 export function VertexImageGenForm(props: ImageGenFormBaseProps) {
   const { imageProvider, existingConfig } = props;
+  const tValImageGen = useTranslations("validation.imageGen");
+  const validationSchema = useMemo(
+    () =>
+      Yup.object().shape({
+        custom_config: Yup.object().shape({
+          vertex_credentials: Yup.string().required(
+            tValImageGen("credentialsRequired")
+          ),
+          vertex_location: Yup.string().required(
+            tValImageGen("locationRequired")
+          ),
+        }),
+      }),
+    [tValImageGen]
+  );
 
   return (
     <ImageGenFormWrapper<VertexImageGenFormValues>

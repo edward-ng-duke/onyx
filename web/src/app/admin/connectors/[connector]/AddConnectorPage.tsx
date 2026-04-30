@@ -135,6 +135,7 @@ export default function AddConnector({
   const t = useTranslations("admin.connectors.add");
   const tT = useTranslations("toasts.admin.connectors");
   const tShared = useTranslations("toasts.admin.shared");
+  const tValConnectors = useTranslations("validation.connectors");
   const [currentPageUrl, setCurrentPageUrl] = useState<string | null>(null);
   const [oauthUrl, setOauthUrl] = useState<string | null>(null);
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -296,7 +297,10 @@ export default function AddConnector({
   return (
     <Formik
       initialValues={createConnectorInitialValues(connector)}
-      validationSchema={createConnectorValidationSchema(connector)}
+      validationSchema={createConnectorValidationSchema(
+        connector,
+        tValConnectors
+      )}
       onSubmit={async (values) => {
         const {
           name,

@@ -32,6 +32,7 @@ export default function CreateRateLimitModal({
   forSpecificUserGroup,
 }: CreateRateLimitModalProps) {
   const t = useTranslations("admin.tokenRateLimits");
+  const tValRate = useTranslations("validation.tokenRateLimits");
   const [modalUserGroups, setModalUserGroups] = useState([]);
   const [shouldFetchUserGroups, setShouldFetchUserGroups] = useState(
     forSpecificScope === Scope.USER_GROUP
@@ -76,17 +77,17 @@ export default function CreateRateLimitModal({
           }}
           validationSchema={Yup.object().shape({
             period_hours: Yup.number()
-              .required("Time Window is a required field")
-              .min(1, "Time Window must be at least 1 hour"),
+              .required(tValRate("timeWindowRequired"))
+              .min(1, tValRate("timeWindowMin")),
             token_budget: Yup.number()
-              .required("Token Budget is a required field")
-              .min(1, "Token Budget must be at least 1"),
+              .required(tValRate("tokenBudgetRequired"))
+              .min(1, tValRate("tokenBudgetMin")),
             target_scope: Yup.string().required(
-              "Target Scope is a required field"
+              tValRate("targetScopeRequired")
             ),
             user_group_id: Yup.string().test(
               "user_group_id",
-              "User Group is a required field",
+              tValRate("userGroupRequired"),
               (value, context) => {
                 return (
                   context.parent.target_scope !== "user_group" ||

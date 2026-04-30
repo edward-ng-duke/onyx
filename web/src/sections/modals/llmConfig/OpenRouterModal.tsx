@@ -108,6 +108,7 @@ export default function OpenRouterModal({
   onSuccess,
 }: LLMProviderFormProps) {
   const tToast = useTranslations("toasts.admin.llm");
+  const tValLlm = useTranslations("validation.llm");
   const isOnboarding = variant === "onboarding";
   const { mutate } = useSWRConfig();
 
@@ -122,7 +123,7 @@ export default function OpenRouterModal({
     api_base: existingLlmProvider?.api_base ?? DEFAULT_API_BASE,
   } as OpenRouterModalValues;
 
-  const validationSchema = buildValidationSchema(isOnboarding, {
+  const validationSchema = buildValidationSchema(isOnboarding, tValLlm, {
     apiKey: true,
     apiBase: true,
   });

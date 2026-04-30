@@ -2158,5 +2158,154 @@
     "onboarding": {
       "saveNameFailed": "保存姓名失败，请重试。"
     }
+  },
+  "validation": {
+    "shared": {
+      "required": "此字段为必填项",
+      "validUrl": "必须是有效的 URL",
+      "validEmail": "必须是有效的邮箱地址",
+      "enterValidUrl": "请输入有效的 URL",
+      "urlMustStartWithHttp": "URL 必须以 http:// 或 https:// 开头"
+    },
+    "connectors": {
+      "accessTypeRequired": "访问类型为必填项",
+      "connectorNameRequired": "连接器名称为必填项",
+      "fieldRequired": "{label} 为必填项",
+      "propertyValueRequired": "属性值为必填项",
+      "propertyValueValidNumber": "属性值必须是有效的数字",
+      "propertyValueInteger": "属性值必须是整数",
+      "propertyValueMinMinute": "属性值必须大于或等于 1 分钟",
+      "propertyValueMinHour": "属性值必须大于或等于 0.083 小时（5 分钟）",
+      "primaryAdminRequired": "必填",
+      "channelNameRequired": "频道名称为必填项",
+      "pruneFreqMin": "清理频率至少为 0.083 小时（5 分钟）",
+      "refreshFreqMin": "刷新频率至少为 1 分钟"
+    },
+    "embeddings": {
+      "modelNameRequired": "模型名称为必填项",
+      "modelDimensionRequired": "模型维度为必填项",
+      "providerTypeRequired": "提供商类型为必填项",
+      "apiUrlRequired": "API 基础 URL 为必填项",
+      "apiKeyRequired": "API 密钥为必填项",
+      "deploymentNameRequired": "部署名称为必填项",
+      "apiVersionRequired": "API 版本为必填项"
+    },
+    "reranking": {
+      "urlMustStartWithHttp": "URL 必须以 http:// 或 https:// 开头",
+      "cohereApiKeyRequired": "Cohere 重排序需要 API 密钥",
+      "litellmApiUrlRequired": "LiteLLM 重排序需要 API URL"
+    },
+    "tokenRateLimits": {
+      "timeWindowRequired": "时间窗口为必填项",
+      "timeWindowMin": "时间窗口至少为 1 小时",
+      "tokenBudgetRequired": "令牌预算为必填项",
+      "tokenBudgetMin": "令牌预算至少为 1",
+      "targetScopeRequired": "目标范围为必填项",
+      "userGroupRequired": "用户组为必填项"
+    },
+    "documentSet": {
+      "nameRequired": "请输入文档集名称"
+    },
+    "standardAnswer": {
+      "keywordsRequired": "关键词或匹配模式为必填项",
+      "answerRequired": "答案为必填项",
+      "categoryMin": "至少需要一个分类"
+    },
+    "theme": {
+      "noticeHeaderRequired": "通知标题为必填项",
+      "noticeContentRequired": "通知内容为必填项",
+      "noticeConsentRequired": "通知同意提示为必填项",
+      "maxChars": "最多 {max} 个字符"
+    },
+    "agent": {
+      "nameRequired": "智能体名称为必填项。",
+      "descriptionMax": "描述不能超过 {max} 个字符",
+      "starterMax": "对话开场白不能超过 {max} 个字符",
+      "knowledgeCutoffNotFuture": "知识截止日期必须为今天或更早。"
+    },
+    "password": {
+      "currentRequired": "请输入当前密码",
+      "newRequired": "请输入新密码",
+      "confirmRequired": "请再次输入新密码进行确认",
+      "minLength": "密码至少需要 {min} 个字符",
+      "doNotMatch": "两次输入的密码不一致"
+    },
+    "voice": {
+      "apiKeyRequired": "API 密钥为必填项",
+      "targetUriRequired": "目标 URI 为必填项"
+    },
+    "imageGen": {
+      "apiKeyRequired": "API 密钥为必填项",
+      "credentialsRequired": "凭证文件为必填项",
+      "locationRequired": "区域为必填项",
+      "targetUriRequired": "目标 URI 为必填项",
+      "targetUriValid": "目标 URI 必须为有效的 URL，需带有 api-version 与部署名称"
+    },
+    "hooks": {
+      "displayNameRequired": "显示名称不能为空。",
+      "endpointUrlRequired": "终端 URL 不能为空。",
+      "apiKeyRequired": "API 密钥不能为空。",
+      "timeoutRequired": "超时时间为必填项。",
+      "timeoutRange": "必须大于 0 且不超过 {max} 秒。"
+    },
+    "mcpServer": {
+      "nameRequired": "服务器名称为必填项",
+      "urlRequired": "服务器 URL 为必填项"
+    },
+    "openApi": {
+      "definitionRequired": "OpenAPI 模式定义为必填项"
+    },
+    "mcpAuth": {
+      "transportRequired": "传输方式为必填项",
+      "authTypeRequired": "认证类型为必填项",
+      "authPerformerRequired": "认证执行者为必填项",
+      "apiTokenRequired": "API 令牌为必填项"
+    },
+    "openApiAuth": {
+      "methodRequired": "认证方式为必填项",
+      "authorizationUrlRequired": "授权 URL 为必填项",
+      "tokenUrlRequired": "令牌 URL 为必填项",
+      "clientIdRequired": "客户端 ID 为必填项",
+      "clientSecretRequired": "客户端密钥为必填项",
+      "headerKeyRequired": "请求头键为必填项",
+      "headerValueRequired": "请求头值为必填项",
+      "headersMin": "至少添加一个认证请求头"
+    },
+    "feedback": {
+      "feedbackRequired": "请输入反馈内容"
+    },
+    "llm": {
+      "displayNameRequired": "显示名称为必填项",
+      "providerNameRequired": "提供商名称为必填项",
+      "modelNameRequired": "模型名称为必填项",
+      "apiKeyRequired": "API 密钥为必填项",
+      "apiBaseRequired": "API 基础 URL 为必填项",
+      "awsRegionRequired": "AWS 区域为必填项",
+      "ollamaApiKeyRequired": "API 密钥为必填项",
+      "azureTargetUriRequired": "目标 URI 为必填项",
+      "azureTargetUriValid": "目标 URI 必须为有效的 URL，且需带有 api-version 查询参数，并在路径中包含部署名称或 /openai/responses"
+    },
+    "oauthFinalize": {
+      "credentialIdRequired": "凭证 ID 为必填项。",
+      "siteIdRequired": "请选择一个 Confluence 站点（未找到 ID）。",
+      "siteNameRequired": "请选择一个 Confluence 站点（未找到名称）。",
+      "siteUrlRequired": "请选择一个 Confluence 站点（未找到 URL）。"
+    },
+    "credentials": {
+      "authMethodRequired": "请选择认证方式",
+      "fileRequired": "请选择 {name} 文件",
+      "fieldEmpty": "{name} 不能为空",
+      "pleaseEnter": "请输入您的 {name}"
+    }
+  },
+  "modals": {
+    "feedback": {
+      "title": "反馈",
+      "additionalDetails": "补充详细信息",
+      "optional": "选填",
+      "placeholderLike": "您喜欢这次回答的哪些方面？",
+      "placeholderDislike": "您对这次回答有哪些不满意？",
+      "submitting": "提交中…"
+    }
   }
 }

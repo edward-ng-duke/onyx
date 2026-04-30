@@ -42,6 +42,7 @@ export const StandardAnswerCreationForm = ({
   const router = useRouter();
   const t = useTranslations("admin.standardAnswer.form");
   const tT = useTranslations("toasts.admin.standardAnswer");
+  const tValStdAns = useTranslations("validation.standardAnswer");
 
   return (
     <div>
@@ -66,13 +67,15 @@ export const StandardAnswerCreationForm = ({
           }}
           validationSchema={Yup.object().shape({
             keyword: Yup.string()
-              .required("Keywords or pattern is required")
+              .required(tValStdAns("keywordsRequired"))
               .max(255)
               .min(1),
-            answer: Yup.string().required("Answer is required").min(1),
+            answer: Yup.string()
+              .required(tValStdAns("answerRequired"))
+              .min(1),
             categories: Yup.array()
               .required()
-              .min(1, "At least one category is required"),
+              .min(1, tValStdAns("categoryMin")),
           })}
           onSubmit={async (values, formikHelpers) => {
             formikHelpers.setSubmitting(true);

@@ -5,6 +5,7 @@ import {
 } from "./interfaces";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
+import { useTranslations } from "next-intl";
 import { TextFormField, BooleanFormField } from "@/components/Field";
 import { Dispatch, SetStateAction } from "react";
 import { Text } from "@opal/components";
@@ -23,6 +24,7 @@ export function CustomEmbeddingModelForm({
   provider: EmbeddingDetails;
   embeddingType: EmbeddingProvider;
 }) {
+  const tValEmbeddings = useTranslations("validation.embeddings");
   return (
     <div>
       <Formik
@@ -42,15 +44,21 @@ export function CustomEmbeddingModelForm({
           }
         }
         validationSchema={Yup.object().shape({
-          model_name: Yup.string().required("Model name is required"),
-          model_dim: Yup.number().required("Model dimension is required"),
+          model_name: Yup.string().required(
+            tValEmbeddings("modelNameRequired")
+          ),
+          model_dim: Yup.number().required(
+            tValEmbeddings("modelDimensionRequired")
+          ),
           normalize: Yup.boolean().required(),
           query_prefix: Yup.string(),
           passage_prefix: Yup.string(),
-          provider_type: Yup.string().required("Provider type is required"),
+          provider_type: Yup.string().required(
+            tValEmbeddings("providerTypeRequired")
+          ),
           api_key: Yup.string().optional(),
           enabled: Yup.boolean(),
-          api_url: Yup.string().required("API base URL is required"),
+          api_url: Yup.string().required(tValEmbeddings("apiUrlRequired")),
           description: Yup.string(),
           index_name: Yup.string().nullable(),
         })}

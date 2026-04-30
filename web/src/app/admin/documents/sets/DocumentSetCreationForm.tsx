@@ -50,6 +50,7 @@ export const DocumentSetCreationForm = ({
   const t = useTranslations("admin.documents.sets");
   const tForm = useTranslations("admin.documents.sets.form");
   const tT = useTranslations("toasts.admin.documents");
+  const tValDocSet = useTranslations("validation.documentSet");
 
   useEffect(() => {
     if (existingDocumentSet?.is_public) {
@@ -78,7 +79,7 @@ export const DocumentSetCreationForm = ({
         }}
         validationSchema={Yup.object()
           .shape({
-            name: Yup.string().required("Please enter a name for the set"),
+            name: Yup.string().required(tValDocSet("nameRequired")),
             description: Yup.string().optional(),
             cc_pair_ids: Yup.array().of(Yup.number().required()),
             federated_connectors: Yup.array().of(

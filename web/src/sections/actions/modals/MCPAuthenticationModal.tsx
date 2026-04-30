@@ -56,47 +56,51 @@ export interface MCPAuthFormValues {
   oauth_client_secret: string;
 }
 
-const validationSchema = Yup.object().shape({
-  transport: Yup.string()
-    .oneOf([MCPTransportType.STREAMABLE_HTTP, MCPTransportType.SSE])
-    .required("Transport is required"),
-  auth_type: Yup.string()
-    .oneOf([
-      MCPAuthenticationType.NONE,
-      MCPAuthenticationType.API_TOKEN,
-      MCPAuthenticationType.OAUTH,
-      MCPAuthenticationType.PT_OAUTH,
-    ])
-    .required("Authentication type is required"),
-  auth_performer: Yup.string().when("auth_type", {
-    is: (auth_type: string) => auth_type !== MCPAuthenticationType.NONE,
-    then: (schema) =>
-      schema
-        .oneOf([
-          MCPAuthenticationPerformer.ADMIN,
-          MCPAuthenticationPerformer.PER_USER,
-        ])
-        .required("Authentication performer is required"),
-    otherwise: (schema) => schema.notRequired(),
-  }),
-  api_token: Yup.string().when(["auth_type", "auth_performer"], {
-    is: (auth_type: string, auth_performer: string) =>
-      auth_type === MCPAuthenticationType.API_TOKEN &&
-      auth_performer === MCPAuthenticationPerformer.ADMIN,
-    then: (schema) => schema.required("API token is required"),
-    otherwise: (schema) => schema.notRequired(),
-  }),
-  oauth_client_id: Yup.string().when("auth_type", {
-    is: MCPAuthenticationType.OAUTH,
-    then: (schema) => schema.notRequired(),
-    otherwise: (schema) => schema.notRequired(),
-  }),
-  oauth_client_secret: Yup.string().when("auth_type", {
-    is: MCPAuthenticationType.OAUTH,
-    then: (schema) => schema.notRequired(),
-    otherwise: (schema) => schema.notRequired(),
-  }),
-});
+function buildValidationSchema(
+  tValMcpAuth: ReturnType<typeof useTranslations<"validation.mcpAuth">>
+) {
+  return Yup.object().shape({
+    transport: Yup.string()
+      .oneOf([MCPTransportType.STREAMABLE_HTTP, MCPTransportType.SSE])
+      .required(tValMcpAuth("transportRequired")),
+    auth_type: Yup.string()
+      .oneOf([
+        MCPAuthenticationType.NONE,
+        MCPAuthenticationType.API_TOKEN,
+        MCPAuthenticationType.OAUTH,
+        MCPAuthenticationType.PT_OAUTH,
+      ])
+      .required(tValMcpAuth("authTypeRequired")),
+    auth_performer: Yup.string().when("auth_type", {
+      is: (auth_type: string) => auth_type !== MCPAuthenticationType.NONE,
+      then: (schema) =>
+        schema
+          .oneOf([
+            MCPAuthenticationPerformer.ADMIN,
+            MCPAuthenticationPerformer.PER_USER,
+          ])
+          .required(tValMcpAuth("authPerformerRequired")),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    api_token: Yup.string().when(["auth_type", "auth_performer"], {
+      is: (auth_type: string, auth_performer: string) =>
+        auth_type === MCPAuthenticationType.API_TOKEN &&
+        auth_performer === MCPAuthenticationPerformer.ADMIN,
+      then: (schema) => schema.required(tValMcpAuth("apiTokenRequired")),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    oauth_client_id: Yup.string().when("auth_type", {
+      is: MCPAuthenticationType.OAUTH,
+      then: (schema) => schema.notRequired(),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    oauth_client_secret: Yup.string().when("auth_type", {
+      is: MCPAuthenticationType.OAUTH,
+      then: (schema) => schema.notRequired(),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+  });
+}
 
 export default function MCPAuthenticationModal({
   mcpServer,
@@ -106,6 +110,11 @@ export default function MCPAuthenticationModal({
 }: MCPAuthenticationModalProps) {
   const { isOpen, toggle } = useModal();
   const tToast = useTranslations("toasts.admin.actions.mcp");
+  const tValMcpAuth = useTranslations("validation.mcpAuth");
+  const validationSchema = useMemo(
+    () => buildValidationSchema(tValMcpAuth),
+    [tValMcpAuth]
+  );
   const [activeAuthTab, setActiveAuthTab] = useState<"per-user" | "admin">(
     "per-user"
   );

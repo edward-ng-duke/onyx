@@ -69,6 +69,7 @@ export function VoiceProviderSetupModal({
   const t = useTranslations("admin.voice");
   const tCommon = useTranslations("common.actions");
   const tT = useTranslations("toasts.admin.voice");
+  const tValVoice = useTranslations("validation.voice");
   const onClose = useModalClose();
   const initialTtsModel = defaultModelId
     ? resolveModelId(defaultModelId)
@@ -109,10 +110,10 @@ export function VoiceProviderSetupModal({
   }, [providerType]);
 
   const validationSchema = Yup.object().shape({
-    api_key: Yup.string().required("API key is required"),
+    api_key: Yup.string().required(tValVoice("apiKeyRequired")),
     target_uri:
       providerType === "azure"
-        ? Yup.string().required("Target URI is required")
+        ? Yup.string().required(tValVoice("targetUriRequired"))
         : Yup.string(),
     stt_model: Yup.string(),
     tts_model: Yup.string(),

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -33,14 +33,6 @@ interface AddMCPServerModalProps {
   mutateMcpServers?: () => Promise<void>;
 }
 
-const validationSchema = Yup.object().shape({
-  name: Yup.string().required("Server name is required"),
-  description: Yup.string(),
-  server_url: Yup.string()
-    .url("Must be a valid URL")
-    .required("Server URL is required"),
-});
-
 export default function AddMCPServerModal({
   skipOverlay = false,
   activeServer,
@@ -52,6 +44,19 @@ export default function AddMCPServerModal({
 }: AddMCPServerModalProps) {
   const { isOpen, toggle } = useModal();
   const tToast = useTranslations("toasts.admin.actions.mcp");
+  const tValShared = useTranslations("validation.shared");
+  const tValMcp = useTranslations("validation.mcpServer");
+  const validationSchema = useMemo(
+    () =>
+      Yup.object().shape({
+        name: Yup.string().required(tValMcp("nameRequired")),
+        description: Yup.string(),
+        server_url: Yup.string()
+          .url(tValShared("validUrl"))
+          .required(tValMcp("urlRequired")),
+      }),
+    [tValShared, tValMcp]
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Use activeServer from props

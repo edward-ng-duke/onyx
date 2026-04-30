@@ -88,6 +88,7 @@ export default function CreateCredential({
   refresh?: () => void;
 }) {
   const tToast = useTranslations("toasts.admin.credentials");
+  const tValCredentials = useTranslations("validation.credentials");
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [authMethod, setAuthMethod] = useState<string>();
   const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
@@ -180,7 +181,10 @@ export default function CreateCredential({
   }
 
   const credentialTemplate: dictionaryType = credentialTemplates[sourceType];
-  const validationSchema = createValidationSchema(credentialTemplate);
+  const validationSchema = createValidationSchema(
+    credentialTemplate,
+    tValCredentials
+  );
 
   // Set initial auth method for templates with multiple auth methods
   const templateWithAuth = credentialTemplate as any;

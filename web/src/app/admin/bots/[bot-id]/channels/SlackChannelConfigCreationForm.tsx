@@ -37,6 +37,7 @@ export const SlackChannelConfigCreationForm = ({
 }) => {
   const router = useRouter();
   const tT = useTranslations("toasts.admin.bots");
+  const tValConnectors = useTranslations("validation.connectors");
   const isUpdate = Boolean(existingSlackChannelConfig);
   const isDefault = existingSlackChannelConfig?.is_default || false;
   const existingSlackBotUsesPersona = existingSlackChannelConfig?.persona
@@ -128,7 +129,7 @@ export const SlackChannelConfigCreationForm = ({
           slack_bot_id: Yup.number().required(),
           channel_name: isDefault
             ? Yup.string()
-            : Yup.string().required("Channel Name is required"),
+            : Yup.string().required(tValConnectors("channelNameRequired")),
           response_type: Yup.mixed<SlackBotResponseType>()
             .oneOf(["quotes", "citations"])
             .required(),
