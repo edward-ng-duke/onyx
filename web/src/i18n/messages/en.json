@@ -1364,7 +1364,36 @@
       "responseError": "There was an error with the response.",
       "stackTrace": "Stack trace",
       "modelLabel": "Model:",
-      "toolLabel": "Tool:"
+      "toolLabel": "Tool:",
+      "placeholderDefault": "How can I help you today?",
+      "placeholderSearch": "Search connected sources",
+      "placeholderListening": "Listening...",
+      "placeholderSpeaking": "Onyx is speaking...",
+      "placeholderEditQueued": "Press up to edit queued messages",
+      "attachFiles": "Attach Files",
+      "deepResearch": "Deep Research",
+      "deepResearchDisabledMultiModel": "Deep Research is disabled in multi-model mode",
+      "readingTab": "Reading tab...",
+      "readThisTab": "Read this tab",
+      "voiceNotConfigured": "Voice not configured. Set up in admin settings.",
+      "setUpVoiceLabel": "Set up voice",
+      "startRecording": "Start recording",
+      "stopRecording": "Stop recording",
+      "createNewPrompt": "Create New Prompt",
+      "shortcutPromptPlaceholder": "Summarize",
+      "shortcutContentPlaceholder": "Provide a concise 1–2 sentence summary of the following:",
+      "removeShortcut": "Remove shortcut",
+      "cannotDeletePublicShortcut": "Cannot delete public prompt-shortcuts."
+    },
+    "sharedAppBar": {
+      "idlePrompt": "How can Onyx help you today",
+      "startNewSession": "Start New Session"
+    },
+    "queuedMessages": {
+      "selectResponseToContinue": "Select a response to continue",
+      "editLabel": "edit ·",
+      "removeLabel": "remove",
+      "removeTooltip": "Remove queued message"
     },
     "message": {
       "previousTooltip": "Previous",
@@ -1522,6 +1551,167 @@
       "startNewChat": "Start a new chat",
       "sharedOn": "Shared on {date}",
       "sharedBy": "by {owner}"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "general": "General",
+      "chatPreferences": "Chat Preferences",
+      "accountsAccess": "Accounts & Access",
+      "connectors": "Connectors"
+    },
+    "general": {
+      "profile": {
+        "sectionTitle": "Profile",
+        "fullNameLabel": "Full Name",
+        "fullNameDescription": "We'll display this name in the app.",
+        "fullNamePlaceholder": "Your name",
+        "workRoleLabel": "Work Role",
+        "workRoleDescription": "Share your role to better tailor responses.",
+        "workRolePlaceholder": "Your role"
+      },
+      "appearance": {
+        "sectionTitle": "Appearance",
+        "colorModeLabel": "Color Mode",
+        "colorModeDescription": "Select your preferred color mode for the UI.",
+        "themeAuto": "Auto",
+        "themeLight": "Light",
+        "themeDark": "Dark",
+        "languageLabel": "Language / 语言",
+        "languageDescription": "Choose the language used throughout the UI.",
+        "chatBackgroundLabel": "Chat Background",
+        "chatBackgroundNone": "None",
+        "chatBackgroundAriaLabel": "{label} background",
+        "chatBackgroundAriaSelected": " (selected)"
+      },
+      "dangerZone": {
+        "sectionTitle": "Danger Zone",
+        "deleteAllChatsLabel": "Delete All Chats",
+        "deleteAllChatsDescription": "Permanently delete all your chat sessions.",
+        "deleteAllChatsButton": "Delete All Chats",
+        "deleteAllChatsModalTitle": "Delete All Chats",
+        "deleteAllChatsConfirmation": "All your chat sessions and history will be permanently deleted. Deletion cannot be undone.",
+        "deleteAllChatsConfirmationQuestion": "Are you sure you want to delete all chats?",
+        "deleteAllChatsDeletingButton": "Deleting...",
+        "deleteAllChatsDeleteButton": "Delete"
+      }
+    },
+    "chatPreferences": {
+      "chats": {
+        "sectionTitle": "Chats",
+        "defaultModelLabel": "Default Model",
+        "defaultModelDescription": "This model will be used by Onyx by default in your chats.",
+        "autoScrollLabel": "Chat Auto-scroll",
+        "autoScrollDescription": "Automatically scroll to new content as chat generates response.",
+        "smoothStreamingLabel": "Smooth Streaming",
+        "smoothStreamingDescription": "Animate streamed responses character-by-character. Disable to render chunks as they arrive.",
+        "defaultAppModeLabel": "Default App Mode",
+        "defaultAppModeDescription": "Choose whether new sessions start in Search or Chat mode.",
+        "defaultAppModeChat": "Chat",
+        "defaultAppModeSearch": "Search",
+        "searchUiDisabledTooltip": "Search UI is disabled and can only be enabled by an admin."
+      },
+      "personalPreferences": {
+        "title": "Personal Preferences",
+        "description": "Provide your custom preferences in natural language.",
+        "placeholder": "Describe how you want the system to behave and the tone it should use."
+      },
+      "memory": {
+        "sectionTitle": "Memory",
+        "useMemoriesLabel": "Reference Stored Memories",
+        "useMemoriesDescription": "Let Onyx reference stored memories in chats.",
+        "updateMemoriesLabel": "Update Memories",
+        "updateMemoriesDescription": "Let Onyx generate and update stored memories."
+      },
+      "promptShortcuts": {
+        "sectionTitle": "Prompt Shortcuts",
+        "useShortcutsLabel": "Use Prompt Shortcuts",
+        "useShortcutsDescription": "Enable shortcuts to quickly insert common prompts."
+      },
+      "voice": {
+        "sectionTitle": "Voice",
+        "autoSendLabel": "Auto-Send on Pause",
+        "autoSendDescription": "Automatically send voice input when you stop speaking.",
+        "autoPlaybackLabel": "Auto-Playback",
+        "autoPlaybackDescription": "Automatically play voice responses.",
+        "playbackSpeedLabel": "Playback Speed",
+        "playbackSpeedDescription": "Adjust the speed of voice playback."
+      }
+    },
+    "accounts": {
+      "sectionTitle": "Accounts",
+      "emailLabel": "Email",
+      "emailDescription": "Your account email address.",
+      "anonymous": "anonymous",
+      "passwordLabel": "Password",
+      "passwordDescription": "Update your account password.",
+      "changePasswordButton": "Change Password",
+      "passwordModal": {
+        "title": "Change Password",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm New Password",
+        "updateButton": "Update",
+        "updatingButton": "Updating..."
+      },
+      "tokens": {
+        "sectionTitle": "Access Tokens",
+        "loadingTokens": "Loading tokens...",
+        "noTokens": "No access tokens created.",
+        "searchPlaceholder": "Search...",
+        "newTokenButton": "New Access Token",
+        "neverExpires": "Never expires",
+        "expiresIn": "Expires in {days} day",
+        "expiresInPlural": "Expires in {days} days",
+        "createdAgo": "Created {days} day ago - {expiry}",
+        "createdAgoPlural": "Created {days} days ago - {expiry}",
+        "deleteTokenAria": "Delete token {name}",
+        "upgradeRequired": "Access tokens require an active paid subscription.",
+        "upgradePlanButton": "Upgrade Plan",
+        "createModal": {
+          "title": "Create Access Token",
+          "description": "All API requests using this token will inherit your access permissions and be attributed to you as an individual.",
+          "doneButton": "Done",
+          "creatingButton": "Creating Token...",
+          "createButton": "Create Token",
+          "tokenValueLabel": "Token Value",
+          "tokenNameLabel": "Token Name",
+          "tokenNamePlaceholder": "Name your token",
+          "expiresInLabel": "Expires in",
+          "expirationPlaceholder": "Select expiration",
+          "expiration7Days": "7 days",
+          "expiration30Days": "30 days",
+          "expiration365Days": "365 days",
+          "expirationNone": "No expiration",
+          "expirationHint": "This token will expire at: {date}"
+        },
+        "revokeModal": {
+          "title": "Revoke Access Token",
+          "revokeButton": "Revoke",
+          "warningPrefix": "Any application using the token",
+          "warningSuffix": "will lose access to Onyx. This action cannot be undone.",
+          "confirmationQuestion": "Are you sure you want to revoke this token?"
+        }
+      }
+    },
+    "connectors": {
+      "sectionTitle": "Connectors",
+      "noConnectors": "No connectors set up for your organization.",
+      "statusConnected": "Connected",
+      "statusPaused": "Paused",
+      "statusNotConnected": "Not connected",
+      "connectButton": "Connect",
+      "disconnectModal": {
+        "title": "Disconnect *{name}*",
+        "disconnectingButton": "Disconnecting...",
+        "disconnectButton": "Disconnect",
+        "disconnectSuccess": "Disconnected successfully",
+        "disconnectFailure": "Failed to disconnect",
+        "warningPrefix": "Onyx will no longer be able to access or search content from your",
+        "warningSuffix": "account.",
+        "warningExisting": "You can still continue existing sessions referencing {name} content."
+      }
     }
   }
 }

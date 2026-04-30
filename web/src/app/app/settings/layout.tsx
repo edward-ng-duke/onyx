@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import * as AppLayouts from "@/layouts/app-layouts";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import { SidebarTab } from "@opal/components";
@@ -17,6 +18,7 @@ export default function Layout({ children }: LayoutProps) {
   const pathname = usePathname();
   const { user } = useUser();
   const authType = useAuthType();
+  const t = useTranslations("settings");
 
   const showPasswordSection = Boolean(user?.password_configured);
   const showTokensSection = authType !== null;
@@ -25,7 +27,7 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <AppLayouts.Root>
       <SettingsLayouts.Root width="lg">
-        <SettingsLayouts.Header icon={SvgSliders} title="Settings" divider />
+        <SettingsLayouts.Header icon={SvgSliders} title={t("title")} divider />
 
         <SettingsLayouts.Body>
           <Section
@@ -43,27 +45,27 @@ export default function Layout({ children }: LayoutProps) {
                 href="/app/settings/general"
                 selected={pathname === "/app/settings/general"}
               >
-                General
+                {t("tabs.general")}
               </SidebarTab>
               <SidebarTab
                 href="/app/settings/chat-preferences"
                 selected={pathname === "/app/settings/chat-preferences"}
               >
-                Chat Preferences
+                {t("tabs.chatPreferences")}
               </SidebarTab>
               {showAccountsAccessTab && (
                 <SidebarTab
                   href="/app/settings/accounts-access"
                   selected={pathname === "/app/settings/accounts-access"}
                 >
-                  Accounts & Access
+                  {t("tabs.accountsAccess")}
                 </SidebarTab>
               )}
               <SidebarTab
                 href="/app/settings/connectors"
                 selected={pathname === "/app/settings/connectors"}
               >
-                Connectors
+                {t("tabs.connectors")}
               </SidebarTab>
             </div>
 

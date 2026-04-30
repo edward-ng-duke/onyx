@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { Text, Button } from "@opal/components";
 import { SvgTrash } from "@opal/icons";
 import { cn } from "@opal/utils";
@@ -18,6 +19,7 @@ function QueuedMessageBar({
   onDiscard,
   onHighlight,
 }: QueuedMessageBarProps) {
+  const t = useTranslations("chat.queuedMessages");
   const isEmpty = messages.length === 0;
 
   return (
@@ -60,7 +62,7 @@ function QueuedMessageBar({
                 {showAwaitingLabel && (
                   <div className="flex-shrink-0 whitespace-nowrap">
                     <Text font="secondary-body" color="text-02">
-                      Select a response to continue
+                      {t("selectResponseToContinue")}
                     </Text>
                   </div>
                 )}
@@ -70,13 +72,13 @@ function QueuedMessageBar({
                       ↵
                     </span>
                     <Text font="secondary-body" color="text-02">
-                      edit ·
+                      {t("editLabel")}
                     </Text>
                     <span className="translate-y-[1.5px] text-text-02 text-[0.7rem]">
                       ⌫
                     </span>
                     <Text font="secondary-body" color="text-02">
-                      remove
+                      {t("removeLabel")}
                     </Text>
                   </div>
                 )}
@@ -84,7 +86,7 @@ function QueuedMessageBar({
                   icon={SvgTrash}
                   prominence="tertiary"
                   size="xs"
-                  tooltip="Remove queued message"
+                  tooltip={t("removeTooltip")}
                   onClick={(e) => {
                     e.stopPropagation();
                     onDiscard(index);

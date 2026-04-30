@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Text from "@/refresh-components/texts/Text";
 import { Button, OpenButton, SelectButton } from "@opal/components";
 import { SvgOpenai } from "@opal/logos";
@@ -12,13 +13,14 @@ import {
 } from "@opal/icons";
 
 export default function SharedAppInputBar() {
+  const t = useTranslations("chat.sharedAppBar");
   return (
     <div className="relative w-full">
       <div className="w-full flex flex-col shadow-01 bg-background-neutral-00 rounded-16">
         {/* Textarea area */}
         <div className="flex flex-row items-center w-full">
           <Text text03 className="w-full px-3 pt-3 pb-2 select-none">
-            How can Onyx help you today
+            {t("idlePrompt")}
           </Text>
         </div>
 
@@ -47,7 +49,7 @@ export default function SharedAppInputBar() {
       {/* CTA button */}
       <div className="absolute inset-0 flex items-center justify-center">
         <Button prominence="secondary" icon={SvgEditBig} href="/app">
-          Start New Session
+          {t("startNewSession")}
         </Button>
       </div>
     </div>

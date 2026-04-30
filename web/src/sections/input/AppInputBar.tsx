@@ -8,6 +8,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslations } from "next-intl";
 import LineItem from "@/refresh-components/buttons/LineItem";
 import { MinimalPersonaSnapshot } from "@/app/admin/agents/interfaces";
 import { InputPrompt } from "@/app/app/interfaces";
@@ -125,6 +126,7 @@ const AppInputBar = React.memo(
     currentTabUrl,
     onToggleTabReading,
   }: AppInputBarProps) => {
+    const t = useTranslations("chat.composer");
     // Internal message state - kept local to avoid parent re-renders on every keystroke
     const [message, setMessage] = useState(initialMessage);
     const [isRecording, setIsRecording] = useState(false);
@@ -566,7 +568,7 @@ const AppInputBar = React.memo(
               <Button
                 disabled={disabled}
                 icon={SvgPaperclip}
-                tooltip="Attach Files"
+                tooltip={t("attachFiles")}
                 interaction={open ? "hover" : "rest"}
                 prominence="tertiary"
               />
@@ -606,8 +608,8 @@ const AppInputBar = React.memo(
                           return currentTabUrl;
                         }
                       })()
-                    : "Reading tab..."
-                  : "Read this tab"}
+                    : t("readingTab")
+                  : t("readThisTab")}
               </SelectButton>
             ) : (
               showDeepResearch && (
@@ -620,11 +622,11 @@ const AppInputBar = React.memo(
                   foldable={!deepResearchEnabled}
                   tooltip={
                     isMultiModelActive
-                      ? "Deep Research is disabled in multi-model mode"
+                      ? t("deepResearchDisabledMultiModel")
                       : undefined
                   }
                 >
-                  Deep Research
+                  {t("deepResearch")}
                 </SelectButton>
               )
             )}
@@ -684,9 +686,9 @@ const AppInputBar = React.memo(
               <Button
                 disabled
                 icon={SvgMicrophone}
-                aria-label="Set up voice"
+                aria-label={t("setUpVoiceLabel")}
                 prominence="tertiary"
-                tooltip="Voice not configured. Set up in admin settings."
+                tooltip={t("voiceNotConfigured")}
               />
             ))}
 
@@ -837,14 +839,14 @@ const AppInputBar = React.memo(
                       aria-multiline={true}
                       placeholder={
                         queuedMessages.length > 0 && !message
-                          ? "Press up to edit queued messages"
+                          ? t("placeholderEditQueued")
                           : isRecording
-                            ? "Listening..."
+                            ? t("placeholderListening")
                             : isVoicePlaybackActive
-                              ? "Onyx is speaking..."
+                              ? t("placeholderSpeaking")
                               : isSearchMode
-                                ? "Search connected sources"
-                                : "How can I help you today?"
+                                ? t("placeholderSearch")
+                                : t("placeholderDefault")
                       }
                       value={message}
                       onKeyDown={(event) => {
@@ -983,7 +985,7 @@ const AppInputBar = React.memo(
                           tabbingIconIndex === sortedFilteredPrompts.length
                         }
                       >
-                        Create New Prompt
+                        {t("createNewPrompt")}
                       </LineItem>,
                     ]}
                   </Popover.Menu>

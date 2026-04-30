@@ -1364,7 +1364,36 @@
       "responseError": "回答出错",
       "stackTrace": "堆栈跟踪",
       "modelLabel": "模型：",
-      "toolLabel": "工具："
+      "toolLabel": "工具：",
+      "placeholderDefault": "今天有什么可以帮你的？",
+      "placeholderSearch": "搜索已连接的来源",
+      "placeholderListening": "聆听中…",
+      "placeholderSpeaking": "Onyx 正在朗读…",
+      "placeholderEditQueued": "按上键编辑排队中的消息",
+      "attachFiles": "添加附件",
+      "deepResearch": "深度研究",
+      "deepResearchDisabledMultiModel": "多模型模式下无法使用深度研究",
+      "readingTab": "正在读取标签页…",
+      "readThisTab": "读取当前标签页",
+      "voiceNotConfigured": "语音未配置，请在管理员设置中开启",
+      "setUpVoiceLabel": "设置语音",
+      "startRecording": "开始录音",
+      "stopRecording": "停止录音",
+      "createNewPrompt": "新建提示词",
+      "shortcutPromptPlaceholder": "总结",
+      "shortcutContentPlaceholder": "请用 1–2 句简明总结以下内容：",
+      "removeShortcut": "移除快捷指令",
+      "cannotDeletePublicShortcut": "公共提示词快捷指令无法删除"
+    },
+    "sharedAppBar": {
+      "idlePrompt": "今天 Onyx 能为你做点什么",
+      "startNewSession": "开启新会话"
+    },
+    "queuedMessages": {
+      "selectResponseToContinue": "请先选择一条回复以继续",
+      "editLabel": "编辑 ·",
+      "removeLabel": "移除",
+      "removeTooltip": "移除排队消息"
     },
     "message": {
       "previousTooltip": "上一条",
@@ -1522,6 +1551,167 @@
       "startNewChat": "开始新对话",
       "sharedOn": "分享于 {date}",
       "sharedBy": "分享人：{owner}"
+    }
+  },
+  "settings": {
+    "title": "设置",
+    "tabs": {
+      "general": "常规",
+      "chatPreferences": "聊天偏好",
+      "accountsAccess": "账号与访问",
+      "connectors": "Connectors"
+    },
+    "general": {
+      "profile": {
+        "sectionTitle": "个人资料",
+        "fullNameLabel": "姓名",
+        "fullNameDescription": "应用中将显示该姓名。",
+        "fullNamePlaceholder": "请输入姓名",
+        "workRoleLabel": "工作角色",
+        "workRoleDescription": "告诉我们你的角色，以便给出更贴合的回答。",
+        "workRolePlaceholder": "请输入角色"
+      },
+      "appearance": {
+        "sectionTitle": "外观",
+        "colorModeLabel": "配色模式",
+        "colorModeDescription": "选择界面使用的配色模式。",
+        "themeAuto": "自动",
+        "themeLight": "浅色",
+        "themeDark": "深色",
+        "languageLabel": "Language / 语言",
+        "languageDescription": "选择整个界面所使用的语言。",
+        "chatBackgroundLabel": "聊天背景",
+        "chatBackgroundNone": "无",
+        "chatBackgroundAriaLabel": "{label} 背景",
+        "chatBackgroundAriaSelected": "（已选中）"
+      },
+      "dangerZone": {
+        "sectionTitle": "危险操作区",
+        "deleteAllChatsLabel": "删除所有对话",
+        "deleteAllChatsDescription": "永久删除你的全部对话会话。",
+        "deleteAllChatsButton": "删除所有对话",
+        "deleteAllChatsModalTitle": "删除所有对话",
+        "deleteAllChatsConfirmation": "你的全部对话和历史将被永久删除，且无法恢复。",
+        "deleteAllChatsConfirmationQuestion": "确定要删除所有对话吗？",
+        "deleteAllChatsDeletingButton": "删除中…",
+        "deleteAllChatsDeleteButton": "删除"
+      }
+    },
+    "chatPreferences": {
+      "chats": {
+        "sectionTitle": "对话",
+        "defaultModelLabel": "默认模型",
+        "defaultModelDescription": "Onyx 在你的对话中将默认使用此模型。",
+        "autoScrollLabel": "对话自动滚动",
+        "autoScrollDescription": "在生成回答时自动滚动到最新内容。",
+        "smoothStreamingLabel": "流式平滑输出",
+        "smoothStreamingDescription": "逐字符播放流式回答；关闭后将按原始分块直接显示。",
+        "defaultAppModeLabel": "默认应用模式",
+        "defaultAppModeDescription": "选择新会话默认进入“搜索”还是“聊天”模式。",
+        "defaultAppModeChat": "聊天",
+        "defaultAppModeSearch": "搜索",
+        "searchUiDisabledTooltip": "搜索界面已被禁用，仅管理员可启用。"
+      },
+      "personalPreferences": {
+        "title": "个人偏好",
+        "description": "用自然语言描述你的自定义偏好。",
+        "placeholder": "描述你希望系统的行为方式以及使用的语气。"
+      },
+      "memory": {
+        "sectionTitle": "记忆",
+        "useMemoriesLabel": "引用已存记忆",
+        "useMemoriesDescription": "允许 Onyx 在对话中引用已存的记忆。",
+        "updateMemoriesLabel": "更新记忆",
+        "updateMemoriesDescription": "允许 Onyx 生成并更新已存的记忆。"
+      },
+      "promptShortcuts": {
+        "sectionTitle": "提示词快捷指令",
+        "useShortcutsLabel": "启用提示词快捷指令",
+        "useShortcutsDescription": "启用后可快速插入常用提示词。"
+      },
+      "voice": {
+        "sectionTitle": "语音",
+        "autoSendLabel": "停顿后自动发送",
+        "autoSendDescription": "停止说话后自动发送语音输入。",
+        "autoPlaybackLabel": "自动播放",
+        "autoPlaybackDescription": "自动播放语音回复。",
+        "playbackSpeedLabel": "播放速度",
+        "playbackSpeedDescription": "调整语音播放的速度。"
+      }
+    },
+    "accounts": {
+      "sectionTitle": "账号",
+      "emailLabel": "邮箱",
+      "emailDescription": "你的账号邮箱地址。",
+      "anonymous": "匿名",
+      "passwordLabel": "密码",
+      "passwordDescription": "更新你的账号密码。",
+      "changePasswordButton": "修改密码",
+      "passwordModal": {
+        "title": "修改密码",
+        "currentPassword": "当前密码",
+        "newPassword": "新密码",
+        "confirmPassword": "确认新密码",
+        "updateButton": "更新",
+        "updatingButton": "更新中…"
+      },
+      "tokens": {
+        "sectionTitle": "访问令牌",
+        "loadingTokens": "加载令牌中…",
+        "noTokens": "尚未创建访问令牌。",
+        "searchPlaceholder": "搜索…",
+        "newTokenButton": "新建访问令牌",
+        "neverExpires": "永不过期",
+        "expiresIn": "{days} 天后过期",
+        "expiresInPlural": "{days} 天后过期",
+        "createdAgo": "创建于 {days} 天前 - {expiry}",
+        "createdAgoPlural": "创建于 {days} 天前 - {expiry}",
+        "deleteTokenAria": "删除令牌 {name}",
+        "upgradeRequired": "访问令牌需要有效的付费订阅。",
+        "upgradePlanButton": "升级套餐",
+        "createModal": {
+          "title": "创建访问令牌",
+          "description": "使用此令牌发出的所有 API 请求都将继承你的访问权限，并归属到你个人。",
+          "doneButton": "完成",
+          "creatingButton": "创建中…",
+          "createButton": "创建令牌",
+          "tokenValueLabel": "令牌值",
+          "tokenNameLabel": "令牌名称",
+          "tokenNamePlaceholder": "为令牌命名",
+          "expiresInLabel": "过期时间",
+          "expirationPlaceholder": "选择有效期",
+          "expiration7Days": "7 天",
+          "expiration30Days": "30 天",
+          "expiration365Days": "365 天",
+          "expirationNone": "永不过期",
+          "expirationHint": "该令牌将于 {date} 过期"
+        },
+        "revokeModal": {
+          "title": "撤销访问令牌",
+          "revokeButton": "撤销",
+          "warningPrefix": "任何使用该令牌的应用",
+          "warningSuffix": "都将失去对 Onyx 的访问权限。该操作无法撤销。",
+          "confirmationQuestion": "确定要撤销该令牌吗？"
+        }
+      }
+    },
+    "connectors": {
+      "sectionTitle": "Connectors",
+      "noConnectors": "你的组织尚未配置任何 Connector。",
+      "statusConnected": "已连接",
+      "statusPaused": "已暂停",
+      "statusNotConnected": "未连接",
+      "connectButton": "连接",
+      "disconnectModal": {
+        "title": "断开 *{name}*",
+        "disconnectingButton": "断开中…",
+        "disconnectButton": "断开",
+        "disconnectSuccess": "已断开",
+        "disconnectFailure": "断开失败",
+        "warningPrefix": "Onyx 将无法再访问或搜索你",
+        "warningSuffix": "账号中的内容。",
+        "warningExisting": "你仍可继续在已有会话中引用 {name} 的内容。"
+      }
     }
   }
 }

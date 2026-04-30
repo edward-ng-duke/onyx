@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@opal/components";
 import { SvgMicrophone } from "@opal/icons";
 import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
@@ -60,6 +61,7 @@ function MicrophoneButton({
   onAudioLevel,
   isNewSession = false,
 }: MicrophoneButtonProps) {
+  const t = useTranslations("chat.composer");
   const {
     isTTSPlaying,
     isTTSLoading,
@@ -332,7 +334,7 @@ function MicrophoneButton({
       disabled={isDisabled}
       icon={icon}
       onClick={handleClick}
-      aria-label={isRecording ? "Stop recording" : "Start recording"}
+      aria-label={isRecording ? t("stopRecording") : t("startRecording")}
       prominence={prominence}
     />
   );
