@@ -30,6 +30,7 @@ type GoogleDriveCredentialJsonTypes = "authorized_user" | "service_account";
 export const DriveJsonUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
   const { mutate } = useSWRConfig();
   const tT = useTranslations("toasts.admin.connectors");
+  const t = useTranslations("admin.connectors.googleCredential");
   const [isUploading, setIsUploading] = useState(false);
   const [fileName, setFileName] = useState<string | undefined>();
   const [isDragging, setIsDragging] = useState(false);
@@ -56,9 +57,7 @@ export const DriveJsonUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
         } else if (appCredentialJson.type === "service_account") {
           credentialFileType = "service_account";
         } else {
-          throw new Error(
-            "Unknown credential type, expected one of 'OAuth Web application' or 'Service Account'"
-          );
+          throw new Error(t("unknownCredentialType"));
         }
       } catch (e) {
         toast.error(tT("invalidFileProvided", { error: String(e) }));
@@ -185,11 +184,13 @@ export const DriveJsonUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
               )}
               <span className="text-sm text-text-500">
                 {isUploading
-                  ? `Uploading ${truncateString(fileName || "file", 50)}...`
+                  ? t("uploadingFile", {
+                      name: truncateString(fileName || t("file"), 50),
+                    })
                   : isDragging
-                    ? "Drop JSON file here"
+                    ? t("dropJsonHere")
                     : truncateString(
-                        fileName || "Select or drag JSON credentials file...",
+                        fileName || t("selectOrDragJson"),
                         50
                       )}
               </span>
@@ -235,6 +236,7 @@ export const DriveJsonUploadSection = ({
   const { mutate } = useSWRConfig();
   const router = useRouter();
   const tT = useTranslations("toasts.admin.connectors");
+  const t = useTranslations("admin.connectors.googleCredential");
   const [localServiceAccountData, setLocalServiceAccountData] = useState(
     serviceAccountCredentialData
   );
@@ -260,10 +262,7 @@ export const DriveJsonUploadSection = ({
       <div>
         <div className="flex items-start py-3 px-4 bg-yellow-50/30 dark:bg-yellow-900/5 rounded">
           <FiAlertTriangle className="text-yellow-500 h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
-          <p className="text-sm">
-            Curators are unable to set up the Google Drive credentials. To add a
-            Google Drive connector, please contact an administrator.
-          </p>
+          <p className="text-sm">{t("driveCuratorRestricted")}</p>
         </div>
       </div>
     );
@@ -271,10 +270,7 @@ export const DriveJsonUploadSection = ({
 
   return (
     <div>
-      <p className="text-sm mb-3">
-        To connect your Google Drive, create credentials (either OAuth App or
-        Service Account), download the JSON file, and upload it below.
-      </p>
+      <p className="text-sm mb-3">{t("driveUploadIntro")}</p>
       <div className="mb-4">
         <a
           className="text-primary hover:text-primary/80 flex items-center gap-1 text-sm"
@@ -283,7 +279,7 @@ export const DriveJsonUploadSection = ({
           rel="noreferrer"
         >
           <FiLink className="h-3 w-3" />
-          View detailed setup instructions
+          {t("viewSetupInstructions")}
         </a>
       </div>
 
@@ -370,7 +366,7 @@ export const DriveJsonUploadSection = ({
                   }
                 }}
               >
-                Delete Credentials
+                {t("deleteCredentials")}
               </Button>
             </div>
           )}
@@ -432,6 +428,7 @@ export const DriveAuthSection = ({
   const tT = useTranslations("toasts.admin.connectors");
   const tValConnectors = useTranslations("validation.connectors");
   const tValShared = useTranslations("validation.shared");
+  const t = useTranslations("admin.connectors.googleCredential");
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [localServiceAccountData, setLocalServiceAccountData] = useState(
     serviceAccountKeyData
@@ -472,10 +469,11 @@ export const DriveAuthSection = ({
           <div className="py-3 px-4 bg-blue-50/30 dark:bg-blue-900/5 rounded mb-4 flex items-start">
             <FiCheck className="text-blue-500 h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
             <div className="flex-1">
-              <span className="font-medium block">Authentication Complete</span>
+              <span className="font-medium block">
+                {t("driveAuthCompleteTitle")}
+              </span>
               <p className="text-sm mt-1 text-text-500 dark:text-text-400 break-words">
-                Your Google Drive credentials have been successfully uploaded
-                and authenticated.
+                {t("driveAuthCompleteBody")}
               </p>
             </div>
           </div>
@@ -490,7 +488,7 @@ export const DriveAuthSection = ({
               );
             }}
           >
-            Revoke Access
+            {t("revokeAccess")}
           </Button>
         </div>
       </div>
@@ -504,14 +502,11 @@ export const DriveAuthSection = ({
   ) {
     return (
       <div>
-        <SectionHeader>Google Drive Authentication</SectionHeader>
+        <SectionHeader>{t("driveAuthHeader")}</SectionHeader>
         <div className="mt-4">
           <div className="flex items-start py-3 px-4 bg-yellow-50/30 dark:bg-yellow-900/5 rounded">
             <FiAlertTriangle className="text-yellow-500 h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
-            <p className="text-sm">
-              Please complete Step 1 by uploading either OAuth credentials or a
-              Service Account key before proceeding with authentication.
-            </p>
+            <p className="text-sm">{t("completeStepOneFirst")}</p>
           </div>
         </div>
       </div>
@@ -571,12 +566,12 @@ export const DriveAuthSection = ({
               <Form>
                 <TextFormField
                   name="google_primary_admin"
-                  label="Primary Admin Email:"
-                  subtext="Enter the email of an admin/owner of the Google Organization that owns the Google Drive(s) you want to index."
+                  label={t("primaryAdminLabel")}
+                  subtext={t("primaryAdminSubtextDrive")}
                 />
                 <div className="flex">
                   <Button disabled={isSubmitting} type="submit">
-                    {isSubmitting ? "Creating..." : "Create Credential"}
+                    {isSubmitting ? t("creating") : t("createCredential")}
                   </Button>
                 </div>
               </Form>
@@ -591,11 +586,7 @@ export const DriveAuthSection = ({
     return (
       <div>
         <div className="bg-background-50/30 dark:bg-background-900/20 rounded mb-4">
-          <p className="text-sm">
-            Next, you need to authenticate with Google Drive via OAuth. This
-            gives us read access to the documents you have access to in your
-            Google Drive account.
-          </p>
+          <p className="text-sm">{t("driveOauthNextStep")}</p>
         </div>
         <Button
           disabled={isAuthenticating}
@@ -622,8 +613,8 @@ export const DriveAuthSection = ({
           }}
         >
           {isAuthenticating
-            ? "Authenticating..."
-            : "Authenticate with Google Drive"}
+            ? t("authenticating")
+            : t("authenticateWithDrive")}
         </Button>
       </div>
     );

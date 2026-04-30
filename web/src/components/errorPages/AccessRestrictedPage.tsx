@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import ErrorPageLayout from "@/components/errorPages/ErrorPageLayout";
 import { Button } from "@opal/components";
 import InlineExternalLink from "@/refresh-components/InlineExternalLink";
@@ -39,6 +40,7 @@ const fetchResubscriptionSession = async () => {
 };
 
 export default function AccessRestricted() {
+  const t = useTranslations("components.accessRestricted");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { data: license } = useLicense();
@@ -52,20 +54,22 @@ export default function AccessRestricted() {
 
   function getSeatLimitMessage() {
     const { used_seats, seat_count } = settings.settings;
-    const counts =
-      used_seats != null && seat_count != null
-        ? ` (${used_seats} users / ${seat_count} seats)`
-        : "";
-    return `Your organization has exceeded its licensed seat count${counts}. Access is restricted until the number of users is reduced or your license is upgraded.`;
+    if (used_seats != null && seat_count != null) {
+      return t("seatLimitMessageWithCounts", {
+        used: used_seats,
+        total: seat_count,
+      });
+    }
+    return t("seatLimitMessage");
   }
 
   const initialModalMessage = isSeatLimitExceeded
     ? getSeatLimitMessage()
     : showRenewalMessage
       ? NEXT_PUBLIC_CLOUD_ENABLED
-        ? "Your access to Onyx has been temporarily suspended due to a lapse in your subscription."
-        : "Your access to Onyx has been temporarily suspended due to a lapse in your license."
-      : "An Enterprise license is required to use Onyx. Your data is protected and will be available once a license is activated.";
+        ? t("subscriptionLapsedMessage")
+        : t("licenseLapsedMessage")
+      : t("noLicenseMessage");
 
   const handleResubscribe = async () => {
     setIsLoading(true);
@@ -82,7 +86,7 @@ export default function AccessRestricted() {
       }
     } catch (error) {
       console.error("Error creating resubscription session:", error);
-      setError("Error opening resubscription page. Please try again later.");
+      setError(t("resubscriptionError"));
     } finally {
       setIsLoading(false);
     }
@@ -91,7 +95,7 @@ export default function AccessRestricted() {
   return (
     <ErrorPageLayout>
       <div className="flex items-center gap-2">
-        <Text headingH2>Access Restricted</Text>
+        <Text headingH2>{t("title")}</Text>
         <SvgLock className="stroke-status-error-05 w-[1.5rem] h-[1.5rem]" />
       </div>
 
@@ -100,15 +104,18 @@ export default function AccessRestricted() {
       {isSeatLimitExceeded ? (
         <>
           <Text text03>
-            If you are an administrator, you can manage users on the{" "}
-            <Link className={linkClassName} href="/admin/users">
-              User Management
-            </Link>{" "}
-            page or upgrade your license on the{" "}
-            <Link className={linkClassName} href="/admin/billing">
-              Admin Billing
-            </Link>{" "}
-            page.
+            {t.rich("adminSeatLimitHelp", {
+              userLink: (chunks) => (
+                <Link className={linkClassName} href="/admin/users">
+                  {chunks}
+                </Link>
+              ),
+              billingLink: (chunks) => (
+                <Link className={linkClassName} href="/admin/billing">
+                  {chunks}
+                </Link>
+              ),
+            })}
           </Text>
 
           <div className="flex flex-row gap-2">
@@ -118,26 +125,19 @@ export default function AccessRestricted() {
                 window.location.reload();
               }}
             >
-              Log out
+              {t("logOut")}
             </Button>
           </div>
         </>
       ) : NEXT_PUBLIC_CLOUD_ENABLED ? (
         <>
-          <Text text03>
-            To reinstate your access and continue benefiting from Onyx&apos;s
-            powerful features, please update your payment information.
-          </Text>
+          <Text text03>{t("cloudUpdatePayment")}</Text>
 
-          <Text text03>
-            If you&apos;re an admin, you can manage your subscription by
-            clicking the button below. For other users, please reach out to your
-            administrator to address this matter.
-          </Text>
+          <Text text03>{t("cloudAdminAdvice")}</Text>
 
           <div className="flex flex-row gap-2">
             <Button disabled={isLoading} onClick={handleResubscribe}>
-              {isLoading ? "Loading..." : "Resubscribe"}
+              {isLoading ? t("loading") : t("resubscribe")}
             </Button>
             <Button
               prominence="secondary"
@@ -146,7 +146,7 @@ export default function AccessRestricted() {
                 window.location.reload();
               }}
             >
-              Log out
+              {t("logOut")}
             </Button>
           </div>
 
@@ -156,21 +156,28 @@ export default function AccessRestricted() {
         <>
           <Text text03>
             {hadPreviousLicense
-              ? "To reinstate your access and continue using Onyx, please contact your system administrator to renew your license."
-              : "To get started, please contact your system administrator to obtain an Enterprise license."}
+              ? t("contactAdminRenew")
+              : t("contactAdminEnterprise")}
           </Text>
 
           <Text text03>
-            If you are the administrator, please visit the{" "}
-            <Link className={linkClassName} href="/admin/billing">
-              Admin Billing
-            </Link>{" "}
-            page to {hadPreviousLicense ? "renew" : "activate"} your license,
-            sign up through Stripe or reach out to{" "}
-            <a className={linkClassName} href="mailto:support@onyx.app">
-              support@onyx.app
-            </a>{" "}
-            for billing assistance.
+            {t.rich(
+              hadPreviousLicense
+                ? "adminRenewBilling"
+                : "adminActivateBilling",
+              {
+                billingLink: (chunks) => (
+                  <Link className={linkClassName} href="/admin/billing">
+                    {chunks}
+                  </Link>
+                ),
+                supportLink: (chunks) => (
+                  <a className={linkClassName} href="mailto:support@onyx.app">
+                    {chunks}
+                  </a>
+                ),
+              }
+            )}
           </Text>
 
           <div className="flex flex-row gap-2">
@@ -180,21 +187,23 @@ export default function AccessRestricted() {
                 window.location.reload();
               }}
             >
-              Log out
+              {t("logOut")}
             </Button>
           </div>
         </>
       )}
 
       <Text text03>
-        Need help? Join our{" "}
-        <InlineExternalLink
-          className={linkClassName}
-          href="https://discord.gg/4NA5SbzrWb"
-        >
-          Discord community
-        </InlineExternalLink>{" "}
-        for support.
+        {t.rich("needHelpDiscord", {
+          discordLink: (chunks) => (
+            <InlineExternalLink
+              className={linkClassName}
+              href="https://discord.gg/4NA5SbzrWb"
+            >
+              {chunks}
+            </InlineExternalLink>
+          ),
+        })}
       </Text>
     </ErrorPageLayout>
   );

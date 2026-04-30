@@ -66,16 +66,17 @@ function ModelConfigurationItem({
   onRemove,
   canRemove,
 }: ModelConfigurationItemProps) {
+  const t = useTranslations("modals.llmConfig.custom");
   return (
     <>
       <InputTypeIn
-        placeholder="Model name"
+        placeholder={t("modelNamePlaceholder")}
         value={model.name}
         onChange={(e) => onChange({ ...model, name: e.target.value })}
         showClearButton={false}
       />
       <InputTypeIn
-        placeholder="Display name"
+        placeholder={t("displayNamePlaceholder")}
         value={model.display_name}
         onChange={(e) => onChange({ ...model, display_name: e.target.value })}
         showClearButton={false}
@@ -86,14 +87,18 @@ function ModelConfigurationItem({
           onChange({ ...model, supports_image_input: value === "text-image" })
         }
       >
-        <InputSelect.Trigger placeholder="Input type" />
+        <InputSelect.Trigger placeholder={t("inputTypePlaceholder")} />
         <InputSelect.Content>
-          <InputSelect.Item value="text-only">Text Only</InputSelect.Item>
-          <InputSelect.Item value="text-image">Text & Image</InputSelect.Item>
+          <InputSelect.Item value="text-only">
+            {t("inputTypeTextOnly")}
+          </InputSelect.Item>
+          <InputSelect.Item value="text-image">
+            {t("inputTypeTextImage")}
+          </InputSelect.Item>
         </InputSelect.Content>
       </InputSelect>
       <InputTypeIn
-        placeholder="Default"
+        placeholder={t("maxTokensDefault")}
         value={model.max_input_tokens?.toString() ?? ""}
         onChange={(e) =>
           onChange({
@@ -116,6 +121,7 @@ function ModelConfigurationItem({
 }
 
 function ModelConfigurationList() {
+  const t = useTranslations("modals.llmConfig.custom");
   const formikProps = useFormikContext<{
     model_configurations: CustomModelConfiguration[];
   }>();
@@ -151,11 +157,11 @@ function ModelConfigurationList() {
       {models.length > 0 ? (
         <div className={`grid items-center gap-1 ${MODEL_GRID_COLS}`}>
           <div className="pb-1">
-            <Text mainUiAction>Model Name</Text>
+            <Text mainUiAction>{t("modelNameHeading")}</Text>
           </div>
-          <Text mainUiAction>Display Name</Text>
-          <Text mainUiAction>Input Type</Text>
-          <Text mainUiAction>Max Tokens</Text>
+          <Text mainUiAction>{t("displayNameHeading")}</Text>
+          <Text mainUiAction>{t("inputTypeHeading")}</Text>
+          <Text mainUiAction>{t("maxTokensHeading")}</Text>
           <div aria-hidden />
 
           {models.map((model, index) => (
@@ -169,7 +175,7 @@ function ModelConfigurationList() {
           ))}
         </div>
       ) : (
-        <EmptyMessageCard title="No models added yet." padding="sm" />
+        <EmptyMessageCard title={t("noModelsAdded")} padding="sm" />
       )}
 
       <Button
@@ -178,22 +184,23 @@ function ModelConfigurationList() {
         onClick={handleAdd}
         type="button"
       >
-        Add Model
+        {t("addModel")}
       </Button>
     </div>
   );
 }
 
 function CustomConfigKeyValue() {
+  const t = useTranslations("modals.llmConfig.custom");
   const formikProps = useFormikContext<{ custom_config_list: KeyValue[] }>();
   return (
     <KeyValueInput
       items={formikProps.values.custom_config_list}
-      keyPlaceholder="e.g. OPENAI_ORGANIZATION"
+      keyPlaceholder={t("envVarKeyPlaceholder")}
       onChange={(items) =>
         formikProps.setFieldValue("custom_config_list", items)
       }
-      addButtonLabel="Add Line"
+      addButtonLabel={t("addLine")}
     />
   );
 }
@@ -201,6 +208,7 @@ function CustomConfigKeyValue() {
 // ─── Provider Name Select ─────────────────────────────────────────────────────
 
 function ProviderNameSelect({ disabled }: { disabled?: boolean }) {
+  const t = useTranslations("modals.llmConfig.custom");
   const { customProviderNames } = useCustomProviderNames();
   const { values, setFieldValue } = useFormikContext<{ provider: string }>();
 
@@ -219,9 +227,9 @@ function ProviderNameSelect({ disabled }: { disabled?: boolean }) {
       value={values.provider}
       onValueChange={(value) => setFieldValue("provider", value)}
       options={options}
-      placeholder="Provider ID string as shown on LiteLLM"
+      placeholder={t("providerPlaceholder")}
       disabled={disabled}
-      createPrefix="Use"
+      createPrefix={t("createPrefix")}
       dropdownMaxHeight="60vh"
     />
   );
@@ -248,6 +256,7 @@ export default function CustomModal({
 }: LLMProviderFormProps) {
   const tToast = useTranslations("toasts.admin.llm");
   const tValLlm = useTranslations("validation.llm");
+  const t = useTranslations("modals.llmConfig.custom");
   const isOnboarding = variant === "onboarding";
   const { mutate } = useSWRConfig();
 
@@ -315,7 +324,7 @@ export default function CustomModal({
       onClose={onClose}
       initialValues={initialValues}
       validationSchema={validationSchema}
-      description="Connect models from other LiteLLM-compatible providers."
+      description={t("modalDescription")}
       onSubmit={async (values, { setSubmitting, setStatus }) => {
         setSubmitting(true);
 
@@ -389,27 +398,22 @@ export default function CustomModal({
       <InputPadder>
         <InputVertical
           withLabel="provider"
-          title="Provider"
-          subDescription={markdown(
-            "See full list of supported LLM providers at [LiteLLM](https://docs.litellm.ai/docs/providers)."
-          )}
+          title={t("providerTitle")}
+          subDescription={markdown(t("providerSubDescription"))}
         >
           <ProviderNameSelect disabled={!!existingLlmProvider} />
         </InputVertical>
       </InputPadder>
 
-      <APIKeyField
-        optional
-        subDescription="Paste your API key if your model provider requires authentication."
-      />
+      <APIKeyField optional subDescription={t("apiKeySubDescription")} />
 
       <APIBaseField optional />
 
       <InputPadder>
         <InputVertical
           withLabel="api_version"
-          title="API Version"
-          suffix="optional"
+          title={t("apiVersionTitle")}
+          suffix={t("optionalSuffix")}
         >
           <InputTypeInField name="api_version" />
         </InputVertical>
@@ -418,10 +422,8 @@ export default function CustomModal({
       <InputPadder>
         <Section gap={0.75}>
           <Content
-            title="Environment Variables"
-            description={markdown(
-              "Add extra properties as needed by the model provider. These are passed to LiteLLM's `completion()` call as [environment variables](https://docs.litellm.ai/docs/set_keys#environment-variables). See [documentation](https://docs.onyx.app/admins/ai_models/custom_inference_provider) for more instructions."
-            )}
+            title={t("envVarsTitle")}
+            description={markdown(t("envVarsDescription"))}
             width="full"
             variant="section"
             sizePreset="main-content"
@@ -442,8 +444,8 @@ export default function CustomModal({
       <Section gap={0.5}>
         <InputPadder>
           <Content
-            title="Models"
-            description="List LLM models you wish to use and their configurations for this provider. See full list of models at LiteLLM."
+            title={t("modelsTitle")}
+            description={t("modelsDescription")}
             variant="section"
             sizePreset="main-content"
             width="full"

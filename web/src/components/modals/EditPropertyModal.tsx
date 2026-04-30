@@ -1,4 +1,5 @@
 import { Formik, Form } from "formik";
+import { useTranslations } from "next-intl";
 import Modal from "@/refresh-components/Modal";
 import { Button } from "@opal/components";
 import { TextFormField } from "@/components/Field";
@@ -22,12 +23,13 @@ export default function EditPropertyModal({
   onClose,
   onSubmit,
 }: EditPropertyModalProps) {
+  const t = useTranslations("components.editPropertyModal");
   return (
     <Modal open onOpenChange={onClose}>
       <Modal.Content width="sm">
         <Modal.Header
           icon={SvgEdit}
-          title={`Edit ${propertyTitle}`}
+          title={t("title", { propertyTitle })}
           onClose={onClose}
         />
         <Modal.Body>
@@ -48,7 +50,7 @@ export default function EditPropertyModal({
                   vertical
                   label={propertyDetails || ""}
                   name="propertyValue"
-                  placeholder="Property value"
+                  placeholder={t("placeholder")}
                 />
 
                 <Modal.Footer>
@@ -60,7 +62,7 @@ export default function EditPropertyModal({
                     }
                     type="submit"
                   >
-                    {isSubmitting ? "Updating..." : "Update property"}
+                    {isSubmitting ? t("updating") : t("submit")}
                   </Button>
                 </Modal.Footer>
               </Form>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Route } from "next";
+import { useTranslations } from "next-intl";
 import { SvgCheck, SvgAlertTriangle } from "@opal/icons";
 import CardSection from "@/components/admin/CardSection";
 import { Button } from "@opal/components";
@@ -33,14 +34,15 @@ interface OAuthCallbackPageProps {
 }
 
 export default function OAuthCallbackPage({ config }: OAuthCallbackPageProps) {
+  const t = useTranslations("components.oauthCallback");
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [statusMessage, setStatusMessage] = useState(
-    config.processingMessage || "Processing..."
+    config.processingMessage || t("processing")
   );
   const [statusDetails, setStatusDetails] = useState(
-    config.processingDetails || "Please wait while we complete the setup."
+    config.processingDetails || t("processingDetails")
   );
   const [isError, setIsError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -91,11 +93,8 @@ export default function OAuthCallbackPage({ config }: OAuthCallbackPageProps) {
     const handleOAuthCallback = async () => {
       // Handle OAuth error from provider
       if (error) {
-        setStatusMessage(config.errorMessage || "Authorization Failed");
-        setStatusDetails(
-          errorDescription ||
-            "The authorization was cancelled or failed. Please try again."
-        );
+        setStatusMessage(config.errorMessage || t("authorizationFailed"));
+        setStatusDetails(errorDescription || t("authorizationFailedDetails"));
         setIsError(true);
         setIsLoading(false);
         return;
@@ -103,10 +102,8 @@ export default function OAuthCallbackPage({ config }: OAuthCallbackPageProps) {
 
       // Validate required parameters
       if (!code || !state) {
-        setStatusMessage("Invalid Request");
-        setStatusDetails(
-          "The authorization request was incomplete. Please try again."
-        );
+        setStatusMessage(t("invalidRequest"));
+        setStatusDetails(t("invalidRequestDetails"));
         setIsError(true);
         setIsLoading(false);
         return;
@@ -128,7 +125,7 @@ export default function OAuthCallbackPage({ config }: OAuthCallbackPageProps) {
         });
 
         if (!response.ok) {
-          let errorMessage = "Failed to complete authorization";
+          let errorMessage = t("completeAuthorizationFailed");
           try {
             const errorData = await response.json();
             if (errorData.detail && config.errorMessageMap) {
@@ -175,16 +172,16 @@ export default function OAuthCallbackPage({ config }: OAuthCallbackPageProps) {
         const redirectUrl = new URL(sanitizedPath, window.location.origin);
         redirectUrl.searchParams.set("message", "oauth_connected");
         setRedirectPath(redirectUrl.pathname + redirectUrl.search);
-        setStatusMessage(config.successMessage || "Success!");
+        setStatusMessage(config.successMessage || t("success"));
 
+        const fallbackServiceName =
+          result.serviceName || t("fallbackServiceName");
         const successDetails = config.successDetailsTemplate
           ? config.successDetailsTemplate.replace(
               "{serviceName}",
-              result.serviceName || "service"
+              fallbackServiceName
             )
-          : `Your ${
-              result.serviceName || "service"
-            } authorization completed successfully.`;
+          : t("successDetails", { serviceName: fallbackServiceName });
 
         setStatusDetails(successDetails);
         setIsSuccess(true);
@@ -193,11 +190,9 @@ export default function OAuthCallbackPage({ config }: OAuthCallbackPageProps) {
       } catch (error) {
         if (controller.signal.aborted) return;
         console.error("OAuth callback error:", error);
-        setStatusMessage(config.errorMessage || "Something Went Wrong");
+        setStatusMessage(config.errorMessage || t("somethingWentWrong"));
         setStatusDetails(
-          error instanceof Error
-            ? error.message
-            : "An error occurred during the OAuth process. Please try again."
+          error instanceof Error ? error.message : t("oauthErrorDetails")
         );
         setIsError(true);
         setIsLoading(false);
@@ -257,8 +252,7 @@ export default function OAuthCallbackPage({ config }: OAuthCallbackPageProps) {
             {isSuccess && secondsLeft !== null && (
               <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
                 <p className="text-green-800 dark:text-green-200 text-sm">
-                  Redirecting in {secondsLeft}{" "}
-                  {secondsLeft === 1 ? "second" : "seconds"}...
+                  {t("redirectingIn", { seconds: secondsLeft })}
                 </p>
               </div>
             )}
@@ -274,14 +268,14 @@ export default function OAuthCallbackPage({ config }: OAuthCallbackPageProps) {
                     }}
                     width="full"
                   >
-                    {config.backButtonText || "Back to Chat"}
+                    {config.backButtonText || t("backToChat")}
                   </Button>
                 </div>
               )}
 
               {isLoading && (
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  This may take a few moments...
+                  {t("loadingHint")}
                 </p>
               )}
             </div>

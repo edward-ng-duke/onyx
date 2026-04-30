@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { parseLlmDescriptor, structureValue } from "@/lib/llmConfig/utils";
 import { DefaultModel, LLMProviderDescriptor } from "@/interfaces/llm";
 import { getModelIcon } from "@/lib/llmConfig";
@@ -40,6 +41,7 @@ export default function LLMSelector({
   requiresImageGeneration,
   excludePublicProviders = false,
 }: LLMSelectorProps) {
+  const t = useTranslations("components.llmSelector");
   const currentDescriptor = useMemo(
     () => (currentLlm ? parseLlmDescriptor(currentLlm) : null),
     [currentLlm]
@@ -152,7 +154,7 @@ export default function LLMSelector({
   const defaultModelDisplayName = defaultModelConfig
     ? defaultModelConfig.display_name || defaultModelConfig.name
     : defaultModelName || null;
-  const defaultLabel = userSettings ? "System Default" : "User Default";
+  const defaultLabel = userSettings ? t("systemDefault") : t("userDefault");
 
   // Determine if we should show grouped view (only if we have multiple vendors)
   const showGrouped = groupedOptions.length > 1;

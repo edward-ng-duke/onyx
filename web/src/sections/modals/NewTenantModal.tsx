@@ -28,6 +28,7 @@ export default function NewTenantModal({
   onClose,
 }: NewTenantModalProps) {
   const tToast = useTranslations("toasts.team");
+  const t = useTranslations("modals.newTenant");
   const router = useRouter();
   const { user } = useUser();
   const [isLoading, setIsLoading] = useState(false);
@@ -51,9 +52,7 @@ export default function NewTenantModal({
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(
-            errorData.detail ||
-              errorData.message ||
-              "Failed to accept invitation"
+            errorData.detail || errorData.message || t("acceptFailed")
           );
         }
 
@@ -69,9 +68,7 @@ export default function NewTenantModal({
       onClose?.();
     } catch (error) {
       const message =
-        error instanceof Error
-          ? error.message
-          : "Failed to join the team. Please try again.";
+        error instanceof Error ? error.message : t("joinFailed");
 
       setError(message);
       toast.error(message);
@@ -99,9 +96,7 @@ export default function NewTenantModal({
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.detail ||
-            errorData.message ||
-            "Failed to decline invitation"
+          errorData.detail || errorData.message || t("declineFailed")
         );
       }
 
@@ -109,9 +104,7 @@ export default function NewTenantModal({
       onClose?.();
     } catch (error) {
       const message =
-        error instanceof Error
-          ? error.message
-          : "Failed to decline the invitation. Please try again.";
+        error instanceof Error ? error.message : t("declineFailedRetry");
 
       setError(message);
       toast.error(message);
@@ -121,16 +114,18 @@ export default function NewTenantModal({
   }
 
   const title = isInvite
-    ? `You have been invited to join ${
-        tenantInfo.number_of_users
-      } other teammate${
-        tenantInfo.number_of_users === 1 ? "" : "s"
-      } of ${APP_DOMAIN}.`
-    : `Your request to join ${tenantInfo.number_of_users} other users of ${APP_DOMAIN} has been approved.`;
+    ? t("inviteTitle", {
+        count: tenantInfo.number_of_users,
+        domain: APP_DOMAIN,
+      })
+    : t("approvedTitle", {
+        count: tenantInfo.number_of_users,
+        domain: APP_DOMAIN,
+      });
 
   const description = isInvite
-    ? `By accepting this invitation, you will join the existing ${APP_DOMAIN} team and lose access to your current team. Note: you will lose access to your current agents, prompts, chats, and connected sources.`
-    : `To finish joining your team, please reauthenticate with ${user?.email}.`;
+    ? t("inviteDescription", { domain: APP_DOMAIN })
+    : t("approvedDescription", { email: user?.email ?? "" });
 
   return (
     <Modal open>
@@ -152,7 +147,7 @@ export default function NewTenantModal({
                   onClick={handleRejectInvite}
                   icon={SvgX}
                 >
-                  Decline
+                  {t("decline")}
                 </Button>
               ) : undefined
             }
@@ -164,11 +159,11 @@ export default function NewTenantModal({
               >
                 {isLoading
                   ? isInvite
-                    ? "Accepting..."
-                    : "Joining..."
+                    ? t("accepting")
+                    : t("joining")
                   : isInvite
-                    ? "Accept Invitation"
-                    : "Reauthenticate"}
+                    ? t("acceptInvitation")
+                    : t("reauthenticate")}
               </Button>
             }
           />

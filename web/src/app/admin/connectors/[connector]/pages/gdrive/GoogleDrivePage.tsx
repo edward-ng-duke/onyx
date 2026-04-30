@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { ErrorCallout } from "@/components/ErrorCallout";
 import { LoadingAnimation } from "@/components/Loading";
 import { ValidSources } from "@/lib/types";
@@ -25,6 +26,7 @@ import {
 } from "@/lib/googleConnector";
 
 const GDriveMain = () => {
+  const t = useTranslations("admin.connectors.googleCredential");
   const { isAdmin, user } = useUser();
 
   // Get app credential and service account key
@@ -152,7 +154,7 @@ const GDriveMain = () => {
 
   return (
     <>
-      <Title className="mb-2 mt-6">Step 1: Provide your Credentials</Title>
+      <Title className="mb-2 mt-6">{t("stepOneTitle")}</Title>
       <DriveJsonUploadSection
         appCredentialData={appCredentialData}
         serviceAccountCredentialData={serviceAccountKeyData}
@@ -168,7 +170,7 @@ const GDriveMain = () => {
         (appCredentialData?.client_id ||
           serviceAccountKeyData?.service_account_email) && (
           <>
-            <Title className="mb-2 mt-6">Step 2: Authenticate with Onyx</Title>
+            <Title className="mb-2 mt-6">{t("stepTwoTitle")}</Title>
             <DriveAuthSection
               refreshCredentials={handleRefresh}
               googleDrivePublicUploadedCredential={

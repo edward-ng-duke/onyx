@@ -2,6 +2,7 @@
 
 import AdminSidebar from "@/sections/sidebar/AdminSidebar";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useSettingsContext } from "@/providers/SettingsProvider";
 import { ApplicationStatus } from "@/interfaces/settings";
 import { Button } from "@opal/components";
@@ -51,6 +52,7 @@ const SETTINGS_LAYOUT_PREFIXES = [
 ];
 
 export function ClientLayout({ children, enableCloud }: ClientLayoutProps) {
+  const t = useTranslations("admin.clientLayout");
   const { folded: sidebarFolded, setFolded: setSidebarFolded } =
     useSidebarState();
   const { isMobile } = useScreenSize();
@@ -73,11 +75,11 @@ export function ClientLayout({ children, enableCloud }: ClientLayoutProps) {
       {settings.settings.application_status ===
         ApplicationStatus.PAYMENT_REMINDER && (
         <div className="fixed top-2 left-1/2 transform -translate-x-1/2 bg-amber-400 dark:bg-amber-500 text-gray-900 dark:text-gray-100 p-4 rounded-lg shadow-lg z-50 max-w-md text-center">
-          <strong className="font-bold">Warning:</strong> Your trial ends in
-          less than 5 days and no payment method has been added.
+          <strong className="font-bold">{t("warningLabel")}</strong>{" "}
+          {t("trialEndingMessage")}
           <div className="mt-2">
             <Button width="full" href="/admin/billing">
-              Update Billing Information
+              {t("updateBilling")}
             </Button>
           </div>
         </div>

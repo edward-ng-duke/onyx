@@ -1,4 +1,5 @@
 import React, { JSX } from "react";
+import { useTranslations } from "next-intl";
 import { DocumentSetSummary, Tag, ValidSources } from "@/lib/types";
 import { SourceMetadata } from "@/lib/search/interfaces";
 import { FiBook, FiBookmark, FiMap, FiX } from "react-icons/fi";
@@ -59,6 +60,7 @@ export function HorizontalFilters({
   availableDocumentSets,
   existingSources,
 }: SourceSelectorProps) {
+  const t = useTranslations("components.sourceSelector");
   const handleSourceSelect = (source: SourceMetadata) => {
     setSelectedSources((prev: SourceMetadata[]) => {
       const prevSourceNames = prev.map((source) => source.internalName);
@@ -122,7 +124,7 @@ export function HorizontalFilters({
               <FiMap size={16} />
             </div>
           }
-          defaultDisplay="All Sources"
+          defaultDisplay={t("allSources")}
         />
         {availableDocumentSets.length > 0 && (
           <FilterDropdown
@@ -147,7 +149,7 @@ export function HorizontalFilters({
                 <FiBook size={16} />
               </div>
             }
-            defaultDisplay="All Document Sets"
+            defaultDisplay={t("allDocumentSets")}
           />
         )}
       </div>

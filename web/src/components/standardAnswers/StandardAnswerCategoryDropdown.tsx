@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useTranslations } from "next-intl";
 import { StandardAnswerCategoryResponse } from "./getStandardAnswerCategoriesIfEE";
 import { Label } from "@/components/Field";
 import MultiSelectDropdown from "../MultiSelectDropdown";
@@ -15,6 +16,7 @@ interface StandardAnswerCategoryDropdownFieldProps {
 export const StandardAnswerCategoryDropdownField: FC<
   StandardAnswerCategoryDropdownFieldProps
 > = ({ standardAnswerCategoryResponse, categories, setCategories }) => {
+  const t = useTranslations("admin.standardAnswer.categoryDropdown");
   if (!standardAnswerCategoryResponse.paidEnterpriseFeaturesEnabled) {
     return null;
   }
@@ -22,8 +24,10 @@ export const StandardAnswerCategoryDropdownField: FC<
   if (standardAnswerCategoryResponse.error != null) {
     return (
       <ErrorCallout
-        errorTitle="Something went wrong :("
-        errorMsg={`Failed to fetch standard answer categories - ${standardAnswerCategoryResponse.error.message}`}
+        errorTitle={t("errorTitle")}
+        errorMsg={t("fetchFailed", {
+          error: standardAnswerCategoryResponse.error.message,
+        })}
       />
     );
   }
@@ -35,7 +39,7 @@ export const StandardAnswerCategoryDropdownField: FC<
   return (
     <>
       <div>
-        <Label>Standard Answer Categories</Label>
+        <Label>{t("label")}</Label>
         <div className="w-64">
           <MultiSelectDropdown
             name="standard_answer_categories"

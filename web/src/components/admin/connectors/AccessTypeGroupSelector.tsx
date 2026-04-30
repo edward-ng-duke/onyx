@@ -1,5 +1,6 @@
 import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { FieldArray, ArrayHelpers, ErrorMessage, useField } from "formik";
 import Text from "@/refresh-components/texts/Text";
 import { Button, Divider } from "@opal/components";
@@ -32,6 +33,8 @@ export function AccessTypeGroupSelector({
 }: {
   connector: ConfigurableSources;
 }) {
+  const t = useTranslations("admin.connectors.accessType");
+  const tCommon = useTranslations("common.actions");
   const { data: userGroups, isLoading: userGroupsIsLoading } = useUserGroups();
   const { isAdmin, user, isCurator } = useUser();
   const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
@@ -82,7 +85,7 @@ export function AccessTypeGroupSelector({
   ]);
 
   if (userGroupsIsLoading) {
-    return <div>Loading...</div>;
+    return <div>{tCommon("loading")}</div>;
   }
   if (!isPaidEnterpriseFeaturesEnabled) {
     return null;
@@ -93,8 +96,10 @@ export function AccessTypeGroupSelector({
       <>
         {userGroups && userGroups[0] !== undefined && (
           <div className="mb-1 font-medium text-base">
-            This Connector will be assigned to group <b>{userGroups[0].name}</b>
-            .
+            {t.rich("autoAssignToGroup", {
+              groupName: userGroups[0].name,
+              b: (chunks) => <b>{chunks}</b>,
+            })}
           </div>
         )}
       </>
@@ -110,15 +115,15 @@ export function AccessTypeGroupSelector({
             <Divider />
             <div className="flex flex-col gap-3 pt-4">
               <Text as="p" mainUiAction text05>
-                Assign group access for this Connector
+                {t("assignGroupAccess")}
               </Text>
               {userGroupsIsLoading ? (
                 <div className="animate-pulse bg-background-200 h-8 w-32 rounded" />
               ) : (
                 <Text as="p" mainUiMuted text03>
                   {isAdmin
-                    ? "This Connector will be visible/accessible by the groups selected below"
-                    : "Curators must select one or more groups to give access to this Connector"}
+                    ? t("adminGroupHelp")
+                    : t("curatorGroupHelp")}
                 </Text>
               )}
             </div>

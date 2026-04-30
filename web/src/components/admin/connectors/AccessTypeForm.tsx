@@ -9,6 +9,7 @@ import { useField } from "formik";
 import { AutoSyncOptions } from "./AutoSyncOptions";
 import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 import { useEffect, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { Credential } from "@/lib/connectors/credentials";
 import { credentialTemplates } from "@/lib/connectors/credentials";
 
@@ -25,6 +26,7 @@ export function AccessTypeForm({
   connector: ConfigurableSources;
   currentCredential?: Credential<any> | null;
 }) {
+  const t = useTranslations("admin.connectors.accessType");
   const [access_type, meta, access_type_helpers] =
     useField<AccessType>("access_type");
 
@@ -67,18 +69,16 @@ export function AccessTypeForm({
 
   const options = [
     {
-      name: "Private",
+      name: t("privateName"),
       value: "private",
-      description:
-        "Only users who have explicitly been given access to this connector (through the User Groups page) can access the documents pulled in by this connector",
+      description: t("privateDescription"),
       disabled: false,
       disabledReason: "",
     },
     {
-      name: "Public",
+      name: t("publicName"),
       value: "public",
-      description:
-        "Everyone with an account on Onyx can access the documents pulled in by this connector",
+      description: t("publicDescription"),
       disabled: false,
       disabledReason: "",
     },
@@ -86,13 +86,11 @@ export function AccessTypeForm({
 
   if (isAutoSyncSupported && isPaidEnterpriseEnabled) {
     options.push({
-      name: "Auto Sync Permissions",
+      name: t("syncName"),
       value: "sync",
-      description:
-        "We will automatically sync permissions from the source. A document will be searchable in Onyx if and only if the user performing the search has permission to access the document in the source.",
+      description: t("syncDescription"),
       disabled: isSyncDisabledByAuth,
-      disabledReason:
-        "Current credential auth method doesn't support Auto Sync Permissions. Please change the credential auth method to a supported one.",
+      disabledReason: t("syncDisabledReason"),
     });
   }
 
@@ -101,10 +99,8 @@ export function AccessTypeForm({
       {isPaidEnterpriseEnabled && (
         <>
           <div>
-            <label className="text-text-950 font-medium">Document Access</label>
-            <p className="text-sm text-text-500">
-              Control who has access to the documents indexed by this connector.
-            </p>
+            <label className="text-text-950 font-medium">{t("title")}</label>
+            <p className="text-sm text-text-500">{t("description")}</p>
           </div>
           <DefaultDropdown
             options={options}

@@ -1,5 +1,6 @@
 import * as Yup from "yup";
 
+import { useTranslations } from "next-intl";
 import { Button } from "@opal/components";
 import { ValidSources } from "@/lib/types";
 import { TextFormField } from "@/components/Field";
@@ -21,6 +22,7 @@ export function CreateStdOAuthCredential({
 
   additionalFields: OAuthAdditionalKwargDescription[];
 }) {
+  const tCommon = useTranslations("common.actions");
   const handleSubmit = async (
     values: formType,
     formikHelpers: FormikHelpers<formType>
@@ -75,7 +77,7 @@ export function CreateStdOAuthCredential({
             ))}
 
             <div className="flex w-full">
-              <Button type="submit">Create</Button>
+              <Button type="submit">{tCommon("create")}</Button>
             </div>
           </CardSection>
         </Form>

@@ -28,6 +28,8 @@ export function FailedReIndexAttempts({
   failedIndexingStatuses: FailedConnectorIndexingStatus[];
 }) {
   const tToast = useTranslations("toasts.admin.credentials");
+  const t = useTranslations("admin.indexing.failedReindex");
+  const tCommon = useTranslations("common.actions");
   const numToDisplay = 10;
   const [page, setPage] = useState(1);
   const [pendingConnectorDeletion, setPendingConnectorDeletion] = useState<{
@@ -50,7 +52,7 @@ export function FailedReIndexAttempts({
           danger
           entityType="connector"
           entityName={pendingConnectorDeletion.name}
-          additionalDetails="Deleting this connector schedules a deletion job that removes its indexed documents and deletes it for every user."
+          additionalDetails={t("deleteConfirmDetails")}
           onClose={() => setPendingConnectorDeletion(null)}
           onSubmit={async () => {
             try {
@@ -72,17 +74,12 @@ export function FailedReIndexAttempts({
 
       <div className="text-status-error-05">
         <Text as="p" font="main-ui-action">
-          Failed Re-indexing Attempts
+          {t("title")}
         </Text>
       </div>
       <Spacer rem={0.5} />
       <div className="text-status-error-05">
-        <Text as="p">
-          The table below shows only the failed re-indexing attempts for
-          existing connectors. These failures require immediate attention. Once
-          all connectors have been re-indexed successfully, the new model will
-          be used for all search queries.
-        </Text>
+        <Text as="p">{t("description")}</Text>
       </div>
       <Spacer rem={1} />
 
@@ -90,13 +87,19 @@ export function FailedReIndexAttempts({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-1/8 sm:w-1/6">Connector Name</TableHead>
-              <TableHead className="w-1/8 sm:w-1/6">Status</TableHead>
-              <TableHead className="w-4/8 sm:w-2/6">Error Message</TableHead>
-              <TableHead className="w-1/8 sm:w-1/6">Visit Connector</TableHead>
+              <TableHead className="w-1/8 sm:w-1/6">
+                {t("connectorName")}
+              </TableHead>
+              <TableHead className="w-1/8 sm:w-1/6">{t("status")}</TableHead>
+              <TableHead className="w-4/8 sm:w-2/6">
+                {t("errorMessage")}
+              </TableHead>
+              <TableHead className="w-1/8 sm:w-1/6">
+                {t("visitConnector")}
+              </TableHead>
               {anyDeletable && (
                 <TableHead className="w-1/8 sm:w-2/6">
-                  Delete Connector
+                  {t("deleteConnector")}
                 </TableHead>
               )}
             </TableRow>
@@ -133,7 +136,7 @@ export function FailedReIndexAttempts({
                         className="ctext-link cursor-pointer flex"
                       >
                         <FiLink className="my-auto mr-1" />
-                        Visit Connector
+                        {t("visitConnector")}
                       </Link>
                     </TableCell>
                     <TableCell>
@@ -146,7 +149,9 @@ export function FailedReIndexAttempts({
                               connectorId: reindexingProgress.connector_id,
                               credentialId: reindexingProgress.credential_id,
                               ccPairId: reindexingProgress.cc_pair_id,
-                              name: reindexingProgress.name ?? "this connector",
+                              name:
+                                reindexingProgress.name ??
+                                t("connectorFallback"),
                             });
                             return;
                           }
@@ -169,7 +174,7 @@ export function FailedReIndexAttempts({
                         }}
                         icon={SvgTrash}
                       >
-                        Delete
+                        {tCommon("delete")}
                       </Button>
                     </TableCell>
                   </TableRow>

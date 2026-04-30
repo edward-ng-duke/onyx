@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { SEARCH_TOOL_ID } from "@/app/app/components/tools/constants";
 import { ToolSnapshot } from "@/lib/tools/interfaces";
 import { getIconForAction } from "@/app/app/services/actionUtils";
@@ -51,7 +52,7 @@ export default function ActionLineItem({
   tooltip,
   showAdminConfigure = false,
   adminConfigureHref,
-  adminConfigureTooltip = "Configure",
+  adminConfigureTooltip,
   onToggle,
   onForceToggle,
   onSourceManagementOpen,
@@ -61,6 +62,7 @@ export default function ActionLineItem({
   onClose,
   sourceCounts,
 }: ActionItemProps) {
+  const t = useTranslations("components.actionLineItem");
   const router = useRouter();
   const { currentProjectId } = useProjectsContext();
 
@@ -69,7 +71,7 @@ export default function ActionLineItem({
 
   let label = tool ? tool.display_name || tool.name : providedLabel!;
   if (!!currentProjectId && tool?.in_code_tool_id === SEARCH_TOOL_ID) {
-    label = "Project Search";
+    label = t("projectSearch");
   }
 
   const isSearchToolWithNoConnectors =
@@ -135,13 +137,13 @@ export default function ActionLineItem({
                 icon={SvgSlash}
                 onClick={noProp(onToggle)}
                 internal
-                aria-label={disabled ? "Enable" : "Disable"}
+                aria-label={disabled ? t("enable") : t("disable")}
                 className={cn(
                   !disabled && "invisible group-hover/LineItem:visible",
                   // Hide when showing source count (it has its own hover behavior)
                   shouldShowSourceCount && "!hidden"
                 )}
-                tooltip={disabled ? "Enable" : "Disable"}
+                tooltip={disabled ? t("enable") : t("disable")}
               />
             )}
 
@@ -154,7 +156,7 @@ export default function ActionLineItem({
                 })}
                 prominence="tertiary"
                 size="sm"
-                tooltip={adminConfigureTooltip}
+                tooltip={adminConfigureTooltip ?? t("configure")}
               />
             )}
 
@@ -174,7 +176,7 @@ export default function ActionLineItem({
                     onClick={noProp(onToggle)}
                     prominence="tertiary"
                     size="sm"
-                    tooltip={disabled ? "Enable" : "Disable"}
+                    tooltip={disabled ? t("enable") : t("disable")}
                   />
                 </span>
               </span>
@@ -184,8 +186,8 @@ export default function ActionLineItem({
               <Button
                 aria-label={
                   isSearchToolWithNoConnectors
-                    ? "Add Connectors"
-                    : "Configure Connectors"
+                    ? t("addConnectors")
+                    : t("configureConnectors")
                 }
                 icon={
                   isSearchToolWithNoConnectors ? SvgSettings : SvgChevronRight
@@ -199,8 +201,8 @@ export default function ActionLineItem({
                 size="sm"
                 tooltip={
                   isSearchToolWithNoConnectors
-                    ? "Add Connectors"
-                    : "Configure Connectors"
+                    ? t("addConnectors")
+                    : t("configureConnectors")
                 }
               />
             )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef } from "react";
+import { useTranslations } from "next-intl";
 import Popover from "@/refresh-components/Popover";
 import { LlmManager } from "@/lib/hooks";
 import { getModelIcon } from "@/lib/llmConfig";
@@ -39,6 +40,7 @@ export default function ModelSelector({
   onRemove,
   onReplace,
 }: ModelSelectorProps) {
+  const t = useTranslations("components.modelSelector");
   const [open, setOpen] = useState(false);
   // null = add mode (via + button), number = replace mode (via pill click)
   const [replacingIndex, setReplacingIndex] = useState<number | null>(null);
@@ -138,7 +140,7 @@ export default function ModelSelector({
             prominence="tertiary"
             icon={SvgPlusCircle}
             size="sm"
-            tooltip="Add Model"
+            tooltip={t("addModel")}
             onClick={(e: React.MouseEvent) => {
               anchorRef.current = e.currentTarget as HTMLElement;
               setReplacingIndex(null);

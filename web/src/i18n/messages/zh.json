@@ -584,6 +584,54 @@
       "shared": {
         "optional": "（可选）"
       },
+      "googleCredential": {
+        "stepOneTitle": "第 1 步：提供你的凭据",
+        "stepTwoTitle": "第 2 步：在 Onyx 中完成认证",
+        "unknownCredentialType": "未知凭据类型，应为 'OAuth Web 应用' 或 '服务账号' 之一",
+        "uploadingFile": "正在上传 {name}…",
+        "file": "文件",
+        "dropJsonHere": "把 JSON 文件拖放到这里",
+        "selectOrDragJson": "选择或拖入 JSON 凭据文件…",
+        "viewSetupInstructions": "查看详细设置说明",
+        "deleteCredentials": "删除凭据",
+        "revokeAccess": "撤销访问",
+        "completeStepOneFirst": "请先在第 1 步上传 OAuth 凭据或 Service Account 密钥，然后再进行认证。",
+        "primaryAdminLabel": "主管理员邮箱：",
+        "primaryAdminSubtext": "请输入想要索引的 Gmail 账号所属 Google 组织的管理员/拥有者邮箱。",
+        "primaryAdminSubtextDrive": "请输入想要索引的 Google Drive 所属 Google 组织的管理员/拥有者邮箱。",
+        "creating": "正在创建…",
+        "createCredential": "创建凭据",
+        "gmailCuratorRestricted": "Curator 无法配置 Gmail 凭据。如需添加 Gmail Connector，请联系管理员。",
+        "gmailUploadIntro": "要连接 Gmail，请先创建凭据（OAuth 应用或 Service Account），下载 JSON 文件，然后在下方上传。",
+        "gmailAuthCompleteTitle": "认证完成",
+        "gmailAuthCompleteBody": "你的 Gmail 凭据已成功上传并完成认证。",
+        "gmailAuthHeader": "Gmail 认证",
+        "gmailOauthNextStep": "接下来需要通过 OAuth 认证 Gmail。这将授予我们对你 Gmail 账户内邮件的只读访问权限。",
+        "authenticating": "正在认证…",
+        "authenticateWithGmail": "使用 Gmail 认证",
+        "driveCuratorRestricted": "Curator 无法配置 Google Drive 凭据。如需添加 Google Drive Connector，请联系管理员。",
+        "driveUploadIntro": "要连接 Google Drive，请先创建凭据（OAuth 应用或 Service Account），下载 JSON 文件，然后在下方上传。",
+        "driveAuthCompleteTitle": "认证完成",
+        "driveAuthCompleteBody": "你的 Google Drive 凭据已成功上传并完成认证。",
+        "driveAuthHeader": "Google Drive 认证",
+        "driveOauthNextStep": "接下来需要通过 OAuth 认证 Google Drive。这将授予我们对你 Google Drive 内文档的只读访问权限。",
+        "authenticateWithDrive": "使用 Google Drive 认证"
+      },
+      "accessType": {
+        "title": "文档访问权限",
+        "description": "控制谁可以访问该 Connector 索引的文档。",
+        "privateName": "私有",
+        "privateDescription": "只有通过“用户组”页面被显式授权的用户，才能访问该 Connector 拉取的文档。",
+        "publicName": "公开",
+        "publicDescription": "任何拥有 Onyx 账号的用户都可以访问该 Connector 拉取的文档。",
+        "syncName": "自动同步权限",
+        "syncDescription": "我们会自动从源端同步权限。当且仅当搜索用户在源端具备访问该文档的权限时，文档才能在 Onyx 中被搜索到。",
+        "syncDisabledReason": "当前凭据的认证方式不支持自动同步权限。请将凭据切换为受支持的认证方式。",
+        "autoAssignToGroup": "该 Connector 将被分配给组 <b>{groupName}</b>。",
+        "assignGroupAccess": "为该 Connector 分配组访问权限",
+        "adminGroupHelp": "下面所选的组将能够访问该 Connector。",
+        "curatorGroupHelp": "Curator 必须选择至少一个组来授予该 Connector 的访问权限。"
+      },
       "list": {
         "searchPlaceholder": "搜索 Connector",
         "popular": "热门",
@@ -717,6 +765,43 @@
       }
     },
     "indexing": {
+      "reindexProgress": {
+        "connectorName": "Connector 名称",
+        "status": "状态",
+        "docsReindexed": "已重新索引文档数"
+      },
+      "customModelForm": {
+        "modelNameRequired": "请输入嵌入模型的名称",
+        "modelDimRequired": "请输入模型生成嵌入向量的维度",
+        "nameLabel": "名称：",
+        "nameSubtext": "模型在 Hugging Face 上的名称",
+        "namePlaceholder": "如 'nomic-ai/nomic-embed-text-v1'",
+        "dimLabel": "模型维度：",
+        "dimSubtext": "模型生成的嵌入向量的维度",
+        "dimPlaceholder": "如 '768'",
+        "descriptionLabel": "描述：",
+        "descriptionSubtext": "你的模型描述",
+        "queryPrefixLabel": "[可选] 查询前缀：",
+        "queryPrefixSubtext": "模型作者要求在<i>查询</i>传入模型前添加的前缀。很多模型不需要前缀，留空即可。",
+        "queryPrefixPlaceholder": "如 'query: '",
+        "passagePrefixLabel": "[可选] 段落前缀：",
+        "passagePrefixSubtext": "模型作者要求在<i>段落</i>传入模型前添加的前缀。很多模型不需要前缀，留空即可。",
+        "passagePrefixPlaceholder": "如 'passage: '",
+        "normalizeLabel": "归一化嵌入向量",
+        "normalizeSubtext": "是否对模型生成的嵌入向量进行归一化。如果不确定，请保持选中。",
+        "submit": "选择"
+      },
+      "failedReindex": {
+        "title": "重新索引失败的任务",
+        "description": "下表仅显示已有 Connector 中失败的重新索引任务。这些失败需要立即处理。所有 Connector 都重新索引成功后，新模型将用于所有搜索查询。",
+        "connectorName": "Connector 名称",
+        "status": "状态",
+        "errorMessage": "错误信息",
+        "visitConnector": "查看 Connector",
+        "deleteConnector": "删除 Connector",
+        "deleteConfirmDetails": "删除该 Connector 会启动一个删除任务，移除其已索引的文档，并为所有用户删除该 Connector。",
+        "connectorFallback": "该 Connector"
+      },
       "status": {
         "errorLoadingIndexingStatus": "加载索引状态失败。",
         "noConnectorsBody": "看起来你还没有配置任何 Connector。前往 [新增 Connector](/admin/add-connector) 页面开始配置！",
@@ -768,6 +853,11 @@
       }
     },
     "standardAnswer": {
+      "categoryDropdown": {
+        "errorTitle": "出错了 :(",
+        "fetchFailed": "加载标准回复分类失败 - {error}",
+        "label": "标准回复分类"
+      },
       "newTitle": "新建标准回复",
       "editTitle": "编辑标准回复",
       "headerDescription": "管理预设问题的标准回复。\n注意：目前只有从 Slack 发起的问题才能命中标准回复。",
@@ -1259,6 +1349,11 @@
         "updateSuccess": "自定义分析脚本已更新！",
         "updateFailed": "更新自定义分析脚本失败：“{error}”"
       }
+    },
+    "clientLayout": {
+      "warningLabel": "警告：",
+      "trialEndingMessage": "你的试用将在 5 天内到期，但尚未添加付款方式。",
+      "updateBilling": "更新账单信息"
     }
   },
   "nav": {
@@ -1337,7 +1432,8 @@
       "deleteChatTitle": "删除对话",
       "deleteChatConfirm": "确定要删除这条对话吗？此操作无法撤销。",
       "deleteProjectTitle": "删除项目",
-      "deleteProjectConfirm": "确定要删除这个项目吗？此操作无法撤销。"
+      "deleteProjectConfirm": "确定要删除这个项目吗？此操作无法撤销。",
+      "projectFallback": "项目"
     }
   },
   "chat": {
@@ -2314,6 +2410,93 @@
       "placeholderLike": "您喜欢这次回答的哪些方面？",
       "placeholderDislike": "您对这次回答有哪些不满意？",
       "submitting": "提交中…"
+    },
+    "newTeam": {
+      "joinRequestSent": "加入请求已发送",
+      "foundExistingTeam": "发现 {domain} 已有团队",
+      "loadingTeamInfo": "正在加载团队信息…",
+      "continueWithNewTeam": "继续创建新团队",
+      "requestSentDescription": "你的加入请求已发送。在等待 {domain} 的管理员审批期间，你可以先以独立团队身份体验。",
+      "tryOnyxWhileWaiting": "等待审批期间先试用 Onyx",
+      "joinRequestApproval": "{domain} 的任意管理员都可以审批你的加入请求。",
+      "sendingRequest": "正在发送请求…",
+      "requestToJoin": "申请加入你的团队"
+    },
+    "federatedOAuth": {
+      "title": "连接你的应用",
+      "description": "授权 {applicationName} 在所有已连接的数据中搜索，可以获得更高质量的回答。",
+      "connect": "连接",
+      "skipForNow": "暂时跳过"
+    },
+    "addInstruction": {
+      "title": "设置项目指令",
+      "description": "为该项目下的对话指定期望的行为或语气。",
+      "placeholder": "我的目标是…… 请确保在回答中……",
+      "save": "保存指令"
+    },
+    "moveCustomAgentChat": {
+      "title": "移动自定义 Agent 对话",
+      "confirmMove": "确认移动",
+      "description": "该对话使用了<b>自定义 Agent</b>，将其移入<b>项目</b>不会覆盖该 Agent 的 Prompt 或知识库配置。该操作仅用于整理归类。",
+      "doNotShowAgain": "不再显示此提示"
+    },
+    "memories": {
+      "title": "记忆",
+      "description": "让 Onyx 在对话中引用这些已保存的笔记和记忆。",
+      "memoryPlaceholder": "输入或粘贴一条个人笔记或记忆",
+      "removeLine": "移除该行",
+      "searchPlaceholder": "搜索…",
+      "addLine": "新增一行",
+      "maxReached": "记忆数量已达到上限 {max} 条",
+      "noMatches": "没有匹配的记忆。",
+      "noMemories": "还没有任何记忆。点击“新增一行”开始添加。",
+      "lineSingular": "条",
+      "linePlural": "条"
+    },
+    "newTenant": {
+      "inviteTitle": "你被邀请加入 {domain} 已有 {count} 位成员的团队。",
+      "approvedTitle": "你加入 {domain} 团队（已有 {count} 位成员）的请求已通过。",
+      "inviteDescription": "接受邀请后，你将加入已有的 {domain} 团队，并失去对当前团队的访问权限。注意：你将无法再访问当前的 Agent、Prompt、聊天和已连接的数据源。",
+      "approvedDescription": "请使用 {email} 重新认证以完成加入团队。",
+      "decline": "拒绝",
+      "accepting": "正在接受…",
+      "joining": "正在加入…",
+      "acceptInvitation": "接受邀请",
+      "reauthenticate": "重新认证",
+      "acceptFailed": "接受邀请失败",
+      "declineFailed": "拒绝邀请失败",
+      "joinFailed": "加入团队失败，请重试。",
+      "declineFailedRetry": "拒绝邀请失败，请重试。"
+    },
+    "llmConfig": {
+      "custom": {
+        "modalDescription": "接入其他兼容 LiteLLM 的提供商模型。",
+        "providerTitle": "提供商",
+        "providerPlaceholder": "LiteLLM 中显示的提供商 ID",
+        "providerSubDescription": "在 [LiteLLM](https://docs.litellm.ai/docs/providers) 查看完整的 LLM 提供商列表。",
+        "createPrefix": "使用",
+        "apiKeySubDescription": "如果你的模型提供商需要认证，请粘贴 API 密钥。",
+        "apiVersionTitle": "API 版本",
+        "optionalSuffix": "可选",
+        "envVarsTitle": "环境变量",
+        "envVarsDescription": "按提供商需要新增额外属性。这些属性会作为[环境变量](https://docs.litellm.ai/docs/set_keys#environment-variables)传给 LiteLLM 的 `completion()` 调用。更多说明见[文档](https://docs.onyx.app/admins/ai_models/custom_inference_provider)。",
+        "envVarKeyPlaceholder": "如 OPENAI_ORGANIZATION",
+        "addLine": "新增一行",
+        "modelsTitle": "模型",
+        "modelsDescription": "在此列出你想使用的 LLM 模型及其配置。完整模型列表见 LiteLLM。",
+        "modelNameHeading": "模型名称",
+        "displayNameHeading": "显示名称",
+        "inputTypeHeading": "输入类型",
+        "maxTokensHeading": "最大 Token",
+        "modelNamePlaceholder": "模型名称",
+        "displayNamePlaceholder": "显示名称",
+        "inputTypePlaceholder": "输入类型",
+        "inputTypeTextOnly": "仅文本",
+        "inputTypeTextImage": "文本和图片",
+        "maxTokensDefault": "默认值",
+        "noModelsAdded": "尚未添加模型。",
+        "addModel": "新增模型"
+      }
     }
   },
   "sections": {
@@ -2361,6 +2544,98 @@
   "components": {
     "advancedOptionsToggle": {
       "advancedOptions": "高级选项"
+    },
+    "modelSelector": {
+      "addModel": "新增模型"
+    },
+    "accessRestricted": {
+      "title": "访问受限",
+      "seatLimitMessage": "你的组织已超出授权席位数量。请减少用户数量或升级许可证后才能恢复访问。",
+      "seatLimitMessageWithCounts": "你的组织已超出授权席位数量（{used} 个用户 / {total} 个席位）。请减少用户数量或升级许可证后才能恢复访问。",
+      "subscriptionLapsedMessage": "由于订阅已失效，你对 Onyx 的访问已被暂时停用。",
+      "licenseLapsedMessage": "由于许可证已失效，你对 Onyx 的访问已被暂时停用。",
+      "noLicenseMessage": "使用 Onyx 需要企业许可证。你的数据已受到保护，激活许可证后即可恢复访问。",
+      "resubscriptionError": "打开重新订阅页面失败，请稍后再试。",
+      "adminSeatLimitHelp": "如果你是管理员，可以在<userLink>用户管理</userLink>页面管理用户，或在<billingLink>管理员账单</billingLink>页面升级许可证。",
+      "logOut": "退出登录",
+      "cloudUpdatePayment": "为恢复访问并继续使用 Onyx 的功能，请更新你的付款信息。",
+      "cloudAdminAdvice": "如果你是管理员，点击下方按钮即可管理订阅。其他用户请联系所在组织的管理员处理。",
+      "loading": "加载中…",
+      "resubscribe": "重新订阅",
+      "contactAdminRenew": "若要恢复访问并继续使用 Onyx，请联系系统管理员续期许可证。",
+      "contactAdminEnterprise": "请先联系系统管理员获取企业许可证以开始使用。",
+      "adminRenewBilling": "如果你是管理员，请前往<billingLink>管理员账单</billingLink>页面续期许可证、通过 Stripe 注册，或联系 <supportLink>support@onyx.app</supportLink> 获取账单支持。",
+      "adminActivateBilling": "如果你是管理员，请前往<billingLink>管理员账单</billingLink>页面激活许可证、通过 Stripe 注册，或联系 <supportLink>support@onyx.app</supportLink> 获取账单支持。",
+      "needHelpDiscord": "需要帮助？加入我们的 <discordLink>Discord 社区</discordLink>获取支持。"
+    },
+    "customAgentAvatar": {
+      "agentAvatarAlt": "Agent 头像"
+    },
+    "inputDatePicker": {
+      "selectDate": "选择日期",
+      "today": "今天"
+    },
+    "actionLineItem": {
+      "projectSearch": "项目内搜索",
+      "enable": "启用",
+      "disable": "停用",
+      "configure": "配置",
+      "addConnectors": "添加 Connector",
+      "configureConnectors": "配置 Connector"
+    },
+    "editPropertyModal": {
+      "title": "编辑 {propertyTitle}",
+      "placeholder": "属性值",
+      "submit": "更新属性",
+      "updating": "正在更新…"
+    },
+    "expandableContentWrapper": {
+      "untitled": "未命名",
+      "download": "下载文件",
+      "minimize": "最小化",
+      "fullScreen": "全屏",
+      "hide": "隐藏"
+    },
+    "sourceSelector": {
+      "allSources": "所有来源",
+      "allDocumentSets": "所有文档集"
+    },
+    "waveform": {
+      "mute": "静音",
+      "unmute": "取消静音",
+      "muteMic": "静音麦克风",
+      "unmuteMic": "取消静音麦克风"
+    },
+    "llmSelector": {
+      "systemDefault": "系统默认",
+      "userDefault": "用户默认"
+    },
+    "federatedConnectorSelector": {
+      "searchPlaceholder": "搜索 Federated Connector…",
+      "allSelected": "已选择全部 Federated Connector",
+      "description": "查询时会从所选的 Federated Connector 实时检索文档。",
+      "noMatching": "未找到匹配的 Federated Connector",
+      "noMore": "没有更多 Federated Connector",
+      "removeConnector": "移除 Connector",
+      "entitiesConfigured": "已配置实体",
+      "noneSelected": "尚未选择 Federated Connector。请在上方搜索并选择。"
+    },
+    "oauthCallback": {
+      "processing": "处理中…",
+      "processingDetails": "正在完成配置，请稍候。",
+      "authorizationFailed": "授权失败",
+      "authorizationFailedDetails": "授权已取消或失败，请重试。",
+      "invalidRequest": "无效请求",
+      "invalidRequestDetails": "授权请求不完整，请重试。",
+      "completeAuthorizationFailed": "完成授权失败",
+      "success": "成功！",
+      "successDetails": "你与 {serviceName} 的授权已成功完成。",
+      "fallbackServiceName": "服务",
+      "somethingWentWrong": "出错了",
+      "oauthErrorDetails": "OAuth 过程发生错误，请重试。",
+      "redirectingIn": "{seconds} 秒后将自动跳转……",
+      "backToChat": "返回聊天",
+      "loadingHint": "这可能需要几秒钟……"
     },
     "groupsMultiSelect": {
       "label": "用户组",

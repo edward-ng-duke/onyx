@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@opal/utils";
 import { formatElapsedTime } from "@/lib/dateUtils";
 import { Button } from "@opal/components";
@@ -39,6 +40,7 @@ function Waveform({
   audioLevel = 0,
   onMuteToggle,
 }: WaveformProps) {
+  const t = useTranslations("components.waveform");
   // ─── Recording variant state ───────────────────────────────────────────────
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [barHeights, setBarHeights] = useState<number[]>(
@@ -162,7 +164,7 @@ function Waveform({
               onClick={onMuteToggle}
               prominence="tertiary"
               size="sm"
-              tooltip={isMuted ? "Unmute" : "Mute"}
+              tooltip={isMuted ? t("unmute") : t("mute")}
             />
           </div>
         )}
@@ -196,7 +198,7 @@ function Waveform({
           onClick={onMuteToggle}
           prominence="tertiary"
           size="sm"
-          aria-label={isMuted ? "Unmute microphone" : "Mute microphone"}
+          aria-label={isMuted ? t("unmuteMic") : t("muteMic")}
         />
       )}
     </div>

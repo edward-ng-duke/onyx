@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@opal/utils";
+import { useTranslations } from "next-intl";
 import type { IconProps } from "@opal/types";
 import Text from "@/refresh-components/texts/Text";
 import Image from "next/image";
@@ -98,6 +99,7 @@ export default function CustomAgentAvatar({
 
   size = DEFAULT_AVATAR_SIZE_PX,
 }: CustomAgentAvatarProps) {
+  const t = useTranslations("components.customAgentAvatar");
   if (src) {
     return (
       <div
@@ -105,7 +107,7 @@ export default function CustomAgentAvatar({
         style={{ height: size, width: size }}
       >
         <Image
-          alt={name || "Agent avatar"}
+          alt={name || t("agentAvatarAlt")}
           src={src}
           fill
           className="object-cover object-center"

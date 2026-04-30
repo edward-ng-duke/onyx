@@ -9,6 +9,7 @@ import {
 } from "@/app/app/projects/projectsService";
 import Popover, { PopoverMenu } from "@/refresh-components/Popover";
 import { FiMoreHorizontal } from "react-icons/fi";
+import { useTranslations } from "next-intl";
 import useChatSessions from "@/hooks/useChatSessions";
 import { useCallback, useState, useMemo } from "react";
 import MoveCustomAgentChatModal from "@/components/modals/MoveCustomAgentChatModal";
@@ -51,6 +52,7 @@ export function ChatSessionMorePopup({
   iconSize = 16,
   isVisible = false,
 }: ChatSessionMorePopupProps) {
+  const t = useTranslations("nav.itemMenu");
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { refreshChatSessions, removeSession } = useChatSessions();
@@ -149,7 +151,7 @@ export function ChatSessionMorePopup({
             icon={SvgShare}
             onClick={noProp(() => showShareModal(chatSession))}
           >
-            Share
+            {t("share")}
           </LineItem>
         ),
         <LineItem
@@ -157,7 +159,7 @@ export function ChatSessionMorePopup({
           icon={SvgFolderIn}
           onClick={noProp(() => setShowMoveOptions(true))}
         >
-          Move to Project
+          {t("moveToProject")}
         </LineItem>,
         projectId && (
           <LineItem
@@ -165,9 +167,11 @@ export function ChatSessionMorePopup({
             icon={SvgFolder}
             onClick={noProp(() => handleRemoveChatSessionFromProject())}
           >
-            {`Remove from ${
-              projects.find((p) => p.id === projectId)?.name ?? "Project"
-            }`}
+            {t("removeFromProject", {
+              projectName:
+                projects.find((p) => p.id === projectId)?.name ??
+                t("projectFallback"),
+            })}
           </LineItem>
         ),
         null,
@@ -177,7 +181,7 @@ export function ChatSessionMorePopup({
           onClick={noProp(() => setIsDeleteModalOpen(true))}
           danger
         >
-          Delete
+          {t("delete")}
         </LineItem>,
       ];
     }
@@ -249,17 +253,16 @@ export function ChatSessionMorePopup({
       </div>
       {isDeleteModalOpen && (
         <ConfirmationModalLayout
-          title="Delete Chat"
+          title={t("deleteChatTitle")}
           icon={SvgTrash}
           onClose={() => setIsDeleteModalOpen(false)}
           submit={
             <Button variant="danger" onClick={handleConfirmDelete}>
-              Delete
+              {t("delete")}
             </Button>
           }
         >
-          Are you sure you want to delete this chat? This action cannot be
-          undone.
+          {t("deleteChatConfirm")}
         </ConfirmationModalLayout>
       )}
 

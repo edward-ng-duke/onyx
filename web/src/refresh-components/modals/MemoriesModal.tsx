@@ -47,6 +47,7 @@ function MemoryItem({
   shouldHighlight,
   onHighlighted,
 }: MemoryItemProps) {
+  const t = useTranslations("modals.memories");
   const [isFocused, setIsFocused] = useState(false);
   const [isHighlighting, setIsHighlighting] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -92,7 +93,7 @@ function MemoryItem({
         <Section flexDirection="row" alignItems="start" gap={0.5}>
           <InputTextArea
             ref={textareaRef}
-            placeholder="Type or paste in a personal note or memory"
+            placeholder={t("memoryPlaceholder")}
             value={memory.content}
             onChange={(e) => onUpdate(originalIndex, e.target.value)}
             onFocus={() => setIsFocused(true)}
@@ -122,8 +123,8 @@ function MemoryItem({
             prominence="tertiary"
             icon={SvgMinusCircle}
             onClick={() => void onRemove(originalIndex)}
-            aria-label="Remove Line"
-            tooltip="Remove Line"
+            aria-label={t("removeLine")}
+            tooltip={t("removeLine")}
           />
         </Section>
         <div
@@ -172,6 +173,7 @@ export default function MemoriesModal({
   focusNewLine = false,
 }: MemoriesModalProps) {
   const tToast = useTranslations("toasts.settings");
+  const t = useTranslations("modals.memories");
   const close = useModalClose(onClose);
   const [focusMemoryId, setFocusMemoryId] = useState<number | null>(null);
 
@@ -269,13 +271,13 @@ export default function MemoriesModal({
       <Modal.Content width="sm" height="lg" position="top">
         <Modal.Header
           icon={SvgAddLines}
-          title="Memory"
-          description="Let Onyx reference these stored notes and memories in chats."
+          title={t("title")}
+          description={t("description")}
           onClose={close}
         >
           <Section flexDirection="row" gap={0.5}>
             <InputTypeIn
-              placeholder="Search..."
+              placeholder={t("searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               leftSearchIcon
@@ -289,11 +291,11 @@ export default function MemoriesModal({
               rightIcon={SvgPlusCircle}
               title={
                 !canAddMemory
-                  ? `Maximum of ${MAX_MEMORY_COUNT} memories reached`
+                  ? t("maxReached", { max: MAX_MEMORY_COUNT })
                   : undefined
               }
             >
-              Add Line
+              {t("addLine")}
             </Button>
           </Section>
         </Modal.Header>
@@ -302,9 +304,7 @@ export default function MemoriesModal({
           {filteredMemories.length === 0 ? (
             <Section alignItems="center" padding={2}>
               <Text secondaryBody text03>
-                {searchQuery.trim()
-                  ? "No memories match your search."
-                  : 'No memories yet. Click "Add Line" to get started.'}
+                {searchQuery.trim() ? t("noMatches") : t("noMemories")}
               </Text>
             </Section>
           ) : (
@@ -333,7 +333,7 @@ export default function MemoriesModal({
           )}
           <TextSeparator
             count={totalLineCount}
-            text={totalLineCount === 1 ? "Line" : "Lines"}
+            text={totalLineCount === 1 ? t("lineSingular") : t("linePlural")}
           />
         </Modal.Body>
       </Modal.Content>

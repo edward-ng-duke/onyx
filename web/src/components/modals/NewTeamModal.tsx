@@ -25,6 +25,7 @@ export interface TenantByDomainResponse {
 
 export default function NewTeamModal() {
   const tToast = useTranslations("toasts.team");
+  const t = useTranslations("modals.newTeam");
   const { showNewTeamModal, setShowNewTeamModal } = useModalContext();
   const [existingTenant, setExistingTenant] =
     useState<TenantByDomainResponse | null>(null);
@@ -143,12 +144,12 @@ export default function NewTeamModal() {
             {hasRequestedInvite ? (
               <>
                 <SvgCheckCircle className="mr-2 h-5 w-5 stroke-text-05" />
-                Join Request Sent
+                {t("joinRequestSent")}
               </>
             ) : (
               <>
                 <SvgOrganization className="mr-2 h-5 w-5 stroke-text-04" />
-                We found an existing team for {appDomain}
+                {t("foundExistingTeam", { domain: appDomain ?? "" })}
               </>
             )}
           </Dialog.Title>
@@ -156,7 +157,7 @@ export default function NewTeamModal() {
           {isLoading ? (
             <div className="py-8 text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-border-05 mx-auto mb-4"></div>
-              <p>Loading team information...</p>
+              <p>{t("loadingTeamInfo")}</p>
             </div>
           ) : error ? (
             <div className="space-y-4">
@@ -167,16 +168,14 @@ export default function NewTeamModal() {
                   width="full"
                   rightIcon={SvgArrowRight}
                 >
-                  Continue with new team
+                  {t("continueWithNewTeam")}
                 </Button>
               </div>
             </div>
           ) : hasRequestedInvite ? (
             <div className="space-y-4">
               <p className="text-text-04">
-                Your join request has been sent. You can explore as your own
-                team while waiting for an admin of {appDomain} to approve your
-                request.
+                {t("requestSentDescription", { domain: appDomain ?? "" })}
               </p>
               <div className="flex w-full pt-2">
                 <Button
@@ -184,14 +183,14 @@ export default function NewTeamModal() {
                   width="full"
                   rightIcon={SvgArrowRight}
                 >
-                  Try Onyx while waiting
+                  {t("tryOnyxWhileWaiting")}
                 </Button>
               </div>
             </div>
           ) : (
             <div className="space-y-4">
               <p className="text-text-03 text-sm mb-2">
-                Your join request can be approved by any admin of {appDomain}.
+                {t("joinRequestApproval", { domain: appDomain ?? "" })}
               </p>
               <div className="flex flex-col items-center justify-center gap-4 mt-4">
                 <Button
@@ -200,9 +199,7 @@ export default function NewTeamModal() {
                   width="full"
                   icon={isSubmitting ? SimpleLoader : SvgArrowUp}
                 >
-                  {isSubmitting
-                    ? "Sending request..."
-                    : "Request to join your team"}
+                  {isSubmitting ? t("sendingRequest") : t("requestToJoin")}
                 </Button>
               </div>
               <Button
@@ -211,7 +208,7 @@ export default function NewTeamModal() {
                 icon={SvgPlus}
                 prominence="secondary"
               >
-                Continue with new team
+                {t("continueWithNewTeam")}
               </Button>
             </div>
           )}
