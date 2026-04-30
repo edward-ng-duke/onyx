@@ -1,6 +1,7 @@
 "use client";
 
 import type { IconFunctionComponent } from "@opal/types";
+import { useTranslations } from "next-intl";
 import { Button, SelectCard } from "@opal/components";
 import { Content, ContentAction } from "@opal/layouts";
 import { Section } from "@/layouts/general-layouts";
@@ -83,12 +84,14 @@ export default function ProviderCard({
   onEdit,
   onDisconnect,
   disconnectModalOpen,
-  selectedLabel = "Current Default",
+  selectedLabel,
   "aria-label": ariaLabel,
 }: ProviderCardProps) {
+  const t = useTranslations("admin.providerCard");
   const isDisconnected = status === "disconnected";
   const isConnected = status === "connected";
   const isSelected = status === "selected";
+  const resolvedSelectedLabel = selectedLabel ?? t("currentDefault");
 
   return (
     <Hoverable.Root
@@ -127,7 +130,7 @@ export default function ProviderCard({
                   onConnect();
                 }}
               >
-                Connect
+                {t("connect")}
               </Button>
             ) : (
               <Section alignItems="end" justifyContent="start" gap={0}>
@@ -140,12 +143,12 @@ export default function ProviderCard({
                       onSelect();
                     }}
                   >
-                    Set as Default
+                    {t("setAsDefault")}
                   </Button>
                 ) : isSelected ? (
                   <div className="p-2">
                     <Content
-                      title={selectedLabel}
+                      title={resolvedSelectedLabel}
                       sizePreset="main-ui"
                       variant="section"
                       icon={SvgCheckSquare}
@@ -166,8 +169,8 @@ export default function ProviderCard({
                         >
                           <Button
                             icon={SvgUnplug}
-                            tooltip="Disconnect"
-                            aria-label={`Disconnect ${title}`}
+                            tooltip={t("disconnect")}
+                            aria-label={t("disconnectAria", { name: title })}
                             prominence="tertiary"
                             onClick={(e) => {
                               e.stopPropagation();
@@ -180,8 +183,8 @@ export default function ProviderCard({
                       {onEdit && (
                         <Button
                           icon={SvgSettings}
-                          tooltip="Edit"
-                          aria-label={`Edit ${title}`}
+                          tooltip={t("edit")}
+                          aria-label={t("editAria", { name: title })}
                           prominence="tertiary"
                           onClick={(e) => {
                             e.stopPropagation();

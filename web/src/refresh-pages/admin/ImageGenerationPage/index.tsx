@@ -1,18 +1,22 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import ImageGenerationContent from "@/refresh-pages/admin/ImageGenerationPage/ImageGenerationContent";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
+import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
 
 const route = ADMIN_ROUTES.IMAGE_GENERATION;
 
 export default function ImageGenerationPage() {
+  const t = useTranslations("admin.imageGeneration");
+  const { title: pageTitle } = useAdminRouteI18n(route);
   return (
     <SettingsLayouts.Root>
       <SettingsLayouts.Header
         icon={route.icon}
-        title={route.title}
-        description="Settings for in-chat image generation."
+        title={pageTitle}
+        description={t("headerDescription")}
         divider
       />
       <SettingsLayouts.Body>

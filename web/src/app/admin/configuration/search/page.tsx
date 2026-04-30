@@ -7,6 +7,7 @@ import { Text } from "@opal/components";
 import Title from "@/components/ui/title";
 import { Button } from "@opal/components";
 import useSWR from "swr";
+import { useTranslations } from "next-intl";
 import { SWR_KEYS } from "@/lib/swr-keys";
 import { ModelPreview } from "@/components/embedding/ModelSelector";
 import {
@@ -33,6 +34,7 @@ export interface EmbeddingDetails {
 }
 
 function Main() {
+  const t = useTranslations("admin.searchSettings");
   const settings = useContext(SettingsContext);
   useToastFromQuery({
     "search-settings": {
@@ -80,7 +82,7 @@ function Main() {
     !currentEmeddingModel ||
     futureEmeddingModelError
   ) {
-    return <ErrorCallout errorTitle="Failed to fetch embedding model status" />;
+    return <ErrorCallout errorTitle={t("fetchStatusFailed")} />;
   }
 
   return (
@@ -88,20 +90,21 @@ function Main() {
       {!futureEmbeddingModel ? (
         <>
           {settings?.settings.needs_reindexing && (
-            <p className="max-w-3xl">
-              Your search settings are currently out of date! We recommend
-              updating your search settings and re-indexing.
-            </p>
+            <p className="max-w-3xl">{t("outOfDateNotice")}</p>
           )}
-          <Title className="mb-6 mt-8 !text-2xl">Embedding Model</Title>
+          <Title className="mb-6 mt-8 !text-2xl">
+            {t("embeddingModelTitle")}
+          </Title>
 
           {currentEmeddingModel ? (
             <ModelPreview model={currentEmeddingModel} display showDetails />
           ) : (
-            <Title className="mt-8 mb-4">Choose your Embedding Model</Title>
+            <Title className="mt-8 mb-4">{t("chooseEmbeddingModel")}</Title>
           )}
 
-          <Title className="mb-2 mt-8 !text-2xl">Post-processing</Title>
+          <Title className="mb-2 mt-8 !text-2xl">
+            {t("postProcessingTitle")}
+          </Title>
 
           <CardSection className="!mr-auto mt-8 !w-96 shadow-lg bg-background-tint-00 rounded-16">
             {searchSettings && (
@@ -110,23 +113,23 @@ function Main() {
                   <div className="space-y-4">
                     <div>
                       <Text as="p" font="main-ui-action">
-                        Multipass Indexing
+                        {t("multipassIndexing")}
                       </Text>
                       <Text as="p">
                         {searchSettings.multipass_indexing
-                          ? "Enabled"
-                          : "Disabled"}
+                          ? t("enabled")
+                          : t("disabled")}
                       </Text>
                     </div>
 
                     <div>
                       <Text as="p" font="main-ui-action">
-                        Contextual RAG
+                        {t("contextualRag")}
                       </Text>
                       <Text as="p">
                         {searchSettings.enable_contextual_rag
-                          ? "Enabled"
-                          : "Disabled"}
+                          ? t("enabled")
+                          : t("disabled")}
                       </Text>
                     </div>
                   </div>
@@ -137,7 +140,7 @@ function Main() {
 
           <div className="mt-4">
             <Button variant="action" href="/admin/embeddings">
-              Update Index Settings
+              {t("updateIndexSettings")}
             </Button>
           </div>
         </>

@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, useMemo, type ReactNode, type FunctionComponent } from "react";
+import { useTranslations } from "next-intl";
 
 import { FormField } from "@/refresh-components/form/FormField";
 import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
@@ -62,6 +63,8 @@ export const WebProviderSetupModal = memo(
     apiKeyAutoFocus = true,
     hideApiKey = false,
   }: WebProviderSetupModalProps) => {
+    const t = useTranslations("admin.webSearch");
+    const tCommon = useTranslations("common.actions");
     const LogoArrangement = useMemo(() => {
       const Component: FunctionComponent<IconProps> = () => (
         <div className="flex items-center gap-1">
@@ -82,7 +85,7 @@ export const WebProviderSetupModal = memo(
         <Modal.Content width="sm" preventAccidentalClose>
           <Modal.Header
             icon={LogoArrangement}
-            title={markdown(`Set up *${providerLabel}*`)}
+            title={markdown(t("modalSetUpTitle", { label: providerLabel }))}
             description={description}
             onClose={onClose}
           />
@@ -124,11 +127,11 @@ export const WebProviderSetupModal = memo(
                 }
                 className="w-full"
               >
-                <FormField.Label>API Key</FormField.Label>
+                <FormField.Label>{t("apiKeyLabel")}</FormField.Label>
                 <FormField.Control asChild>
                   <PasswordInputTypeIn
                     data-testid="web-provider-api-key-input"
-                    placeholder="Enter API key"
+                    placeholder={t("apiKeyPlaceholder")}
                     value={apiKeyValue}
                     autoFocus={apiKeyAutoFocus}
                     isNonRevealable={isStoredApiKey}
@@ -148,7 +151,7 @@ export const WebProviderSetupModal = memo(
                       loading:
                         typeof helperMessage === "string"
                           ? helperMessage
-                          : "Validating API key...",
+                          : t("validatingApiKey"),
                     }}
                   />
                 ) : typeof helperMessage === "string" ? (
@@ -216,7 +219,7 @@ export const WebProviderSetupModal = memo(
                           loading:
                             typeof helperMessage === "string"
                               ? helperMessage
-                              : "Testing connection...",
+                              : t("testingConnection"),
                         }}
                       />
                     ) : typeof helperMessage === "string" ? (
@@ -247,14 +250,14 @@ export const WebProviderSetupModal = memo(
           </Modal.Body>
           <Modal.Footer>
             <Button prominence="secondary" type="button" onClick={onClose}>
-              Cancel
+              {tCommon("cancel")}
             </Button>
             <Button
               disabled={!canConnect || isProcessing}
               type="button"
               onClick={onConnect}
             >
-              {isProcessing ? "Connecting..." : "Connect"}
+              {isProcessing ? t("connecting") : t("connect")}
             </Button>
           </Modal.Footer>
         </Modal.Content>

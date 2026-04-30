@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import ProviderCard from "@/sections/admin/ProviderCard";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import {
@@ -18,6 +19,7 @@ import { Content } from "@opal/layouts";
 import { MessageCard, Text } from "@opal/components";
 import { Section } from "@/layouts/general-layouts";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
+import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import {
   getProviderIcon,
@@ -109,8 +111,6 @@ const TTS_PROVIDER_GROUPS: ProviderGroup[] = [
 ];
 
 const route = ADMIN_ROUTES.VOICE;
-const pageDescription =
-  "Configure speech-to-text and text-to-speech providers for voice input and spoken responses.";
 
 interface ModelCardProps {
   model: ModelDetails;
@@ -156,6 +156,7 @@ function ModelCard({
       disconnectModal.toggle(false);
     }
   };
+  // Note: toast strings above are intentionally left for T19.
 
   const handleSetupSuccess = () => {
     onMutate();
@@ -208,6 +209,9 @@ function ModelCard({
 }
 
 export default function VoiceConfigurationPage() {
+  const t = useTranslations("admin.voice");
+  const { title: pageTitle } = useAdminRouteI18n(route);
+  const pageDescription = t("headerDescription");
   const { providers, isLoading, refresh: mutate } = useVoiceProviders();
 
   const providersByType = useMemo(() => {
@@ -224,7 +228,7 @@ export default function VoiceConfigurationPage() {
       <SettingsLayouts.Root>
         <SettingsLayouts.Header
           icon={route.icon}
-          title={route.title}
+          title={pageTitle}
           description={pageDescription}
           divider
         />
@@ -263,17 +267,14 @@ export default function VoiceConfigurationPage() {
         <Section gap={2}>
           <Section gap={0.75}>
             <Content
-              title="Speech to Text"
-              description="Select a model to transcribe speech to text in chats."
+              title={t("sttSectionTitle")}
+              description={t("sttSectionDescription")}
               sizePreset="main-content"
               variant="section"
             />
 
             {!hasActiveSTTProvider && (
-              <MessageCard
-                variant="info"
-                title="Connect a speech to text provider to use in chat."
-              />
+              <MessageCard variant="info" title={t("sttConnectPrompt")} />
             )}
 
             <Section gap={0.5}>
@@ -304,17 +305,14 @@ export default function VoiceConfigurationPage() {
 
           <Section gap={0.75}>
             <Content
-              title="Text to Speech"
-              description="Select a model to speak out chat responses."
+              title={t("ttsSectionTitle")}
+              description={t("ttsSectionDescription")}
               sizePreset="main-content"
               variant="section"
             />
 
             {!hasActiveTTSProvider && (
-              <MessageCard
-                variant="info"
-                title="Connect a text to speech provider to use in chat."
-              />
+              <MessageCard variant="info" title={t("ttsConnectPrompt")} />
             )}
 
             <Section gap={1}>

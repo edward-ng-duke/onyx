@@ -2,6 +2,7 @@
 
 import { markdown } from "@opal/utils";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { SvgOnyxLogo } from "@opal/logos";
@@ -65,6 +66,8 @@ export function VoiceProviderSetupModal({
   defaultModelId,
   onSuccess,
 }: VoiceProviderSetupModalProps) {
+  const t = useTranslations("admin.voice");
+  const tCommon = useTranslations("common.actions");
   const onClose = useModalClose();
   const initialTtsModel = defaultModelId
     ? resolveModelId(defaultModelId)
@@ -203,18 +206,16 @@ export function VoiceProviderSetupModal({
                 icon={ProviderIcon}
                 moreIcon1={SvgArrowExchange}
                 moreIcon2={SvgOnyxLogo}
-                title={`Set up ${label}`}
-                description={`Connect to ${label} and set up your voice models.`}
+                title={t("setupModal.title", { label })}
+                description={t("setupModal.description", { label })}
                 onClose={onClose}
               />
               <Modal.Body>
                 <Section gap={1} alignItems="stretch">
                   {providerType === "azure" && (
                     <InputVertical
-                      title="Target URI"
-                      subDescription={markdown(
-                        "Paste the endpoint shown in [Azure Portal (Keys and Endpoint)](https://portal.azure.com/). Onyx extracts the speech region from this URL. Examples: `https://westus.api.cognitive.microsoft.com/` or `https://westus.tts.speech.microsoft.com/`."
-                      )}
+                      title={t("setupModal.targetUriLabel")}
+                      subDescription={markdown(t("setupModal.targetUriHelp"))}
                       withLabel="target_uri"
                     >
                       <InputTypeInField
@@ -225,20 +226,26 @@ export function VoiceProviderSetupModal({
                   )}
 
                   <InputVertical
-                    title="API Key"
+                    title={t("setupModal.apiKeyLabel")}
                     subDescription={markdown(
-                      `Paste your [API key](${PROVIDER_API_KEY_URLS[providerType]}) from ${label} to access your models.`
+                      t("setupModal.apiKeyHelp", {
+                        url: PROVIDER_API_KEY_URLS[providerType] ?? "",
+                        label,
+                      })
                     )}
                     withLabel="api_key"
                   >
                     <PasswordInputTypeInField
                       name="api_key"
-                      placeholder="API key"
+                      placeholder={t("setupModal.apiKeyPlaceholder")}
                     />
                   </InputVertical>
 
                   {mode === "stt" && providerType === "openai" && (
-                    <InputVertical title="STT Model" withLabel="stt_model">
+                    <InputVertical
+                      title={t("setupModal.sttModelLabel")}
+                      withLabel="stt_model"
+                    >
                       <InputSelectField name="stt_model">
                         <InputSelect.Trigger />
                         <InputSelect.Content>
@@ -256,8 +263,8 @@ export function VoiceProviderSetupModal({
                     <>
                       {providerType === "openai" && (
                         <InputVertical
-                          title="Default Model"
-                          subDescription="This model will be used by Onyx by default for text-to-speech."
+                          title={t("setupModal.defaultModelLabel")}
+                          subDescription={t("setupModal.defaultModelHelp")}
                           withLabel="tts_model"
                         >
                           <InputSelectField name="tts_model">
@@ -274,15 +281,17 @@ export function VoiceProviderSetupModal({
                       )}
 
                       <InputVertical
-                        title="Voice"
+                        title={t("setupModal.voiceLabel")}
                         subDescription={markdown(
-                          `This voice will be used for spoken responses. See full list of supported languages and voices at [${
-                            PROVIDER_VOICE_DOCS_URLS[providerType]?.label ??
-                            label
-                          }](${
-                            PROVIDER_VOICE_DOCS_URLS[providerType]?.url ??
-                            PROVIDER_DOCS_URLS[providerType]
-                          }).`
+                          t("setupModal.voiceHelp", {
+                            docsLabel:
+                              PROVIDER_VOICE_DOCS_URLS[providerType]?.label ??
+                              label,
+                            docsUrl:
+                              PROVIDER_VOICE_DOCS_URLS[providerType]?.url ??
+                              PROVIDER_DOCS_URLS[providerType] ??
+                              "",
+                          })
                         )}
                         withLabel="default_voice"
                       >
@@ -291,8 +300,8 @@ export function VoiceProviderSetupModal({
                           options={voiceOptions}
                           placeholder={
                             isLoadingVoices
-                              ? "Loading voices..."
-                              : "Select a voice or enter voice ID"
+                              ? t("setupModal.loadingVoices")
+                              : t("setupModal.selectVoice")
                           }
                           disabled={isLoadingVoices}
                           strict={false}
@@ -304,14 +313,14 @@ export function VoiceProviderSetupModal({
               </Modal.Body>
               <Modal.Footer>
                 <Button prominence="secondary" onClick={onClose}>
-                  Cancel
+                  {tCommon("cancel")}
                 </Button>
                 <Button
                   type="submit"
                   disabled={isSubmitting || !isValid || !dirty}
                   icon={isSubmitting ? SimpleLoader : undefined}
                 >
-                  {isEditing ? "Save" : "Connect"}
+                  {isEditing ? tCommon("save") : t("setupModal.connect")}
                 </Button>
               </Modal.Footer>
             </Form>
@@ -343,6 +352,8 @@ export function VoiceDisconnectModal({
   providers,
   onDisconnect,
 }: VoiceDisconnectModalProps) {
+  const t = useTranslations("admin.voice");
+  const tCommon = useTranslations("common.actions");
   const onClose = useModalClose();
   // Find other configured providers that could serve as replacements
   const replacementOptions = providers.filter(
@@ -356,29 +367,31 @@ export function VoiceDisconnectModal({
       <Modal.Content width="md">
         <Modal.Header
           icon={SvgUnplug}
-          title={`Disconnect ${disconnectTarget.providerLabel}`}
+          title={t("disconnect.title", {
+            label: disconnectTarget.providerLabel,
+          })}
           onClose={onClose}
         />
         <Modal.Body>
           <Section alignItems="start" gap={0.5}>
             <Text color="text-03">
               {markdown(
-                `**${disconnectTarget.providerLabel}** models will no longer be used for speech-to-text or text-to-speech, and it will no longer be your default. Session history will be preserved.`
+                t("disconnect.body", {
+                  label: disconnectTarget.providerLabel,
+                })
               )}
             </Text>
             {!hasReplacements && (
-              <Text color="text-03">
-                Connect another provider to continue using voice.
-              </Text>
+              <Text color="text-03">{t("disconnect.connectAnother")}</Text>
             )}
           </Section>
         </Modal.Body>
         <Modal.Footer>
           <Button prominence="secondary" onClick={onClose}>
-            Cancel
+            {tCommon("cancel")}
           </Button>
           <Button variant="danger" onClick={onDisconnect}>
-            Disconnect
+            {t("disconnect.confirm")}
           </Button>
         </Modal.Footer>
       </Modal.Content>
