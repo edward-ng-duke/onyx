@@ -282,10 +282,7 @@ export default function Page({ params }: Props) {
         refreshChannels();
       } else {
         toast.success(
-          t("updatedChannelsCount", {
-            count: succeeded,
-            plural: succeeded !== 1 ? "s" : "",
-          })
+          t("updatedChannelsCount", { count: succeeded })
         );
         // Update original to match local (avoids flash from refresh)
         setOriginalChannels(localChannels);

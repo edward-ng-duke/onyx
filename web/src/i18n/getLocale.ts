@@ -2,7 +2,7 @@ import { cookies, headers } from "next/headers";
 
 import { defaultLocale, locales, type Locale } from "../../next-intl.config";
 
-function parseAcceptLanguage(header: string): string[] {
+export function parseAcceptLanguage(header: string): string[] {
   // Returns BCP-47 tag prefixes (e.g. "en", "zh") sorted by descending q.
   return header
     .split(",")

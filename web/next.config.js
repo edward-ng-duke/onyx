@@ -19,12 +19,18 @@ const cspHeader = `
 `;
 
 /** @type {import('next').NextConfig} */
+const devAllowedOrigins = (process.env.NEXT_DEV_ALLOWED_ORIGINS ?? "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter((origin) => origin.length > 0);
+
 const nextConfig = {
   productionBrowserSourceMaps: false,
   output: "standalone",
   transpilePackages: ["@onyx/opal"],
   typedRoutes: true,
   reactCompiler: true,
+  allowedDevOrigins: devAllowedOrigins,
   images: {
     // Used to fetch favicons
     remotePatterns: [

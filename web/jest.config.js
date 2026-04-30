@@ -50,6 +50,12 @@ const sharedConfig = {
         "@radix-ui",
         "@headlessui",
         "@phosphor-icons",
+        // i18n (next-intl pulls a chain of ESM-only deps: use-intl,
+        // @formatjs/*, intl-messageformat)
+        "next-intl",
+        "use-intl",
+        "@formatjs",
+        "intl-messageformat",
         // Testing & Mocking
         "msw",
         "until-async",
@@ -145,6 +151,7 @@ module.exports = {
         "**/src/app/**/utils/*.test.ts",
         "**/src/app/**/hooks/*.test.ts", // Pure packet processor tests
         "**/src/hooks/**/*.test.ts",
+        "**/src/i18n/**/*.test.ts",
         "**/src/refresh-components/**/*.test.ts",
         "**/src/refresh-pages/**/*.test.ts",
         "**/src/sections/**/*.test.ts",

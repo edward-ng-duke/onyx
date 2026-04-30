@@ -106,34 +106,31 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="text-text min-h-screen bg-background">
-            <TooltipProvider>
-              <PHProvider>
-                <SWRConfigProvider>
-                  <AppHealthBanner />
-                  <AppProvider>
-                    <DynamicMetadata />
-                    <CustomAnalyticsScript />
-                    <Suspense fallback={null}>
-                      <PostHogPageView />
-                    </Suspense>
-                    <div id={MODAL_ROOT_ID} className="h-screen w-screen">
-                      <NextIntlClientProvider
-                        locale={locale}
-                        messages={messages}
-                      >
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            <div className="text-text min-h-screen bg-background">
+              <TooltipProvider>
+                <PHProvider>
+                  <SWRConfigProvider>
+                    <AppHealthBanner />
+                    <AppProvider>
+                      <DynamicMetadata />
+                      <CustomAnalyticsScript />
+                      <Suspense fallback={null}>
+                        <PostHogPageView />
+                      </Suspense>
+                      <div id={MODAL_ROOT_ID} className="h-screen w-screen">
                         <ProductGatingWrapper>{children}</ProductGatingWrapper>
-                      </NextIntlClientProvider>
-                    </div>
-                    {process.env.NEXT_PUBLIC_POSTHOG_KEY && <WebVitals />}
-                    {process.env.NEXT_PUBLIC_ENABLE_STATS === "true" && (
-                      <StatsOverlayLoader />
-                    )}
-                  </AppProvider>
-                </SWRConfigProvider>
-              </PHProvider>
-            </TooltipProvider>
-          </div>
+                      </div>
+                      {process.env.NEXT_PUBLIC_POSTHOG_KEY && <WebVitals />}
+                      {process.env.NEXT_PUBLIC_ENABLE_STATS === "true" && (
+                        <StatsOverlayLoader />
+                      )}
+                    </AppProvider>
+                  </SWRConfigProvider>
+                </PHProvider>
+              </TooltipProvider>
+            </div>
+          </NextIntlClientProvider>
         </ThemeProvider>
       </body>
     </html>

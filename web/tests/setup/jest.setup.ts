@@ -1,6 +1,88 @@
 import "@testing-library/jest-dom";
 import { TextEncoder, TextDecoder } from "util";
 
+// next-intl global mock.
+//
+// Most components on the i18n branch call `useTranslations(...)` directly
+// without their tests wrapping in <NextIntlClientProvider>. Wiring a real
+// provider into every test file is high-churn for zero benefit — many
+// existing tests assert on the literal English copy that components used
+// to render verbatim. We resolve keys via the real `en.json` so those
+// assertions keep working transparently. Tests that want a different
+// locale or want to assert keys directly can override per-file with
+// `jest.mock("next-intl", ...)`.
+jest.mock("next-intl", () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const en = require("../../src/i18n/messages/en.json");
+
+  function resolve(namespace: string | undefined, key: string): unknown {
+    const path = namespace ? `${namespace}.${key}` : key;
+    let cursor: unknown = en;
+    for (const segment of path.split(".")) {
+      if (cursor && typeof cursor === "object" && segment in cursor) {
+        cursor = (cursor as Record<string, unknown>)[segment];
+      } else {
+        return path;
+      }
+    }
+    return cursor;
+  }
+
+  function applyIcu(
+    template: string,
+    values: Record<string, unknown> = {}
+  ): string {
+    // Minimal ICU substitution: replaces top-level {name} and resolves
+    // simple plural blocks `{count, plural, one {…} other {…}}`. Anything
+    // beyond that returns the template unchanged — good enough for tests.
+    let out = template;
+    out = out.replace(
+      /\{(\w+),\s*plural,([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}/g,
+      (_full, name: string, body: string) => {
+        const n = Number(values[name]);
+        const oneMatch = body.match(/one\s*\{([^{}]*)\}/);
+        const otherMatch = body.match(/other\s*\{([^{}]*)\}/);
+        const branch =
+          n === 1 && oneMatch ? oneMatch[1]! : (otherMatch?.[1] ?? "");
+        return branch.replace(/#/g, String(values[name] ?? ""));
+      }
+    );
+    out = out.replace(/\{(\w+)\}/g, (_, name: string) =>
+      values[name] === undefined ? `{${name}}` : String(values[name])
+    );
+    return out;
+  }
+
+  function makeTranslator(namespace?: string) {
+    function t(key: string, values?: Record<string, unknown>): string {
+      const resolved = resolve(namespace, key);
+      if (typeof resolved !== "string") return namespace ? `${namespace}.${key}` : key;
+      return applyIcu(resolved, values);
+    }
+    t.rich = (key: string) => key;
+    t.markup = (key: string) => key;
+    t.raw = (key: string) => resolve(namespace, key);
+    t.has = (key: string) => typeof resolve(namespace, key) === "string";
+    return t;
+  }
+
+  return {
+    useTranslations: (namespace?: string) => makeTranslator(namespace),
+    useLocale: () => "en",
+    useFormatter: () => ({
+      dateTime: (v: Date) => v.toISOString(),
+      number: (v: number) => String(v),
+      relativeTime: (v: Date) => v.toISOString(),
+      list: (v: Iterable<string>) => Array.from(v).join(", "),
+    }),
+    useNow: () => new Date(0),
+    useTimeZone: () => "UTC",
+    useMessages: () => en,
+    NextIntlClientProvider: ({ children }: { children: React.ReactNode }) =>
+      children,
+  };
+});
+
 // Tell React 18+ this is a test environment where act() is available
 // This suppresses "not configured to support act(...)" warnings
 // @ts-ignore

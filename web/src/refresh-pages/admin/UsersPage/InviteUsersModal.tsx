@@ -119,10 +119,7 @@ export default function InviteUsersModal({
     try {
       await inviteUsers(validEmails);
       toast.success(
-        t("inviteModalSuccess", {
-          count: validEmails.length,
-          plural: validEmails.length > 1 ? "s" : "",
-        })
+        t("inviteModalSuccess", { count: validEmails.length })
       );
       handleClose();
     } catch (err) {

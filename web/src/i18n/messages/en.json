@@ -940,7 +940,7 @@
       "inviteModalEmailPlaceholder": "Add an email and press enter",
       "inviteModalInvalidWarning": "Some email addresses are invalid and will be skipped.",
       "inviteModalNoValidEmails": "Please add at least one valid email address",
-      "inviteModalSuccess": "Invited {count} user{plural}",
+      "inviteModalSuccess": "Invited {count, plural, one {1 user} other {# users}}",
       "inviteModalFailed": "Failed to invite users",
       "inviteModalSubmit": "Invite"
     },
@@ -1135,7 +1135,7 @@
       "columnThreadOnly": "Thread Only Mode",
       "columnAgentOverride": "Agent Override",
       "updatedSomeChannelsFailed": "Updated {succeeded} channels, but {failed} failed",
-      "updatedChannelsCount": "Updated {count} channel{plural}",
+      "updatedChannelsCount": "Updated {count, plural, one {1 channel} other {# channels}}",
       "updateChannelsFailed": "Failed to update channels",
       "defaultAgentUpdated": "Default agent updated",
       "defaultAgentCleared": "Default agent cleared",
