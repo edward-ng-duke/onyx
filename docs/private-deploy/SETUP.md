@@ -48,26 +48,26 @@ make logs   # 跟踪首次启动；首次拉镜像约 5–15 分钟
 - 创建第一个管理员账号；这是首个注册的账号，自动获得 admin 角色。
 - 后续用户走 `AUTH_TYPE=basic` 注册即可；如需限制邮箱后缀，在 `.env` 取消注释 `VALID_EMAIL_DOMAINS`。
 
-### 3.2 LLM Provider 配置
+### 3.2 LLM 配置（侧边栏：Language Models）
 
-- 进入 admin UI → Configuration → LLM Provider → Add Provider。
+- 进入 admin UI 侧边栏 → **Language Models**（URL 路径 `/admin/configuration/llm`）→ Add Provider。
 - Provider 类型选 **OpenAI**（或 **LiteLLM**，视代理协议而定；OpenAI 兼容协议二者皆可）。
-- **API Base** 填内网代理 URL，例如 `http://llm-gateway.corp:8080/v1`。
+- **API Base URL** 填内网代理 URL，例如 `http://llm-gateway.corp:8080/v1`。
 - **API Key** 填 bearer token，与 `.env` 中的 `GEN_AI_API_KEY` 保持一致。
 - **模型清单**：建议至少配置一个 `default model` + 一个 `fast model`；agentic / Deep Research 流量大时 fast model 选择更快档位（如 GPT-4o-mini / Haiku 同等级）。
 - 保存后点 "Test" 验证连通性。
 
-### 3.3 Embedding 配置
+### 3.3 Embedding 配置（侧边栏：Index Settings）
 
-- admin UI → Search Settings。
-- Provider 选 **LiteLLM**（兼容任何 OpenAI 风格的 `/v1/embeddings`）。
-- API Base / API Key 与 LLM Provider 同一组（共用内网代理）。
+- admin UI 侧边栏 → **Index Settings**（URL 路径 `/admin/configuration/search`）。
+- Provider 选 **LiteLLM**（兼容任何 OpenAI 风格的 `/v1/embeddings`；如下拉无 LiteLLM 项，可选 OpenAI 并自定义 API Base）。
+- API Base / API Key 与 §3.2 同一组（共用内网代理）。
 - 模型档位推荐 `text-embedding-3-large` 同等级，维度在 1024–3072 之间。
 - 注意：切换 embedding 模型需要重建 Vespa 索引（admin UI 提供 swap 流程）。
 
-### 3.4 Web 搜索 Provider 配置
+### 3.4 Web 搜索配置（侧边栏：Web Search）
 
-- admin UI → Connectors → Web Search Provider。
+- admin UI 侧边栏 → **Web Search**（URL 路径 `/admin/configuration/web-search`）—— 注意是和 Language Models 同分组，不在 Connectors 下。
 - 默认推荐 **SearXNG**：base URL 填 `http://searxng:8080/`（容器内 service-name DNS）。
 - 也可选 **Serper / Brave / Google PSE / Exa** 并填入对应 API key——注意这种方式会让 `api_server` 直接出网到 SaaS 域名，需要在防火墙层单独白名单。
 - 私有化场景默认推荐 SearXNG 方案，把出网面收敛到一个容器。
