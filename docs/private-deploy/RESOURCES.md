@@ -209,7 +209,7 @@ Onyx 整体可拆分为三层。所有跨层调用都走容器网络（service n
 | Embedding | ✅ 启用 | 通过 admin UI 选 LiteLLM provider 指向同一代理；不走本地 `model_server` 推理，仅做协议适配。 |
 | Reranker | ⚠️ 可选 | 可走 Cohere / LiteLLM 兼容 rerank API，或在 admin UI 中关闭。关闭后搜索质量会略有下降，但不影响整体可用性。 |
 | Vision（图像理解） | ⚠️ 可选 | 如果 enterprise proxy 支持 vision 模型则启用，否则索引图像时自动跳过（不影响纯文本索引链路）。 |
-| OCR | ✅ 启用 | 内置离线库（PyMuPDF、unstructured 等，见 `backend/onyx/file_processing/`），无外部依赖。 |
+| 文本提取 / OCR | ⚠️ 部分支持 | PDF 走 `pypdf` 做文本层抽取（不做 OCR，扫描版 PDF 无法提取文本）。可选启用 `unstructured` 处理复杂文档，但 **`unstructured` 是 SaaS 调用**（需 `UNSTRUCTURED_API_KEY`，会让 `api_server` / `docprocessing` 出网，与「仅 SearXNG 出网」约束冲突），私有化场景默认关闭。如需 OCR 能力请自行集成 tesseract / paddleocr 等离线方案。 |
 | TTS / STT | 🚫 不内置 | Onyx 当前版本未内置语音功能；如确需语音，需自行集成（不在私有化资源清单内）。 |
 | Web 搜索 | ⚠️ 可选 | 推荐 SearXNG（容器内可控、唯一出网容器）；可叠加 Serper / Brave / Google PSE / Exa SaaS API（注意会让 `api_server` 也出网）。 |
 | Web Connector（爬虫式索引） | ⚠️ 可选 | 谨慎启用；会出网爬指定 URL，与「仅 SearXNG 出网」的安全约束冲突；私有化场景一般禁用，仅在白名单内网站点使用。 |
