@@ -3,7 +3,40 @@
     "actions": {
       "save": "保存",
       "cancel": "取消",
-      "delete": "删除"
+      "delete": "删除",
+      "edit": "编辑",
+      "add": "新增",
+      "remove": "移除",
+      "submit": "提交",
+      "close": "关闭",
+      "confirm": "确认",
+      "apply": "应用",
+      "reset": "重置",
+      "refresh": "刷新",
+      "test": "测试",
+      "back": "返回",
+      "next": "下一步",
+      "create": "创建",
+      "search": "搜索",
+      "loading": "加载中…",
+      "saving": "保存中…",
+      "deleting": "删除中…",
+      "done": "完成",
+      "skip": "跳过",
+      "continue": "继续",
+      "retry": "重试",
+      "copy": "复制",
+      "copied": "已复制",
+      "open": "打开"
+    },
+    "labels": {
+      "yes": "是",
+      "no": "否",
+      "name": "名称",
+      "description": "描述",
+      "type": "类型",
+      "status": "状态",
+      "actions": "操作"
     }
   }
 }

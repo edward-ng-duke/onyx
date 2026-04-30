@@ -3,7 +3,40 @@
     "actions": {
       "save": "Save",
       "cancel": "Cancel",
-      "delete": "Delete"
+      "delete": "Delete",
+      "edit": "Edit",
+      "add": "Add",
+      "remove": "Remove",
+      "submit": "Submit",
+      "close": "Close",
+      "confirm": "Confirm",
+      "apply": "Apply",
+      "reset": "Reset",
+      "refresh": "Refresh",
+      "test": "Test",
+      "back": "Back",
+      "next": "Next",
+      "create": "Create",
+      "search": "Search",
+      "loading": "Loading...",
+      "saving": "Saving...",
+      "deleting": "Deleting...",
+      "done": "Done",
+      "skip": "Skip",
+      "continue": "Continue",
+      "retry": "Retry",
+      "copy": "Copy",
+      "copied": "Copied",
+      "open": "Open"
+    },
+    "labels": {
+      "yes": "Yes",
+      "no": "No",
+      "name": "Name",
+      "description": "Description",
+      "type": "Type",
+      "status": "Status",
+      "actions": "Actions"
     }
   }
 }
