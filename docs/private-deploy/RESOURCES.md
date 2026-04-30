@@ -68,7 +68,7 @@ Onyx 整体可拆分为三层。所有跨层调用都走容器网络（service n
 ### 三层职责速查
 
 - **状态层（Stateful）**：保存所有持久化数据，重启后必须保留。Postgres 存关系型元数据（用户、Chat、Persona、Connector 配置、索引任务记录、KG 实体边等）；Vespa 存向量与全文索引；MinIO 存原始文件二进制；OpenSearch 仅在显式启用日志/审计场景时才部署。
-- **无状态计算层（Stateless）**：进程崩溃可直接重启，状态全部位于 Postgres / Vespa / Redis / MinIO。9 个 celery worker 全部跑在同一个 `background` 容器里（supervisord 拉起），但通过队列分工（详见 `CLAUDE.md` 的 worker 列表）。`inference_model_server` 和 `indexing_model_server` 在私有部署中走 proxy 模式，是 LLM/embedding 调用的容器内入口。
+- **无状态计算层（Stateless）**：进程崩溃可直接重启，状态全部位于 Postgres / Vespa / Redis / MinIO。`background` 容器由 supervisord 同时拉起 7 个 celery worker + beat 调度器 + 看门狗，分工监听不同队列。`inference_model_server` 和 `indexing_model_server` 在私有部署中走 proxy 模式，是 LLM/embedding 调用的容器内入口。
 - **唯一出网层（Sole Egress）**：默认仅 `searxng` 容器具备出公网能力，用作 Web 搜索代理。如果选择第三方 Web 搜索 SaaS（Serper / Brave / Google PSE / Exa）则 `api_server` 也需要加白名单出网；推荐优先 SearXNG 方案，把出网面收敛到一个容器。
 
 ### `background` 容器内的 celery worker
@@ -82,8 +82,9 @@ Onyx 整体可拆分为三层。所有跨层调用都走容器网络（service n
 - **docprocessing**：把抓取到的文档分块、调用 embedding、写入 Vespa；嵌入吞吐瓶颈在这里。
 - **user_file_processing**：处理用户上传文件、用户级项目同步。
 - **monitoring**：系统健康度采集（队列、内存、节拍）。
-- **kg_processing**：知识图谱抽取与聚类（仅在启用 KG 时活跃）。
 - **beat**：定时器；只触发任务，不执行实际工作。
+
+> 注：`CLAUDE.md` 提及的 `kg_processing` 在 OSS 镜像的 `supervisord.conf` 中并不作为独立 worker 程序存在；KG 抽取和聚类任务由 `primary`（或在 EE 部署中由专门的 KG worker，私有化场景一般不启用）调度。
 
 容量规划上，文档量大时优先扩 docprocessing 副本；agentic 检索 / Deep Research 流量大时优先扩 `api_server` 副本。
 
@@ -149,7 +150,7 @@ Onyx 整体可拆分为三层。所有跨层调用都走容器网络（service n
 | OpenSearch | `opensearchproject/opensearch:3.4.0` | 有状态（可选） | 2c | 8Gi | 30Gi | `OPENSEARCH_FOR_ONYX_ENABLED=false` 时不部署 |
 | api_server | `onyxdotapp/onyx-backend:<tag>` | 无状态 | 1c | 2Gi | — | FastAPI 主入口 |
 | web_server | `onyxdotapp/onyx-web-server:<tag>` | 无状态 | 0.5c | 1Gi | — | Next.js 前端 |
-| background（celery via supervisord） | `onyxdotapp/onyx-backend:<tag>` | 无状态 | 2c | 4Gi | — | 单容器内含 primary / light / heavy / docprocessing / docfetching / kg_processing / monitoring / user_file_processing / beat 共 9 个 worker |
+| background（celery via supervisord） | `onyxdotapp/onyx-backend:<tag>` | 无状态 | 2c | 4Gi | — | 单容器内含 primary / light / heavy / docprocessing / docfetching / user_file_processing / monitoring 共 7 个 celery worker，外加 beat 调度器与 watchdog |
 | inference_model_server（proxy 模式） | `onyxdotapp/onyx-model-server:<tag>` | 无状态 | 0.5c | 1Gi | — | 几乎闲置；走 LiteLLM provider 后可考虑 `DISABLE_MODEL_SERVER=true`，但保留更兼容 |
 | indexing_model_server（proxy 模式） | `onyxdotapp/onyx-model-server:<tag>` | 无状态 | 0.5c | 1Gi | — | 同上，索引侧入口 |
 | nginx | `nginx:1.25.5-alpine` | 无状态 | 0.2c | 256Mi | — | 反向代理；超时已为 deep-research 长流式响应调高 |
