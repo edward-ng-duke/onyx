@@ -5,15 +5,14 @@
 // `next.config.js` via `createNextIntlPlugin("./src/i18n/request.ts")`, and the
 // per-request locale + messages are resolved in `src/i18n/request.ts`.
 //
-// This file therefore acts as the canonical declaration of the supported
-// locales / default locale for the app. Application code (e.g. the helper
-// in `src/i18n/getLocale.ts`) and any future language-switcher UI should
-// import from here so that adding a locale is a single-file change.
+// This file is the single source of truth for the supported locales / default
+// locale of the app. Application code (e.g. `src/i18n/getLocale.ts`,
+// `src/i18n/request.ts`, and any future language-switcher UI) imports from
+// here so that adding a locale is a single-file change.
 
 export const locales = ["en", "zh"] as const;
+export const defaultLocale: (typeof locales)[number] = "en";
 export type Locale = (typeof locales)[number];
-
-export const defaultLocale: Locale = "en";
 
 const config = {
   defaultLocale,
