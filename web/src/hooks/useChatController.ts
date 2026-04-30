@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   buildChatUrl,
   getAvailableContextTokens,
@@ -141,6 +142,7 @@ export default function useChatController({
   resetInputBar,
   setSelectedAgentFromId,
 }: UseChatControllerProps) {
+  const tToast = useTranslations("toasts.chat");
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -459,9 +461,9 @@ export default function useChatController({
 
       if (currentChatState != "input") {
         if (currentChatState == "uploading") {
-          toast.error("Please wait for the content to upload");
+          toast.error(tToast("waitForUpload"));
         } else {
-          toast.error("Please wait for the response to complete");
+          toast.error(tToast("waitForResponse"));
         }
 
         return;
@@ -565,9 +567,7 @@ export default function useChatController({
         : null;
 
       if (!messageToResend && messageIdToResend !== undefined) {
-        toast.error(
-          "Failed to re-send message - please refresh the page and try again."
-        );
+        toast.error(tToast("resendMessageFailed"));
         resetRegenerationState(frozenSessionId);
         updateChatStateAction(frozenSessionId, "input");
         return;
@@ -1350,9 +1350,7 @@ export default function useChatController({
       );
 
       if (imageFiles.length > 0 && !llmAcceptsImages) {
-        toast.error(
-          "The current model does not support image input. Please select a model with Vision support."
-        );
+        toast.error(tToast("modelNoVisionSupport"));
         return;
       }
       updateChatStateAction(getCurrentSessionId(), "uploading");
@@ -1417,7 +1415,7 @@ export default function useChatController({
         router.push(data.redirect_url);
       } catch (error) {
         console.error("Error seeding chat from Slack:", error);
-        toast.error("Failed to load chat from Slack");
+        toast.error(tToast("loadFromSlackFailed"));
       }
     };
 

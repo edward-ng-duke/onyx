@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import Modal from "@/refresh-components/Modal";
@@ -50,6 +51,7 @@ export default function AddMCPServerModal({
   mutateMcpServers,
 }: AddMCPServerModalProps) {
   const { isOpen, toggle } = useModal();
+  const tToast = useTranslations("toasts.admin.actions.mcp");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Use activeServer from props
@@ -80,13 +82,13 @@ export default function AddMCPServerModal({
       if (isEditMode && server) {
         // Update existing server
         await updateMCPServer(server.id, values);
-        toast.success("MCP Server updated successfully");
+        toast.success(tToast("serverUpdatedSuccess"));
         await mutateMcpServers?.();
       } else {
         // Create new server
         const createdServer = await createMCPServer(values);
 
-        toast.success("MCP Server created successfully");
+        toast.success(tToast("serverCreatedSuccess"));
 
         await mutateMcpServers?.();
 
@@ -104,9 +106,7 @@ export default function AddMCPServerModal({
         error
       );
       toast.error(
-        error instanceof Error
-          ? error.message
-          : `Failed to ${isEditMode ? "update" : "create"} MCP server`
+        error instanceof Error ? error.message : tToast("serverSaveFailed")
       );
     } finally {
       setIsSubmitting(false);

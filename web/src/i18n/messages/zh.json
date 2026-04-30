@@ -1901,7 +1901,16 @@
         "providerDeletedSuccess": "提供商删除成功！",
         "providerDeleteFailed": "删除提供商失败：{error}",
         "defaultModelUpdateSuccess": "默认模型更新成功！",
-        "defaultModelUpdateFailed": "设置默认模型失败：{error}"
+        "defaultModelUpdateFailed": "设置默认模型失败：{error}",
+        "providerUpdatedSuccess": "提供商更新成功！",
+        "providerEnabledSuccess": "提供商启用成功！",
+        "fetchModelsFailed": "获取模型失败",
+        "azureUriParseFailed": "解析目标 URI 失败 — 使用原始值。",
+        "providerUpdateFailedDetail": "更新提供商失败：{error}",
+        "providerEnableFailedDetail": "启用提供商失败：{error}",
+        "setProviderAsDefaultFailed": "无法将提供商设为默认",
+        "setNewProviderAsDefaultFailed": "无法将新提供商设为默认",
+        "modelNameRequired": "至少需要一个模型名称"
       },
       "chatPreferences": {
         "toolsUpdated": "工具已更新",
@@ -1970,7 +1979,184 @@
         "createFailed": "创建服务账号出错 - {error}",
         "updateFailed": "更新服务账号出错 - {error}",
         "unexpectedError": "发生意外错误。"
+      },
+      "actions": {
+        "mcp": {
+          "connectFetchedToolsSuccess": "已成功连接并获取工具",
+          "fetchToolsFailed": "获取工具失败：{error}",
+          "serverDisconnectedSuccess": "MCP 服务器已断开连接",
+          "serverDisconnectFailed": "断开 MCP 服务器失败",
+          "serverDeletedSuccess": "MCP 服务器删除成功",
+          "serverDeleteFailed": "删除 MCP 服务器失败",
+          "serverReconnectedSuccess": "MCP 服务器重新连接成功",
+          "serverReconnectFailed": "重新连接 MCP 服务器失败",
+          "toolToggleSuccess": "工具{action}成功",
+          "toolToggleEnabled": "已启用",
+          "toolToggleDisabled": "已禁用",
+          "toolUpdateFailed": "更新工具失败",
+          "toolsRefreshedSuccess": "工具刷新成功",
+          "toolsRefreshFailed": "刷新工具失败",
+          "noToolsToDisable": "没有可禁用的工具",
+          "toolsBulkUpdateSuccess": "{count} 个工具已{action}",
+          "toolsBulkUpdateFailed": "{action}所有工具失败",
+          "actionEnable": "启用",
+          "actionDisable": "禁用",
+          "actionEnabled": "启用",
+          "actionDisabled": "禁用",
+          "serverRenamedSuccess": "MCP 服务器重命名成功",
+          "serverRenameFailed": "重命名 MCP 服务器失败",
+          "serverUpdatedSuccess": "MCP 服务器更新成功",
+          "serverCreatedSuccess": "MCP 服务器创建成功",
+          "serverSaveFailed": "保存 MCP 服务器失败",
+          "authFailed": "MCP 服务器认证失败",
+          "unknownError": "未知错误"
+        },
+        "openApi": {
+          "authUpdatedSuccess": "{name} 认证更新成功。",
+          "authSavedSuccess": "{name} 认证保存成功。",
+          "authHeadersSavedSuccess": "{name} 认证头保存成功。",
+          "authPassthroughSavedSuccess": "{name} 透传认证保存成功。",
+          "authSaveFailed": "保存认证设置失败。",
+          "toolDisconnectedSuccess": "{name} 已断开连接。",
+          "toolDisconnectFailed": "断开 OpenAPI 操作失败。",
+          "toolDeletedSuccess": "{name} 删除成功。",
+          "toolDeleteFailed": "删除工具失败。",
+          "toolDeleteUnexpectedError": "删除工具时发生意外错误。",
+          "actionRenamedSuccess": "OpenAPI 操作重命名成功",
+          "actionRenameFailed": "重命名 OpenAPI 操作失败",
+          "actionUpdatedSuccess": "OpenAPI 操作更新成功",
+          "actionUpdateFailed": "更新 OpenAPI 操作失败",
+          "actionCreatedSuccess": "OpenAPI 操作创建成功",
+          "actionCreateFailed": "创建 OpenAPI 操作失败",
+          "invalidJsonSchema": "OpenAPI 架构定义中的 JSON 格式无效"
+        }
+      },
+      "credentials": {
+        "swappedSuccess": "凭据交换成功！",
+        "swapFailed": "交换凭据时出错：{error}",
+        "updatedSuccess": "凭据已更新",
+        "updateFailed": "更新凭据时出错",
+        "createdSuccess": "新凭据已创建！",
+        "createFailed": "提交凭据出错",
+        "errorWithMessage": "错误：{error}",
+        "deleteConnectorFailedRetry": "删除连接器失败，请重试。",
+        "deleteIndexAttemptFailed": "删除索引尝试失败"
+      },
+      "ccPair": {
+        "statusUpdateFailedDetail": "更新连接器状态失败 - {detail}",
+        "statusUpdateFailed": "更新连接器状态失败",
+        "enabledConnector": "已启用连接器！",
+        "pausedConnector": "已暂停连接器！",
+        "scheduledDeletion": "已安排删除连接器！"
+      },
+      "sidebar": {
+        "moveChatFailed": "移动会话失败，请重试。"
       }
+    },
+    "shared": {
+      "anErrorOccurred": "发生错误",
+      "unknownError": "发生未知错误",
+      "errorPrefix": "发生错误：{error}"
+    },
+    "chat": {
+      "waitForUpload": "请等待内容上传",
+      "waitForResponse": "请等待响应完成",
+      "loadFromSlackFailed": "从 Slack 加载会话失败",
+      "noPreviousMessage": "未找到之前提交的用户消息。",
+      "feedbackSubmitFailed": "提交反馈失败",
+      "feedbackSubmitNetworkError": "提交反馈失败 - 网络错误",
+      "feedbackRemoveFailedDetail": "移除反馈失败 - {error}",
+      "feedbackSubmitFailedDetail": "提交反馈失败 - {error}",
+      "shareLinkCopied": "分享链接已复制到剪贴板！",
+      "shareLinkGenerateFailed": "生成分享链接失败",
+      "chatNowPrivate": "会话现在为私密",
+      "makeChatPrivateFailed": "将会话设为私密失败",
+      "ttsCouldNotPlayAudio": "无法播放音频",
+      "resendMessageFailed": "重新发送消息失败 - 请刷新页面后重试。",
+      "modelNoVisionSupport": "当前模型不支持图像输入。请选择支持视觉的模型。"
+    },
+    "settings": {
+      "personalizationUpdatedSuccess": "个性化更新成功",
+      "personalizationUpdateFailed": "更新个性化失败",
+      "allChatsDeletedSuccess": "您的所有会话已被删除。",
+      "allChatsDeleteFailed": "删除所有会话失败",
+      "shortcutsLoadFailed": "加载快捷指令失败",
+      "shortcutDeletedSuccess": "快捷指令已删除",
+      "shortcutDeleteFailed": "删除快捷指令失败",
+      "shortcutFieldsRequired": "快捷指令和扩展内容均为必填",
+      "shortcutCreatedSuccess": "快捷指令已创建",
+      "shortcutUpdatedSuccess": "快捷指令已更新",
+      "shortcutSaveFailed": "保存快捷指令失败",
+      "preferencesSavedSuccess": "偏好设置已保存",
+      "preferencesSaveFailed": "保存偏好设置失败",
+      "tokensLoadFailed": "加载令牌失败",
+      "tokenNameRequired": "令牌名称不能为空",
+      "tokenCreatedSuccess": "令牌创建成功",
+      "tokenCreateFailed": "创建令牌失败",
+      "tokenCreateNetworkError": "创建令牌时发生网络错误",
+      "tokenDeletedSuccess": "令牌删除成功",
+      "tokenDeleteFailed": "删除令牌失败",
+      "tokenDeleteNetworkError": "删除令牌时发生网络错误",
+      "passwordUpdatedSuccess": "密码更新成功",
+      "passwordChangeFailed": "修改密码失败",
+      "passwordChangeError": "修改密码时发生错误",
+      "disconnectedSuccess": "断开连接成功",
+      "disconnectFailed": "断开连接失败"
+    },
+    "agents": {
+      "createOrUpdateFailed": "{action}智能体失败 - {error}",
+      "actionUpdate": "更新",
+      "actionCreate": "创建",
+      "createSuccess": "智能体 \"{name}\" 创建成功",
+      "updateSuccess": "智能体 \"{name}\" 更新成功",
+      "deleteSuccess": "智能体删除成功",
+      "deleteFailed": "删除智能体失败：{error}",
+      "shareSavedRefreshFailed": "智能体共享设置已保存，但刷新失败。请重新加载。",
+      "shareFailedRetry": "共享智能体失败，请重试。",
+      "shareFailedDetail": "共享智能体失败：{error}",
+      "featuredUpdateFailedRetry": "更新精选状态失败，请重试。",
+      "featuredUpdateFailedDetail": "更新精选状态失败：{error}",
+      "shareFailedSimple": "共享智能体失败：{error}",
+      "featuredUpdateFailedSimple": "更新精选状态失败：{error}"
+    },
+    "composer": {
+      "couldNotAccessMicrophone": "无法访问麦克风",
+      "couldNotAutoStartMicrophone": "无法自动启动麦克风"
+    },
+    "projects": {
+      "createFailed": "创建项目 {name} 失败",
+      "uploadFailed": "上传文件失败"
+    },
+    "auth": {
+      "logoutFailed": "退出登录失败",
+      "ssoOnlyFeature": "{feature} 目前仅对 SSO 用户可用",
+      "licenseRequired": "此功能需要许可证。请升级您的方案以使用。"
+    },
+    "team": {
+      "inviteRequestSent": "您的邀请请求已发送给团队管理员。",
+      "invitationAccepted": "您已接受邀请。",
+      "joinRequestProcessing": "正在处理您的团队加入请求……",
+      "invitationDeclined": "您已拒绝邀请。"
+    },
+    "files": {
+      "deletedSuccess": "文件删除成功",
+      "deleteFailedRetry": "删除文件失败，请重试。",
+      "uploadWarningTooLarge": "文件过大无法上传",
+      "uploadWarningGeneric": "部分文件无法上传",
+      "fileFailedRemoved": "文件失败并已移除：{names}",
+      "filesFailedRemoved": "文件失败并已移除：{names}",
+      "skippedOversizedFiles": "已跳过 {count} 个超出大小限制的文件（>{maxMb} MB）：{names}",
+      "someFilesNotUploaded": "部分文件未上传。{details}"
+    },
+    "craft": {
+      "waitForOperation": "请等待当前操作完成。",
+      "waitForSandbox": "请等待沙箱初始化",
+      "credentialError": "凭据错误",
+      "connectorConfigError": "连接器配置错误",
+      "createConnectorFailed": "创建连接器失败"
+    },
+    "onboarding": {
+      "saveNameFailed": "保存姓名失败，请重试。"
     }
   }
 }

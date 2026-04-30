@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useState, useRef, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import Modal from "@/refresh-components/Modal";
 import { Section } from "@/layouts/general-layouts";
 import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
@@ -170,6 +171,7 @@ export default function MemoriesModal({
   highlightOnOpen = false,
   focusNewLine = false,
 }: MemoriesModalProps) {
+  const tToast = useTranslations("toasts.settings");
   const close = useModalClose(onClose);
   const [focusMemoryId, setFocusMemoryId] = useState<number | null>(null);
 
@@ -179,8 +181,8 @@ export default function MemoriesModal({
     user,
     updateUserPersonalization,
     {
-      onSuccess: () => toast.success("Preferences saved"),
-      onError: () => toast.error("Failed to save preferences"),
+      onSuccess: () => toast.success(tToast("preferencesSavedSuccess")),
+      onError: () => toast.error(tToast("preferencesSaveFailed")),
     }
   );
 

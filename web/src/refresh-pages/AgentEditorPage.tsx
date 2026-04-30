@@ -489,6 +489,8 @@ export default function AgentEditorPage({
   refreshAgent,
 }: AgentEditorPageProps) {
   const t = useTranslations("agents.editor");
+  const tToast = useTranslations("toasts.agents");
+  const tToastShared = useTranslations("toasts.shared");
   const router = useRouter();
   const appRouter = useAppRouter();
   const { refresh: refreshAgents } = useAgents();
@@ -886,7 +888,12 @@ export default function AgentEditorPage({
           ? await personaResponse.text()
           : "No response received";
         toast.error(
-          `Failed to ${existingAgent ? "update" : "create"} agent - ${error}`
+          tToast("createOrUpdateFailed", {
+            action: existingAgent
+              ? tToast("actionUpdate")
+              : tToast("actionCreate"),
+            error: String(error),
+          })
         );
         return;
       }
@@ -894,9 +901,9 @@ export default function AgentEditorPage({
       // Success
       const agent = await personaResponse.json();
       toast.success(
-        `Agent "${agent.name}" ${
-          existingAgent ? "updated" : "created"
-        } successfully`
+        existingAgent
+          ? tToast("updateSuccess", { name: agent.name })
+          : tToast("createSuccess", { name: agent.name })
       );
 
       // Refresh agents list and the specific agent
@@ -909,7 +916,7 @@ export default function AgentEditorPage({
       appRouter({ agentId: agent.id });
     } catch (error) {
       console.error("Submit error:", error);
-      toast.error(`An error occurred: ${error}`);
+      toast.error(tToastShared("errorPrefix", { error: String(error) }));
     }
   }
 
@@ -920,9 +927,9 @@ export default function AgentEditorPage({
     const error = await deleteAgent(existingAgent.id);
 
     if (error) {
-      toast.error(`Failed to delete agent: ${error}`);
+      toast.error(tToast("deleteFailed", { error: String(error) }));
     } else {
-      toast.success("Agent deleted successfully");
+      toast.success(tToast("deleteSuccess"));
 
       deleteAgentModal.toggle(false);
       await refreshAgents();
@@ -1146,9 +1153,7 @@ export default function AgentEditorPage({
                             "Refresh failed after successful share:",
                             error
                           );
-                          toast.error(
-                            "Agent sharing was saved, but failed to refresh. Please reload."
-                          );
+                          toast.error(tToast("shareSavedRefreshFailed"));
                         }
                       };
 
@@ -1167,12 +1172,14 @@ export default function AgentEditorPage({
                           "Share agent mutation failed unexpectedly:",
                           error
                         );
-                        toast.error("Failed to share agent. Please try again.");
+                        toast.error(tToast("shareFailedRetry"));
                         return;
                       }
 
                       if (shareError) {
-                        toast.error(`Failed to share agent: ${shareError}`);
+                        toast.error(
+                          tToast("shareFailedDetail", { error: shareError })
+                        );
                         return;
                       }
 
@@ -1191,9 +1198,7 @@ export default function AgentEditorPage({
                           // Share succeeded; sync form and UI before returning.
                           applySharingFields();
                           await refreshSharedUi();
-                          toast.error(
-                            "Failed to update featured status. Please try again."
-                          );
+                          toast.error(tToast("featuredUpdateFailedRetry"));
                           return;
                         }
 
@@ -1202,7 +1207,9 @@ export default function AgentEditorPage({
                           applySharingFields();
                           await refreshSharedUi();
                           toast.error(
-                            `Failed to update featured status: ${featuredError}`
+                            tToast("featuredUpdateFailedDetail", {
+                              error: featuredError,
+                            })
                           );
                           return;
                         }

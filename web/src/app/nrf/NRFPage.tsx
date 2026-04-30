@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useUser } from "@/providers/UserProvider";
 import { toast } from "@/hooks/useToast";
@@ -59,6 +60,8 @@ interface NRFPageProps {
 const AVAILABLE_CONTEXT_TOKENS = Number(DEFAULT_CONTEXT_TOKENS) * 0.5;
 
 export default function NRFPage({ isSidePanel = false }: NRFPageProps) {
+  const tToastFiles = useTranslations("toasts.files");
+  const tToastChat = useTranslations("toasts.chat");
   const { setUseOnyxAsNewTab } = useNRFPreferences();
 
   const searchParams = useSearchParams();
@@ -86,12 +89,12 @@ export default function NRFPage({ isSidePanel = false }: NRFPageProps) {
       const names = lastFailedFiles.map((f) => f.name).join(", ");
       toast.error(
         lastFailedFiles.length === 1
-          ? `File failed and was removed: ${names}`
-          : `Files failed and were removed: ${names}`
+          ? tToastFiles("fileFailedRemoved", { names })
+          : tToastFiles("filesFailedRemoved", { names })
       );
       clearLastFailedFiles();
     }
-  }, [lastFailedFiles, clearLastFailedFiles]);
+  }, [lastFailedFiles, clearLastFailedFiles, tToastFiles]);
 
   // Assistant controller
   const { selectedAgent, setSelectedAgentFromId, liveAgent } =
@@ -363,7 +366,7 @@ export default function NRFPage({ isSidePanel = false }: NRFPageProps) {
       .reverse()
       .find((m) => m.type === "user");
     if (!lastUserMsg) {
-      toast.error("No previously-submitted user message found.");
+      toast.error(tToastChat("noPreviousMessage"));
       return;
     }
 

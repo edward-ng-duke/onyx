@@ -227,13 +227,14 @@ function GeneralSettings() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
+  const tToast = useTranslations("toasts.settings");
   const {
     personalizationValues,
     updatePersonalizationField,
     handleSavePersonalization,
   } = useUserPersonalization(user, updateUserPersonalization, {
-    onSuccess: () => toast.success("Personalization updated successfully"),
-    onError: () => toast.error("Failed to update personalization"),
+    onSuccess: () => toast.success(tToast("personalizationUpdatedSuccess")),
+    onError: () => toast.error(tToast("personalizationUpdateFailed")),
   });
 
   // Track initial values to detect changes
@@ -251,18 +252,18 @@ function GeneralSettings() {
     try {
       const response = await deleteAllChatSessions();
       if (response.ok) {
-        toast.success("All your chat sessions have been deleted.");
+        toast.success(tToast("allChatsDeletedSuccess"));
         await refreshChatSessions();
         setShowDeleteConfirmation(false);
       } else {
         throw new Error("Failed to delete all chat sessions");
       }
     } catch (error) {
-      toast.error("Failed to delete all chat sessions");
+      toast.error(tToast("allChatsDeleteFailed"));
     } finally {
       setIsDeleting(false);
     }
-  }, [pathname, router, refreshChatSessions]);
+  }, [pathname, router, refreshChatSessions, tToast]);
 
   return (
     <>
@@ -511,6 +512,7 @@ interface LocalShortcut extends InputPrompt {
 
 function PromptShortcuts() {
   const t = useTranslations("chat.composer");
+  const tToast = useTranslations("toasts.settings");
   const { promptShortcuts, isLoading, error, refresh } = usePromptShortcuts();
   const [shortcuts, setShortcuts] = useState<LocalShortcut[]>([]);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -546,8 +548,8 @@ function PromptShortcuts() {
   // Show error popup if fetch fails
   useEffect(() => {
     if (!error) return;
-    toast.error("Failed to load shortcuts");
-  }, [error]);
+    toast.error(tToast("shortcutsLoadFailed"));
+  }, [error, tToast]);
 
   const handleUpdateShortcut = useCallback(
     (index: number, field: "prompt" | "content", value: string) => {
@@ -619,22 +621,22 @@ function PromptShortcuts() {
         if (response.ok) {
           setShortcuts((prev) => prev.filter((_, i) => i !== index));
           await refresh();
-          toast.success("Shortcut deleted");
+          toast.success(tToast("shortcutDeletedSuccess"));
         } else {
           throw new Error("Failed to delete shortcut");
         }
       } catch (error) {
-        toast.error("Failed to delete shortcut");
+        toast.error(tToast("shortcutDeleteFailed"));
       }
     },
-    [shortcuts, refresh]
+    [shortcuts, refresh, tToast]
   );
 
   const handleSaveShortcut = useCallback(
     async (index: number) => {
       const shortcut = shortcuts[index];
       if (!shortcut || !shortcut.prompt.trim() || !shortcut.content.trim()) {
-        toast.error("Both shortcut and expansion are required");
+        toast.error(tToast("shortcutFieldsRequired"));
         return;
       }
 
@@ -654,7 +656,7 @@ function PromptShortcuts() {
 
           if (response.ok) {
             await refresh();
-            toast.success("Shortcut created");
+            toast.success(tToast("shortcutCreatedSuccess"));
           } else {
             throw new Error("Failed to create shortcut");
           }
@@ -673,16 +675,16 @@ function PromptShortcuts() {
 
           if (response.ok) {
             await refresh();
-            toast.success("Shortcut updated");
+            toast.success(tToast("shortcutUpdatedSuccess"));
           } else {
             throw new Error("Failed to update shortcut");
           }
         }
       } catch (error) {
-        toast.error("Failed to save shortcut");
+        toast.error(tToast("shortcutSaveFailed"));
       }
     },
-    [shortcuts, refresh]
+    [shortcuts, refresh, tToast]
   );
 
   const handleBlurShortcut = useCallback(
@@ -789,6 +791,7 @@ function PromptShortcuts() {
 
 function ChatPreferencesSettings() {
   const t = useTranslations("settings.chatPreferences");
+  const tToast = useTranslations("toasts.settings");
   const {
     user,
     updateUserPersonalization,
@@ -814,8 +817,8 @@ function ChatPreferencesSettings() {
     updateUserPreferences,
     handleSavePersonalization,
   } = useUserPersonalization(user, updateUserPersonalization, {
-    onSuccess: () => toast.success("Preferences saved"),
-    onError: () => toast.error("Failed to save preferences"),
+    onSuccess: () => toast.success(tToast("preferencesSavedSuccess")),
+    onError: () => toast.error(tToast("preferencesSaveFailed")),
   });
   const [draftVoicePlaybackSpeed, setDraftVoicePlaybackSpeed] = useState(
     user?.preferences.voice_playback_speed ?? 1
@@ -833,12 +836,12 @@ function ChatPreferencesSettings() {
     }) => {
       try {
         await updateUserVoiceSettings(settings);
-        toast.success("Preferences saved");
+        toast.success(tToast("preferencesSavedSuccess"));
       } catch {
-        toast.error("Failed to save preferences");
+        toast.error(tToast("preferencesSaveFailed"));
       }
     },
-    [updateUserVoiceSettings]
+    [updateUserVoiceSettings, tToast]
   );
 
   const commitVoicePlaybackSpeed = useCallback(() => {
@@ -1117,6 +1120,7 @@ function ChatPreferencesSettings() {
 
 function AccountsAccessSettings() {
   const t = useTranslations("settings.accounts");
+  const tToast = useTranslations("toasts.settings");
   const { user, authTypeMetadata } = useUser();
   const authType = useAuthType();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -1174,13 +1178,13 @@ function AccountsAccessSettings() {
   // Show error popup if SWR fetch fails
   useEffect(() => {
     if (error) {
-      toast.error("Failed to load tokens");
+      toast.error(tToast("tokensLoadFailed"));
     }
-  }, [error]);
+  }, [error, tToast]);
 
   const createPAT = useCallback(async () => {
     if (!newTokenName.trim()) {
-      toast.error("Token name is required");
+      toast.error(tToast("tokenNameRequired"));
       return;
     }
 
@@ -1204,19 +1208,19 @@ function AccountsAccessSettings() {
           token: data.token,
           name: newTokenName,
         });
-        toast.success("Token created successfully");
+        toast.success(tToast("tokenCreatedSuccess"));
         // Revalidate the token list
         await mutate();
       } else {
         const errorData = await response.json();
-        toast.error(errorData.detail || "Failed to create token");
+        toast.error(errorData.detail || tToast("tokenCreateFailed"));
       }
     } catch (error) {
-      toast.error("Network error creating token");
+      toast.error(tToast("tokenCreateNetworkError"));
     } finally {
       setIsCreating(false);
     }
-  }, [newTokenName, expirationDays, mutate]);
+  }, [newTokenName, expirationDays, mutate, tToast]);
 
   const deletePAT = useCallback(
     async (patId: number) => {
@@ -1231,16 +1235,16 @@ function AccountsAccessSettings() {
             setNewlyCreatedToken(null);
           }
           await mutate();
-          toast.success("Token deleted successfully");
+          toast.success(tToast("tokenDeletedSuccess"));
           setTokenToDelete(null);
         } else {
-          toast.error("Failed to delete token");
+          toast.error(tToast("tokenDeleteFailed"));
         }
       } catch (error) {
-        toast.error("Network error deleting token");
+        toast.error(tToast("tokenDeleteNetworkError"));
       }
     },
-    [newlyCreatedToken, mutate]
+    [newlyCreatedToken, mutate, tToast]
   );
 
   const handleChangePassword = useCallback(
@@ -1262,17 +1266,17 @@ function AccountsAccessSettings() {
         });
 
         if (response.ok) {
-          toast.success("Password updated successfully");
+          toast.success(tToast("passwordUpdatedSuccess"));
           setShowPasswordModal(false);
         } else {
           const errorData = await response.json();
-          toast.error(errorData.detail || "Failed to change password");
+          toast.error(errorData.detail || tToast("passwordChangeFailed"));
         }
       } catch (error) {
-        toast.error("An error occurred while changing the password");
+        toast.error(tToast("passwordChangeError"));
       }
     },
-    []
+    [tToast]
   );
 
   return (
@@ -1616,6 +1620,7 @@ function FederatedConnectorCard({
   onDisconnectSuccess,
 }: FederatedConnectorCardProps) {
   const t = useTranslations("settings.connectors");
+  const tToast = useTranslations("toasts.settings");
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [showDisconnectConfirmation, setShowDisconnectConfirmation] =
     useState(false);
@@ -1630,18 +1635,18 @@ function FederatedConnectorCard({
       );
 
       if (response.ok) {
-        toast.success("Disconnected successfully");
+        toast.success(tToast("disconnectedSuccess"));
         setShowDisconnectConfirmation(false);
         onDisconnectSuccess();
       } else {
         throw new Error("Failed to disconnect");
       }
     } catch (error) {
-      toast.error("Failed to disconnect");
+      toast.error(tToast("disconnectFailed"));
     } finally {
       setIsDisconnecting(false);
     }
-  }, [connector.federated_connector_id, onDisconnectSuccess]);
+  }, [connector.federated_connector_id, onDisconnectSuccess, tToast]);
 
   return (
     <>

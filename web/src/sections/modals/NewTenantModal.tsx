@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import Modal, { BasicModalFooter } from "@/refresh-components/Modal";
 import { Button } from "@opal/components";
 import { toast } from "@/hooks/useToast";
@@ -26,6 +27,7 @@ export default function NewTenantModal({
   isInvite = false,
   onClose,
 }: NewTenantModalProps) {
+  const tToast = useTranslations("toasts.team");
   const router = useRouter();
   const { user } = useUser();
   const [isLoading, setIsLoading] = useState(false);
@@ -55,10 +57,10 @@ export default function NewTenantModal({
           );
         }
 
-        toast.success("You have accepted the invitation.");
+        toast.success(tToast("invitationAccepted"));
       } else {
         // For non-invite flow, just show success message
-        toast.success("Processing your team join request...");
+        toast.success(tToast("joinRequestProcessing"));
       }
 
       // Common logout and redirect for both flows
@@ -103,7 +105,7 @@ export default function NewTenantModal({
         );
       }
 
-      toast.info("You have declined the invitation.");
+      toast.info(tToast("invitationDeclined"));
       onClose?.();
     } catch (error) {
       const message =

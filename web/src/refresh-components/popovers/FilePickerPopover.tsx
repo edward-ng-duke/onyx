@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import Popover, { PopoverMenu } from "@/refresh-components/Popover";
 import { noProp } from "@/lib/utils";
 import { cn } from "@opal/utils";
@@ -183,6 +184,7 @@ export default function FilePickerPopover({
   trigger,
   selectedFileIds,
 }: FilePickerPopoverProps) {
+  const tToast = useTranslations("toasts.files");
   const { allRecentFiles } = useProjectsContext();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const recentFilesModal = useCreateModal();
@@ -212,7 +214,7 @@ export default function FilePickerPopover({
     deleteUserFile(file.id)
       .then((result) => {
         if (!result.has_associations) {
-          toast.success("File deleted successfully");
+          toast.success(tToast("deletedSuccess"));
           setCurrentMessageFiles((prev) =>
             prev.filter((f) => f.id !== file.id)
           );
@@ -245,7 +247,7 @@ export default function FilePickerPopover({
         setRecentFilesSnapshot((prev) =>
           prev.map((f) => (f.id === file.id ? { ...f, status: lastStatus } : f))
         );
-        toast.error("Failed to delete file. Please try again.");
+        toast.error(tToast("deleteFailedRetry"));
         // Useful for debugging; safe in client components
         console.error("Failed to delete file", error);
       });

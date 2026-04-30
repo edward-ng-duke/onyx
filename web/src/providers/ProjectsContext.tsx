@@ -12,6 +12,7 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
+import { useTranslations } from "next-intl";
 import useSWR from "swr";
 import { errorHandlingFetcher, skipRetryOnAuthError } from "@/lib/fetcher";
 import type {
@@ -132,6 +133,8 @@ interface ProjectsProviderProps {
 }
 
 export function ProjectsProvider({ children }: ProjectsProviderProps) {
+  const tToastFiles = useTranslations("toasts.files");
+  const tToastProjects = useTranslations("toasts.projects");
   // Use SWR hook for projects list - no more SSR initial data
   const { projects, refreshProjects } = useProjects();
   const [recentFiles, setRecentFiles] = useState<ProjectFile[]>([]);
@@ -368,7 +371,11 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
       if (oversizedFiles.length > 0) {
         const skippedNames = oversizedFiles.map((file) => file.name).join(", ");
         toast.warning(
-          `Skipped ${oversizedFiles.length} oversized file(s) (>${rawMax} MB): ${skippedNames}`
+          tToastFiles("skippedOversizedFiles", {
+            count: oversizedFiles.length,
+            maxMb: rawMax ?? 0,
+            names: skippedNames,
+          })
         );
       }
 
@@ -432,7 +439,9 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
             const detailsParts = Array.from(uniqueReasons);
 
             toast.warning(
-              `Some files were not uploaded. ${detailsParts.join(" | ")}`
+              tToastFiles("someFilesNotUploaded", {
+                details: detailsParts.join(" | "),
+              })
             );
 
             const failedNameSet = new Set<string>(
@@ -469,7 +478,7 @@ export function ProjectsProvider({ children }: ProjectsProviderProps) {
 
           removeOptimisticFilesByTempIds(optimisticTempIds, projectId);
 
-          toast.error("Failed to upload files");
+          toast.error(tToastProjects("uploadFailed"));
 
           onFailure?.(Array.from(optimisticTempIds));
         })

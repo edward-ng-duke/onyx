@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { markdown } from "@opal/utils";
 import { useSWRConfig } from "swr";
 import { useFormikContext } from "formik";
@@ -109,6 +110,7 @@ export default function OpenAICompatibleModal({
   onOpenChange,
   onSuccess,
 }: LLMProviderFormProps) {
+  const tToast = useTranslations("toasts.admin.llm");
   const isOnboarding = variant === "onboarding";
   const { mutate } = useSWRConfig();
 
@@ -152,10 +154,20 @@ export default function OpenAICompatibleModal({
               await refreshLlmProviderCaches(mutate);
               toast.success(
                 existingLlmProvider
-                  ? "Provider updated successfully!"
-                  : "Provider enabled successfully!"
+                  ? tToast("providerUpdatedSuccess")
+                  : tToast("providerEnabledSuccess")
               );
             }
+          },
+          messages: {
+            providerUpdateFailed: (error: string) =>
+              tToast("providerUpdateFailedDetail", { error }),
+            providerEnableFailed: (error: string) =>
+              tToast("providerEnableFailedDetail", { error }),
+            setProviderAsDefaultFailed: tToast("setProviderAsDefaultFailed"),
+            setNewProviderAsDefaultFailed: tToast(
+              "setNewProviderAsDefaultFailed"
+            ),
           },
         });
       }}

@@ -62,6 +62,7 @@ function MicrophoneButton({
   isNewSession = false,
 }: MicrophoneButtonProps) {
   const t = useTranslations("chat.composer");
+  const tToast = useTranslations("toasts.composer");
   const {
     isTTSPlaying,
     isTTSLoading,
@@ -201,7 +202,7 @@ function MicrophoneButton({
         hasManualRecordStartRef.current = true;
       } catch (err) {
         console.error("Microphone access failed:", err);
-        toast.error("Could not access microphone");
+        toast.error(tToast("couldNotAccessMicrophone"));
       }
     }
   }, [
@@ -257,7 +258,7 @@ function MicrophoneButton({
         messagePrefixRef.current = currentMessageRef.current;
         startRecording().catch((err) => {
           console.error("Auto-start microphone failed:", err);
-          toast.error("Could not auto-start microphone");
+          toast.error(tToast("couldNotAutoStartMicrophone"));
         });
       }, 400);
     }

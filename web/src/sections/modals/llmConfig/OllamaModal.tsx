@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import * as Yup from "yup";
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { useSWRConfig } from "swr";
@@ -161,6 +162,7 @@ export default function OllamaModal({
   onOpenChange,
   onSuccess,
 }: LLMProviderFormProps) {
+  const tToast = useTranslations("toasts.admin.llm");
   const isOnboarding = variant === "onboarding";
   const { mutate } = useSWRConfig();
   const apiKey = existingLlmProvider?.custom_config?.OLLAMA_API_KEY;
@@ -240,10 +242,20 @@ export default function OllamaModal({
               await refreshLlmProviderCaches(mutate);
               toast.success(
                 existingLlmProvider
-                  ? "Provider updated successfully!"
-                  : "Provider enabled successfully!"
+                  ? tToast("providerUpdatedSuccess")
+                  : tToast("providerEnabledSuccess")
               );
             }
+          },
+          messages: {
+            providerUpdateFailed: (error: string) =>
+              tToast("providerUpdateFailedDetail", { error }),
+            providerEnableFailed: (error: string) =>
+              tToast("providerEnableFailedDetail", { error }),
+            setProviderAsDefaultFailed: tToast("setProviderAsDefaultFailed"),
+            setNewProviderAsDefaultFailed: tToast(
+              "setNewProviderAsDefaultFailed"
+            ),
           },
         });
       }}

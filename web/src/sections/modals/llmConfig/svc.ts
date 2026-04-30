@@ -99,6 +99,13 @@ export const testCustomProvider = async (
 
 // ─── Submit provider ──────────────────────────────────────────────────────
 
+export interface SubmitProviderMessages {
+  providerUpdateFailed?: (error: string) => string;
+  providerEnableFailed?: (error: string) => string;
+  setProviderAsDefaultFailed?: string;
+  setNewProviderAsDefaultFailed?: string;
+}
+
 export interface SubmitProviderParams<
   T extends BaseLLMFormValues = BaseLLMFormValues,
 > {
@@ -115,6 +122,8 @@ export interface SubmitProviderParams<
   onSuccess?: () => void | Promise<void>;
   /** Analytics source for tracking. @default LLMProviderConfiguredSource.ADMIN_PAGE */
   analyticsSource?: LLMProviderConfiguredSource;
+  /** Optional pre-translated message factories. */
+  messages?: SubmitProviderMessages;
 }
 
 export async function submitProvider<T extends BaseLLMFormValues>({
@@ -129,6 +138,7 @@ export async function submitProvider<T extends BaseLLMFormValues>({
   onClose,
   onSuccess,
   analyticsSource = LLMProviderConfiguredSource.ADMIN_PAGE,
+  messages,
 }: SubmitProviderParams<T>): Promise<void> {
   setSubmitting(true);
 
@@ -197,8 +207,10 @@ export async function submitProvider<T extends BaseLLMFormValues>({
   if (!response.ok) {
     const errorMsg = (await response.json()).detail;
     const fullErrorMsg = existingLlmProvider
-      ? `Failed to update provider: ${errorMsg}`
-      : `Failed to enable provider: ${errorMsg}`;
+      ? messages?.providerUpdateFailed?.(errorMsg) ??
+        `Failed to update provider: ${errorMsg}`
+      : messages?.providerEnableFailed?.(errorMsg) ??
+        `Failed to enable provider: ${errorMsg}`;
     toast.error(fullErrorMsg);
     setSubmitting(false);
     return;
@@ -219,13 +231,20 @@ export async function submitProvider<T extends BaseLLMFormValues>({
         });
         if (!setDefaultResponse.ok) {
           const err = await setDefaultResponse.json().catch(() => ({}));
-          toast.error(err?.detail ?? "Failed to set provider as default");
+          toast.error(
+            err?.detail ??
+              messages?.setProviderAsDefaultFailed ??
+              "Failed to set provider as default"
+          );
           setSubmitting(false);
           return;
         }
       }
     } catch {
-      toast.error("Failed to set new provider as default");
+      toast.error(
+        messages?.setNewProviderAsDefaultFailed ??
+          "Failed to set new provider as default"
+      );
     }
   }
 

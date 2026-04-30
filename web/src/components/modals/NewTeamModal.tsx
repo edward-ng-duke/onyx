@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Route } from "next";
 import { Dialog } from "@headlessui/react";
@@ -23,6 +24,7 @@ export interface TenantByDomainResponse {
 }
 
 export default function NewTeamModal() {
+  const tToast = useTranslations("toasts.team");
   const { showNewTeamModal, setShowNewTeamModal } = useModalContext();
   const [existingTenant, setExistingTenant] =
     useState<TenantByDomainResponse | null>(null);
@@ -101,7 +103,7 @@ export default function NewTeamModal() {
       }
 
       setHasRequestedInvite(true);
-      toast.success("Your invite request has been sent to the team admin.");
+      toast.success(tToast("inviteRequestSent"));
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Failed to request an invite";

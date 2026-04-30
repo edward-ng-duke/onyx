@@ -17,6 +17,7 @@ import { Text } from "@opal/components";
 import Spacer from "@/refresh-components/Spacer";
 import Link from "next/link";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { FiLink, FiMaximize2, FiTrash } from "react-icons/fi";
 import { mutate } from "swr";
 import { toast } from "@/hooks/useToast";
@@ -26,6 +27,7 @@ export function FailedReIndexAttempts({
 }: {
   failedIndexingStatuses: FailedConnectorIndexingStatus[];
 }) {
+  const tToast = useTranslations("toasts.admin.credentials");
   const numToDisplay = 10;
   const [page, setPage] = useState(1);
   const [pendingConnectorDeletion, setPendingConnectorDeletion] = useState<{
@@ -60,7 +62,7 @@ export function FailedReIndexAttempts({
               );
             } catch (error) {
               console.error("Error deleting connector:", error);
-              toast.error("Failed to delete connector. Please try again.");
+              toast.error(tToast("deleteConnectorFailedRetry"));
             } finally {
               setPendingConnectorDeletion(null);
             }
@@ -162,9 +164,7 @@ export function FailedReIndexAttempts({
                             );
                           } catch (error) {
                             console.error("Error deleting connector:", error);
-                            toast.error(
-                              "Failed to delete connector. Please try again."
-                            );
+                            toast.error(tToast("deleteConnectorFailedRetry"));
                           }
                         }}
                         icon={SvgTrash}

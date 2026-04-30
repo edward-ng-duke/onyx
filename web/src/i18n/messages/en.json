@@ -1901,7 +1901,16 @@
         "providerDeletedSuccess": "Provider deleted successfully!",
         "providerDeleteFailed": "Failed to delete provider: {error}",
         "defaultModelUpdateSuccess": "Default model updated successfully!",
-        "defaultModelUpdateFailed": "Failed to set default model: {error}"
+        "defaultModelUpdateFailed": "Failed to set default model: {error}",
+        "providerUpdatedSuccess": "Provider updated successfully!",
+        "providerEnabledSuccess": "Provider enabled successfully!",
+        "fetchModelsFailed": "Failed to fetch models",
+        "azureUriParseFailed": "Failed to parse target URI — using original values.",
+        "providerUpdateFailedDetail": "Failed to update provider: {error}",
+        "providerEnableFailedDetail": "Failed to enable provider: {error}",
+        "setProviderAsDefaultFailed": "Failed to set provider as default",
+        "setNewProviderAsDefaultFailed": "Failed to set new provider as default",
+        "modelNameRequired": "At least one model name is required"
       },
       "chatPreferences": {
         "toolsUpdated": "Tools updated",
@@ -1970,7 +1979,184 @@
         "createFailed": "Error creating service account - {error}",
         "updateFailed": "Error updating service account - {error}",
         "unexpectedError": "An unexpected error occurred."
+      },
+      "actions": {
+        "mcp": {
+          "connectFetchedToolsSuccess": "Successfully connected and fetched tools",
+          "fetchToolsFailed": "Failed to fetch tools: {error}",
+          "serverDisconnectedSuccess": "MCP Server disconnected successfully",
+          "serverDisconnectFailed": "Failed to disconnect MCP Server",
+          "serverDeletedSuccess": "MCP Server deleted successfully",
+          "serverDeleteFailed": "Failed to delete MCP Server",
+          "serverReconnectedSuccess": "MCP Server reconnected successfully",
+          "serverReconnectFailed": "Failed to reconnect MCP Server",
+          "toolToggleSuccess": "Tool {action} successfully",
+          "toolToggleEnabled": "enabled",
+          "toolToggleDisabled": "disabled",
+          "toolUpdateFailed": "Failed to update tool",
+          "toolsRefreshedSuccess": "Tools refreshed successfully",
+          "toolsRefreshFailed": "Failed to refresh tools",
+          "noToolsToDisable": "No tools to disable",
+          "toolsBulkUpdateSuccess": "{count} {count, plural, one {tool} other {tools}} {action} successfully",
+          "toolsBulkUpdateFailed": "Failed to {action} all tools",
+          "actionEnable": "enable",
+          "actionDisable": "disable",
+          "actionEnabled": "enabled",
+          "actionDisabled": "disabled",
+          "serverRenamedSuccess": "MCP Server renamed successfully",
+          "serverRenameFailed": "Failed to rename MCP Server",
+          "serverUpdatedSuccess": "MCP Server updated successfully",
+          "serverCreatedSuccess": "MCP Server created successfully",
+          "serverSaveFailed": "Failed to save MCP Server",
+          "authFailed": "Failed to authenticate with MCP Server",
+          "unknownError": "Unknown error"
+        },
+        "openApi": {
+          "authUpdatedSuccess": "{name} authentication updated successfully.",
+          "authSavedSuccess": "{name} authentication saved successfully.",
+          "authHeadersSavedSuccess": "{name} authentication headers saved successfully.",
+          "authPassthroughSavedSuccess": "{name} authentication passthrough saved successfully.",
+          "authSaveFailed": "Failed to save authentication settings.",
+          "toolDisconnectedSuccess": "{name} has been disconnected.",
+          "toolDisconnectFailed": "Failed to disconnect OpenAPI action.",
+          "toolDeletedSuccess": "{name} deleted successfully.",
+          "toolDeleteFailed": "Failed to delete tool.",
+          "toolDeleteUnexpectedError": "An unexpected error occurred while deleting the tool.",
+          "actionRenamedSuccess": "OpenAPI action renamed successfully",
+          "actionRenameFailed": "Failed to rename OpenAPI action",
+          "actionUpdatedSuccess": "OpenAPI action updated successfully",
+          "actionUpdateFailed": "Failed to update OpenAPI action",
+          "actionCreatedSuccess": "OpenAPI action created successfully",
+          "actionCreateFailed": "Failed to create OpenAPI action",
+          "invalidJsonSchema": "Invalid JSON format in OpenAPI schema definition"
+        }
+      },
+      "credentials": {
+        "swappedSuccess": "Swapped credential successfully!",
+        "swapFailed": "Issue swapping credential: {error}",
+        "updatedSuccess": "Updated credential",
+        "updateFailed": "Issue updating credential",
+        "createdSuccess": "Created new credential!",
+        "createFailed": "Error submitting credential",
+        "errorWithMessage": "Error: {error}",
+        "deleteConnectorFailedRetry": "Failed to delete connector. Please try again.",
+        "deleteIndexAttemptFailed": "Failed to delete index attempt"
+      },
+      "ccPair": {
+        "statusUpdateFailedDetail": "Failed to update connector status - {detail}",
+        "statusUpdateFailed": "Failed to update connector status",
+        "enabledConnector": "Enabled connector!",
+        "pausedConnector": "Paused connector!",
+        "scheduledDeletion": "Scheduled deletion of connector!"
+      },
+      "sidebar": {
+        "moveChatFailed": "Failed to move chat. Please try again."
       }
+    },
+    "shared": {
+      "anErrorOccurred": "An error occurred",
+      "unknownError": "An unknown error occurred",
+      "errorPrefix": "An error occurred: {error}"
+    },
+    "chat": {
+      "waitForUpload": "Please wait for the content to upload",
+      "waitForResponse": "Please wait for the response to complete",
+      "loadFromSlackFailed": "Failed to load chat from Slack",
+      "noPreviousMessage": "No previously-submitted user message found.",
+      "feedbackSubmitFailed": "Failed to submit feedback",
+      "feedbackSubmitNetworkError": "Failed to submit feedback - network error",
+      "feedbackRemoveFailedDetail": "Failed to remove feedback - {error}",
+      "feedbackSubmitFailedDetail": "Failed to submit feedback - {error}",
+      "shareLinkCopied": "Share link copied to clipboard!",
+      "shareLinkGenerateFailed": "Failed to generate share link",
+      "chatNowPrivate": "Chat is now private",
+      "makeChatPrivateFailed": "Failed to make chat private",
+      "ttsCouldNotPlayAudio": "Could not play audio",
+      "resendMessageFailed": "Failed to re-send message - please refresh the page and try again.",
+      "modelNoVisionSupport": "The current model does not support image input. Please select a model with Vision support."
+    },
+    "settings": {
+      "personalizationUpdatedSuccess": "Personalization updated successfully",
+      "personalizationUpdateFailed": "Failed to update personalization",
+      "allChatsDeletedSuccess": "All your chat sessions have been deleted.",
+      "allChatsDeleteFailed": "Failed to delete all chat sessions",
+      "shortcutsLoadFailed": "Failed to load shortcuts",
+      "shortcutDeletedSuccess": "Shortcut deleted",
+      "shortcutDeleteFailed": "Failed to delete shortcut",
+      "shortcutFieldsRequired": "Both shortcut and expansion are required",
+      "shortcutCreatedSuccess": "Shortcut created",
+      "shortcutUpdatedSuccess": "Shortcut updated",
+      "shortcutSaveFailed": "Failed to save shortcut",
+      "preferencesSavedSuccess": "Preferences saved",
+      "preferencesSaveFailed": "Failed to save preferences",
+      "tokensLoadFailed": "Failed to load tokens",
+      "tokenNameRequired": "Token name is required",
+      "tokenCreatedSuccess": "Token created successfully",
+      "tokenCreateFailed": "Failed to create token",
+      "tokenCreateNetworkError": "Network error creating token",
+      "tokenDeletedSuccess": "Token deleted successfully",
+      "tokenDeleteFailed": "Failed to delete token",
+      "tokenDeleteNetworkError": "Network error deleting token",
+      "passwordUpdatedSuccess": "Password updated successfully",
+      "passwordChangeFailed": "Failed to change password",
+      "passwordChangeError": "An error occurred while changing the password",
+      "disconnectedSuccess": "Disconnected successfully",
+      "disconnectFailed": "Failed to disconnect"
+    },
+    "agents": {
+      "createOrUpdateFailed": "Failed to {action} agent - {error}",
+      "actionUpdate": "update",
+      "actionCreate": "create",
+      "createSuccess": "Agent \"{name}\" created successfully",
+      "updateSuccess": "Agent \"{name}\" updated successfully",
+      "deleteSuccess": "Agent deleted successfully",
+      "deleteFailed": "Failed to delete agent: {error}",
+      "shareSavedRefreshFailed": "Agent sharing was saved, but failed to refresh. Please reload.",
+      "shareFailedRetry": "Failed to share agent. Please try again.",
+      "shareFailedDetail": "Failed to share agent: {error}",
+      "featuredUpdateFailedRetry": "Failed to update featured status. Please try again.",
+      "featuredUpdateFailedDetail": "Failed to update featured status: {error}",
+      "shareFailedSimple": "Failed to share agent: {error}",
+      "featuredUpdateFailedSimple": "Failed to update featured status: {error}"
+    },
+    "composer": {
+      "couldNotAccessMicrophone": "Could not access microphone",
+      "couldNotAutoStartMicrophone": "Could not auto-start microphone"
+    },
+    "projects": {
+      "createFailed": "Failed to create the project {name}",
+      "uploadFailed": "Failed to upload files"
+    },
+    "auth": {
+      "logoutFailed": "Logout failed",
+      "ssoOnlyFeature": "{feature} is only available for SSO users at this time",
+      "licenseRequired": "This feature requires a license. Please upgrade your plan to access."
+    },
+    "team": {
+      "inviteRequestSent": "Your invite request has been sent to the team admin.",
+      "invitationAccepted": "You have accepted the invitation.",
+      "joinRequestProcessing": "Processing your team join request...",
+      "invitationDeclined": "You have declined the invitation."
+    },
+    "files": {
+      "deletedSuccess": "File deleted successfully",
+      "deleteFailedRetry": "Failed to delete file. Please try again.",
+      "uploadWarningTooLarge": "File too large to upload",
+      "uploadWarningGeneric": "Some files could not be uploaded",
+      "fileFailedRemoved": "File failed and was removed: {names}",
+      "filesFailedRemoved": "Files failed and were removed: {names}",
+      "skippedOversizedFiles": "Skipped {count} oversized file(s) (>{maxMb} MB): {names}",
+      "someFilesNotUploaded": "Some files were not uploaded. {details}"
+    },
+    "craft": {
+      "waitForOperation": "Please wait for the current operation to complete.",
+      "waitForSandbox": "Please wait for sandbox to initialize",
+      "credentialError": "Credential error",
+      "connectorConfigError": "Connector configuration error",
+      "createConnectorFailed": "Failed to create connector"
+    },
+    "onboarding": {
+      "saveNameFailed": "Failed to save name. Please try again."
     }
   }
 }

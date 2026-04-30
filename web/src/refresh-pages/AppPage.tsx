@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { redirect, useRouter, useSearchParams } from "next/navigation";
 import { personaIncludesRetrieval } from "@/app/app/services/lib";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -109,6 +110,8 @@ export interface ChatPageProps {
 }
 
 export default function AppPage({ firstMessage }: ChatPageProps) {
+  const tToastFiles = useTranslations("toasts.files");
+  const tToastChat = useTranslations("toasts.chat");
   // Performance tracking
   // Keeping this here in case we need to track down slow renders in the future
   // const renderCount = useRef(0);
@@ -283,12 +286,12 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
       const names = lastFailedFiles.map((f) => f.name).join(", ");
       toast.error(
         lastFailedFiles.length === 1
-          ? `File failed and was removed: ${names}`
-          : `Files failed and were removed: ${names}`
+          ? tToastFiles("fileFailedRemoved", { names })
+          : tToastFiles("filesFailedRemoved", { names })
       );
       clearLastFailedFiles();
     }
-  }, [lastFailedFiles, clearLastFailedFiles]);
+  }, [lastFailedFiles, clearLastFailedFiles, tToastFiles]);
 
   const chatInputBarRef = useRef<AppInputBarHandle>(null);
 
@@ -514,7 +517,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
       .reverse()
       .find((m) => m.type === "user");
     if (!lastUserMsg) {
-      toast.error("No previously-submitted user message found.");
+      toast.error(tToastChat("noPreviousMessage"));
       return;
     }
 

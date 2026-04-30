@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { useSWRConfig } from "swr";
 import { useFormikContext } from "formik";
 import {
@@ -245,6 +246,7 @@ export default function CustomModal({
   onOpenChange,
   onSuccess,
 }: LLMProviderFormProps) {
+  const tToast = useTranslations("toasts.admin.llm");
   const isOnboarding = variant === "onboarding";
   const { mutate } = useSWRConfig();
 
@@ -328,7 +330,7 @@ export default function CustomModal({
           }));
 
         if (modelConfigurations.length === 0) {
-          toast.error("At least one model name is required");
+          toast.error(tToast("modelNameRequired"));
           setSubmitting(false);
           return;
         }
@@ -365,10 +367,20 @@ export default function CustomModal({
               await refreshLlmProviderCaches(mutate);
               toast.success(
                 existingLlmProvider
-                  ? "Provider updated successfully!"
-                  : "Provider enabled successfully!"
+                  ? tToast("providerUpdatedSuccess")
+                  : tToast("providerEnabledSuccess")
               );
             }
+          },
+          messages: {
+            providerUpdateFailed: (error: string) =>
+              tToast("providerUpdateFailedDetail", { error }),
+            providerEnableFailed: (error: string) =>
+              tToast("providerEnableFailedDetail", { error }),
+            setProviderAsDefaultFailed: tToast("setProviderAsDefaultFailed"),
+            setNewProviderAsDefaultFailed: tToast(
+              "setNewProviderAsDefaultFailed"
+            ),
           },
         });
       }}

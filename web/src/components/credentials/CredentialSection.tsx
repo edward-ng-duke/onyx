@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { AccessType, ValidSources } from "@/lib/types";
 import useSWR, { mutate } from "swr";
 import { errorHandlingFetcher } from "@/lib/fetcher";
@@ -49,6 +50,7 @@ export default function CredentialSection({
   sourceType,
   refresh,
 }: CredentialSectionProps) {
+  const tToast = useTranslations("toasts.admin.credentials");
   const { data: credentials } = useSWR<Credential<ConfluenceCredentialJson>[]>(
     buildSimilarCredentialInfoURL(sourceType),
     errorHandlingFetcher,
@@ -96,13 +98,13 @@ export default function CredentialSection({
       mutate(buildSimilarCredentialInfoURL(sourceType));
       refresh();
 
-      toast.success("Swapped credential successfully!");
+      toast.success(tToast("swappedSuccess"));
     } else {
       const errorData = await response.json();
       toast.error(
-        `Issue swapping credential: ${
-          errorData.detail || errorData.message || "Unknown error"
-        }`
+        tToast("swapFailed", {
+          error: errorData.detail || errorData.message || "Unknown error",
+        })
       );
     }
   };
@@ -130,10 +132,10 @@ export default function CredentialSection({
       response = await updateCredential(selectedCredential.id, details);
     }
     if (response.ok) {
-      toast.success("Updated credential");
+      toast.success(tToast("updatedSuccess"));
       onSucces();
     } else {
-      toast.error("Issue updating credential");
+      toast.error(tToast("updateFailed"));
     }
   };
 

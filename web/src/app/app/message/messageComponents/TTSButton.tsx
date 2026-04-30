@@ -17,6 +17,7 @@ interface TTSButtonProps {
 
 function TTSButton({ text, voice, speed }: TTSButtonProps) {
   const t = useTranslations("chat.feedback");
+  const tToast = useTranslations("toasts.chat");
   const { isPlaying, isLoading, error, play, pause, stop } = useVoicePlayback();
   const { isTTSPlaying, isTTSLoading, isAwaitingAutoPlaybackStart, stopTTS } =
     useVoiceMode();
@@ -42,7 +43,7 @@ function TTSButton({ text, voice, speed }: TTSButtonProps) {
         await play(text, voice, speed);
       } catch (err) {
         console.error("TTS playback failed:", err);
-        toast.error("Could not play audio");
+        toast.error(tToast("ttsCouldNotPlayAudio"));
       }
     }
   }, [

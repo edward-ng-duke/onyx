@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState, useEffect, useRef, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { track, AnalyticsEvent } from "@/lib/analytics";
 import {
@@ -60,6 +61,7 @@ interface BuildChatPanelProps {
 export default function BuildChatPanel({
   existingSessionId,
 }: BuildChatPanelProps) {
+  const tToast = useTranslations("toasts.craft");
   const router = useRouter();
   const outputPanelOpen = useOutputPanelOpen();
   const session = useSession();
@@ -259,7 +261,7 @@ export default function BuildChatPanel({
         // Existing session flow
         // Check if response is still streaming - show toast like main chat does
         if (isRunning) {
-          toast.error("Please wait for the current operation to complete.");
+          toast.error(tToast("waitForOperation"));
           return;
         }
 
@@ -283,7 +285,7 @@ export default function BuildChatPanel({
         if (!newSessionId) {
           // This should not happen if UI properly disables input until ready
           console.error("[ChatPanel] No pre-provisioned session available");
-          toast.error("Please wait for sandbox to initialize");
+          toast.error(tToast("waitForSandbox"));
           return;
         }
 

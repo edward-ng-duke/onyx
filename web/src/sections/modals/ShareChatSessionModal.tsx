@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@opal/utils";
 import { ChatSession, ChatSessionSharedStatus } from "@/app/app/interfaces";
 import { toast } from "@/hooks/useToast";
@@ -108,6 +109,8 @@ export default function ShareChatSessionModal({
   chatSession,
   onClose,
 }: ShareChatSessionModalProps) {
+  const tToast = useTranslations("toasts.chat");
+  const tToastShared = useTranslations("toasts.shared");
   const isCurrentlyPublic =
     chatSession.shared_status === ChatSessionSharedStatus.Public;
 
@@ -146,9 +149,9 @@ export default function ShareChatSessionModal({
           updateCurrentChatSessionSharedStatus(ChatSessionSharedStatus.Public);
           await refreshChatSessions();
           copyAll(link);
-          toast.success("Share link copied to clipboard!");
+          toast.success(tToast("shareLinkCopied"));
         } else {
-          toast.error("Failed to generate share link");
+          toast.error(tToast("shareLinkGenerateFailed"));
         }
       } else if (!wantsPublic && isCurrentlyPublic) {
         const success = await deleteShareLink(chatSession.id);
@@ -156,20 +159,20 @@ export default function ShareChatSessionModal({
           setShareLink("");
           updateCurrentChatSessionSharedStatus(ChatSessionSharedStatus.Private);
           await refreshChatSessions();
-          toast.success("Chat is now private");
+          toast.success(tToast("chatNowPrivate"));
           onClose();
         } else {
-          toast.error("Failed to make chat private");
+          toast.error(tToast("makeChatPrivateFailed"));
         }
       } else if (wantsPublic && shareLink) {
         copyAll(shareLink);
-        toast.success("Share link copied to clipboard!");
+        toast.success(tToast("shareLinkCopied"));
       } else {
         onClose();
       }
     } catch (e) {
       console.error(e);
-      toast.error("An error occurred");
+      toast.error(tToastShared("anErrorOccurred"));
     } finally {
       setIsLoading(false);
     }

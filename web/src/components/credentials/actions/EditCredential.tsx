@@ -1,5 +1,6 @@
 import { Button } from "@opal/components";
 import { Text } from "@opal/components";
+import { useTranslations } from "next-intl";
 
 import { FaNewspaper, FaTrash } from "react-icons/fa";
 import { TextFormField, TypedFileUploadFormField } from "@/components/Field";
@@ -28,6 +29,7 @@ export default function EditCredential({
   onClose,
   onUpdate,
 }: EditCredentialProps) {
+  const tToast = useTranslations("toasts.admin.credentials");
   const validationSchema = createEditingValidationSchema(
     credential.credential_json
   );
@@ -42,7 +44,7 @@ export default function EditCredential({
       await onUpdate(credential, values, onClose);
     } catch (error) {
       console.error("Error updating credential:", error);
-      toast.error("Error updating credential");
+      toast.error(tToast("updateFailed"));
     } finally {
       formikHelpers.setSubmitting(false);
     }

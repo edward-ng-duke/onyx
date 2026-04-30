@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { markdown } from "@opal/utils";
 import Link from "next/link";
 import Modal from "@/refresh-components/Modal";
@@ -409,6 +410,7 @@ export default function AddOpenAPIActionModal({
   onDisconnectTool,
 }: AddOpenAPIActionModalProps) {
   const { isOpen, toggle } = useModal();
+  const tToast = useTranslations("toasts.admin.actions.openApi");
 
   const handleModalClose = useCallback(
     (open: boolean) => {
@@ -439,7 +441,7 @@ export default function AddOpenAPIActionModal({
       parsedDefinition = parseJsonWithTrailingCommas(values.definition);
     } catch (error) {
       console.error("Error parsing OpenAPI definition:", error);
-      toast.error("Invalid JSON format in OpenAPI schema definition");
+      toast.error(tToast("invalidJsonSchema"));
       return;
     }
 
@@ -475,7 +477,7 @@ export default function AddOpenAPIActionModal({
         if (response.error) {
           toast.error(response.error);
         } else {
-          toast.success("OpenAPI action updated successfully");
+          toast.success(tToast("actionUpdatedSuccess"));
           handleClose();
           if (response.data && onUpdate) {
             onUpdate(response.data);
@@ -483,7 +485,7 @@ export default function AddOpenAPIActionModal({
         }
       } catch (error) {
         console.error("Error updating OpenAPI action:", error);
-        toast.error("Failed to update OpenAPI action");
+        toast.error(tToast("actionUpdateFailed"));
       }
       return;
     }
@@ -500,7 +502,7 @@ export default function AddOpenAPIActionModal({
       if (response.error) {
         toast.error(response.error);
       } else {
-        toast.success("OpenAPI action created successfully");
+        toast.success(tToast("actionCreatedSuccess"));
         handleClose();
         if (response.data && onSuccess) {
           onSuccess(response.data);
@@ -508,7 +510,7 @@ export default function AddOpenAPIActionModal({
       }
     } catch (error) {
       console.error("Error creating OpenAPI action:", error);
-      toast.error("Failed to create OpenAPI action");
+      toast.error(tToast("actionCreateFailed"));
     }
   };
 

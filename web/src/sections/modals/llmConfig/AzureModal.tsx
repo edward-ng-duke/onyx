@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useSWRConfig } from "swr";
 import { useFormikContext } from "formik";
 import InputTypeInField from "@/refresh-components/form/InputTypeInField";
@@ -76,7 +77,10 @@ function buildTargetUri(existingLlmProvider?: LLMProviderView): string {
   return `${existingLlmProvider.api_base}/openai/deployments/${deploymentName}/chat/completions?api-version=${existingLlmProvider.api_version}`;
 }
 
-const processValues = (values: AzureModalValues): AzureModalValues => {
+const processValues = (
+  values: AzureModalValues,
+  onParseError: () => void
+): AzureModalValues => {
   let processedValues = { ...values };
   if (values.target_uri) {
     try {
@@ -90,7 +94,7 @@ const processValues = (values: AzureModalValues): AzureModalValues => {
         deployment_name: deploymentName || processedValues.deployment_name,
       };
     } catch {
-      toast.warning("Failed to parse target URI — using original values.");
+      onParseError();
     }
   }
   return processedValues;
@@ -103,6 +107,7 @@ export default function AzureModal({
   onOpenChange,
   onSuccess,
 }: LLMProviderFormProps) {
+  const tToast = useTranslations("toasts.admin.llm");
   const isOnboarding = variant === "onboarding";
   const { mutate } = useSWRConfig();
 
@@ -138,7 +143,9 @@ export default function AzureModal({
       initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={async (values, { setSubmitting, setStatus }) => {
-        const processedValues = processValues(values);
+        const processedValues = processValues(values, () => {
+          toast.warning(tToast("azureUriParseFailed"));
+        });
 
         await submitProvider({
           analyticsSource: isOnboarding
@@ -159,10 +166,20 @@ export default function AzureModal({
               await refreshLlmProviderCaches(mutate);
               toast.success(
                 existingLlmProvider
-                  ? "Provider updated successfully!"
-                  : "Provider enabled successfully!"
+                  ? tToast("providerUpdatedSuccess")
+                  : tToast("providerEnabledSuccess")
               );
             }
+          },
+          messages: {
+            providerUpdateFailed: (error: string) =>
+              tToast("providerUpdateFailedDetail", { error }),
+            providerEnableFailed: (error: string) =>
+              tToast("providerEnableFailedDetail", { error }),
+            setProviderAsDefaultFailed: tToast("setProviderAsDefaultFailed"),
+            setNewProviderAsDefaultFailed: tToast(
+              "setNewProviderAsDefaultFailed"
+            ),
           },
         });
       }}

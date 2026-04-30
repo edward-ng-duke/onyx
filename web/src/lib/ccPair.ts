@@ -1,10 +1,18 @@
 import { ConnectorCredentialPairStatus } from "@/app/admin/connector/[ccPairId]/types";
 import { toast } from "@/hooks/useToast";
 
+export interface SetCCPairStatusMessages {
+  failureWithDetail?: (detail: string) => string;
+  failureGeneric?: string;
+  enabled?: string;
+  paused?: string;
+}
+
 export async function setCCPairStatus(
   ccPairId: number,
   ccPairStatus: ConnectorCredentialPairStatus,
-  onUpdate?: () => void
+  onUpdate?: () => void,
+  messages?: SetCCPairStatusMessages
 ) {
   try {
     const response = await fetch(
@@ -20,20 +28,23 @@ export async function setCCPairStatus(
 
     if (!response.ok) {
       const { detail } = await response.json();
-      toast.error(`Failed to update connector status - ${detail}`);
+      toast.error(
+        messages?.failureWithDetail?.(detail) ??
+          `Failed to update connector status - ${detail}`
+      );
       return;
     }
 
     toast.success(
       ccPairStatus === ConnectorCredentialPairStatus.ACTIVE
-        ? "Enabled connector!"
-        : "Paused connector!"
+        ? messages?.enabled ?? "Enabled connector!"
+        : messages?.paused ?? "Paused connector!"
     );
 
     onUpdate && onUpdate();
   } catch (error) {
     console.error("Error updating CC pair status:", error);
-    toast.error("Failed to update connector status");
+    toast.error(messages?.failureGeneric ?? "Failed to update connector status");
   }
 }
 

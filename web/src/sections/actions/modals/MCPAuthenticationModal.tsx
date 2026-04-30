@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import useSWR, { KeyedMutator } from "swr";
 import { SWR_KEYS } from "@/lib/swr-keys";
 import { errorHandlingFetcher } from "@/lib/fetcher";
@@ -104,6 +105,7 @@ export default function MCPAuthenticationModal({
   mutateMcpServers,
 }: MCPAuthenticationModalProps) {
   const { isOpen, toggle } = useModal();
+  const tToast = useTranslations("toasts.admin.actions.mcp");
   const [activeAuthTab, setActiveAuthTab] = useState<"per-user" | "admin">(
     "per-user"
   );
@@ -326,9 +328,7 @@ export default function MCPAuthenticationModal({
       // Ensure UI reflects latest status after any auth/config failure
       await mutateMcpServers();
       toast.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to save authentication configuration"
+        error instanceof Error ? error.message : tToast("authFailed")
       );
     } finally {
       setIsSubmitting(false);

@@ -24,6 +24,8 @@ export interface MoveOperationParams {
   refreshCurrentProjectDetails: () => Promise<any>;
   fetchProjects: () => Promise<any>;
   currentProjectId: number | null;
+  /** Optional pre-translated error message; falls back to English. */
+  moveFailedMessage?: string;
 }
 
 export const handleMoveOperation = async ({
@@ -33,6 +35,7 @@ export const handleMoveOperation = async ({
   refreshCurrentProjectDetails,
   fetchProjects,
   currentProjectId,
+  moveFailedMessage,
 }: MoveOperationParams) => {
   try {
     await moveChatSession(targetProjectId, chatSession.id);
@@ -42,7 +45,7 @@ export const handleMoveOperation = async ({
     await Promise.all([refreshChatSessions(), projectRefreshPromise]);
   } catch (error) {
     console.error("Failed to perform move operation:", error);
-    toast.error("Failed to move chat. Please try again.");
+    toast.error(moveFailedMessage ?? "Failed to move chat. Please try again.");
     throw error;
   }
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { MinimalPersonaSnapshot } from "@/app/admin/agents/interfaces";
 import AgentAvatar from "@/refresh-components/avatars/AgentAvatar";
 import { Button } from "@opal/components";
@@ -42,6 +43,7 @@ export interface AgentCardProps {
 }
 
 export default function AgentCard({ agent }: AgentCardProps) {
+  const tToast = useTranslations("toasts.agents");
   const route = useAppRouter();
   const router = useRouter();
   const { pinnedAgents, togglePinnedAgent } = usePinnedAgents();
@@ -83,7 +85,7 @@ export default function AgentCard({ agent }: AgentCardProps) {
       );
 
       if (shareError) {
-        toast.error(`Failed to share agent: ${shareError}`);
+        toast.error(tToast("shareFailedSimple", { error: shareError }));
         return;
       }
 
@@ -93,7 +95,9 @@ export default function AgentCard({ agent }: AgentCardProps) {
           isFeatured
         );
         if (featuredError) {
-          toast.error(`Failed to update featured status: ${featuredError}`);
+          toast.error(
+            tToast("featuredUpdateFailedSimple", { error: featuredError })
+          );
           refreshAgent();
           return;
         }

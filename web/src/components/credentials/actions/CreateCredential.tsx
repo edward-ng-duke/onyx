@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import Button from "@/refresh-components/buttons/Button";
 import { Button as OpalButton } from "@opal/components";
 import { ValidSources, AccessType } from "@/lib/types";
@@ -86,6 +87,7 @@ export default function CreateCredential({
   // Mutating parent state
   refresh?: () => void;
 }) {
+  const tToast = useTranslations("toasts.admin.credentials");
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [authMethod, setAuthMethod] = useState<string>();
   const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
@@ -142,7 +144,7 @@ export default function CreateCredential({
         if (action === "createAndSwap") {
           onSwap(credential, swapConnector.id, accessType);
         } else {
-          toast.success("Created new credential!");
+          toast.success(tToast("createdSuccess"));
         }
         onClose();
       } else {
@@ -163,7 +165,7 @@ export default function CreateCredential({
       }
     } catch (error) {
       console.error("Error submitting credential:", error);
-      toast.error("Error submitting credential");
+      toast.error(tToast("createFailed"));
     } finally {
       formikHelpers.setSubmitting(false);
     }

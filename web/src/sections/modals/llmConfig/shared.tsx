@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Formik, Form, useFormikContext } from "formik";
 import type { FormikConfig } from "formik";
 import { cn } from "@opal/utils";
@@ -376,6 +377,7 @@ interface RefetchButtonProps {
   onRefetch: (signal: AbortSignal) => Promise<void> | void;
 }
 function RefetchButton({ onRefetch }: RefetchButtonProps) {
+  const tToast = useTranslations("toasts.admin.llm");
   const abortRef = useRef<AbortController | null>(null);
   const [isFetching, setIsFetching] = useState(false);
 
@@ -397,7 +399,7 @@ function RefetchButton({ onRefetch }: RefetchButtonProps) {
         } catch (err) {
           if (err instanceof DOMException && err.name === "AbortError") return;
           toast.error(
-            err instanceof Error ? err.message : "Failed to fetch models"
+            err instanceof Error ? err.message : tToast("fetchModelsFailed")
           );
         } finally {
           if (!controller.signal.aborted) {

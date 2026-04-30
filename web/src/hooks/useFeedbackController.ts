@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { useChatSessionStore } from "@/app/app/stores/useChatSessionStore";
 import { FeedbackType } from "@/app/app/interfaces";
 import { handleChatFeedback, removeChatFeedback } from "@/app/app/services/lib";
@@ -28,6 +29,7 @@ import { toast } from "@/hooks/useToast";
  * ```
  */
 export default function useFeedbackController() {
+  const tToast = useTranslations("toasts.chat");
   const updateCurrentMessageFeedback = useChatSessionStore(
     (state) => state.updateCurrentMessageFeedback
   );
@@ -60,9 +62,9 @@ export default function useFeedbackController() {
             updateCurrentMessageFeedback(messageId, previousFeedback);
             const errorData = await response.json();
             toast.error(
-              `Failed to remove feedback - ${
-                errorData.detail || errorData.message
-              }`
+              tToast("feedbackRemoveFailedDetail", {
+                error: errorData.detail || errorData.message,
+              })
             );
             return false;
           }
@@ -79,9 +81,9 @@ export default function useFeedbackController() {
             updateCurrentMessageFeedback(messageId, previousFeedback);
             const errorData = await response.json();
             toast.error(
-              `Failed to submit feedback - ${
-                errorData.detail || errorData.message
-              }`
+              tToast("feedbackSubmitFailedDetail", {
+                error: errorData.detail || errorData.message,
+              })
             );
             return false;
           }
@@ -90,11 +92,11 @@ export default function useFeedbackController() {
       } catch (error) {
         // Rollback on network error
         updateCurrentMessageFeedback(messageId, previousFeedback);
-        toast.error("Failed to submit feedback - network error");
+        toast.error(tToast("feedbackSubmitNetworkError"));
         return false;
       }
     },
-    [updateCurrentMessageFeedback]
+    [updateCurrentMessageFeedback, tToast]
   );
 
   return { handleFeedbackChange };

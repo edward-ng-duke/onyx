@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Section } from "@/layouts/general-layouts";
 import { Button } from "@opal/components";
 import Modal from "@/refresh-components/Modal";
@@ -63,6 +64,7 @@ export default function CredentialStep({
   isSingleStep = false,
   onConnectorSuccess,
 }: CredentialStepProps) {
+  const tToast = useTranslations("toasts.craft");
   const [createCredentialFormToggle, setCreateCredentialFormToggle] =
     useState(false);
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -110,7 +112,7 @@ export default function CredentialStep({
       onConnectorSuccess?.();
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "Failed to create connector"
+        err instanceof Error ? err.message : tToast("createConnectorFailed")
       );
     } finally {
       setIsConnecting(false);
@@ -166,7 +168,7 @@ export default function CredentialStep({
                   toast.error(
                     err instanceof Error
                       ? err.message
-                      : "Failed to create connector"
+                      : tToast("createConnectorFailed")
                   );
                 } finally {
                   setIsConnecting(false);

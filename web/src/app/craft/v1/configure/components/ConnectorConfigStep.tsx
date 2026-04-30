@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Formik, Form, useFormikContext } from "formik";
 import { Section } from "@/layouts/general-layouts";
 import { Button, Divider } from "@opal/components";
@@ -29,6 +30,7 @@ function ConnectorConfigForm({
   onSuccess,
   onBack,
 }: ConnectorConfigStepProps) {
+  const tToast = useTranslations("toasts.craft");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { values } = useFormikContext<Record<string, any>>();
   const { user } = useUser();
@@ -59,7 +61,7 @@ function ConnectorConfigForm({
       onSuccess();
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "Failed to create connector"
+        err instanceof Error ? err.message : tToast("createConnectorFailed")
       );
     } finally {
       setIsSubmitting(false);
