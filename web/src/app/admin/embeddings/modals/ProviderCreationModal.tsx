@@ -39,6 +39,7 @@ export default function ProviderCreationModal({
   updateCurrentModel,
 }: ProviderCreationModalProps) {
   const tValEmbeddings = useTranslations("validation.embeddings");
+  const t = useTranslations("admin.embeddings");
   const useFileUpload =
     selectedProvider.provider_type == EmbeddingProvider.GOOGLE;
 
@@ -97,9 +98,7 @@ export default function ProviderCreationModal({
         try {
           jsonContent = JSON.parse(fileContent);
         } catch (parseError) {
-          throw new Error(
-            "Failed to parse JSON file. Please ensure it's a valid JSON."
-          );
+          throw new Error(t("jsonParseError"));
         }
         setFieldValue("api_key", JSON.stringify(jsonContent));
       } catch (error) {
@@ -166,9 +165,7 @@ export default function ProviderCreationModal({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(
-          errorData.detail || "Failed to update provider- check your API key"
-        );
+        throw new Error(errorData.detail || t("updateProviderFailedApiKey"));
       }
 
       onConfirm();
@@ -176,7 +173,7 @@ export default function ProviderCreationModal({
       if (error instanceof Error) {
         setErrorMsg(error.message);
       } else {
-        setErrorMsg("An unknown error occurred");
+        setErrorMsg(t("unknownError"));
       }
     } finally {
       setSubmitting(false);
@@ -189,9 +186,9 @@ export default function ProviderCreationModal({
         <Modal.Header
           icon={SvgSettings}
           title={markdown(
-            `Configure *${getFormattedProviderName(
-              selectedProvider.provider_type
-            )}*`
+            t("configureProvider", {
+              provider: getFormattedProviderName(selectedProvider.provider_type),
+            })
           )}
           onClose={onCancel}
         />
@@ -204,24 +201,23 @@ export default function ProviderCreationModal({
             {({ isSubmitting, handleSubmit, setFieldValue }) => (
               <Form onSubmit={handleSubmit} className="space-y-4">
                 <Text as="p">
-                  You are setting the credentials for this provider. To access
-                  this information, follow the instructions{" "}
+                  {t("credentialsIntroPart1")}{" "}
                   <a
                     className="cursor-pointer underline"
                     target="_blank"
                     href={selectedProvider.docsLink}
                     rel="noreferrer"
                   >
-                    here
+                    {t("credentialsIntroHere")}
                   </a>{" "}
-                  and gather your{" "}
+                  {t("credentialsIntroPart2")}{" "}
                   <a
                     className="cursor-pointer underline"
                     target="_blank"
                     href={selectedProvider.apiLink}
                     rel="noreferrer"
                   >
-                    {isProxy || isAzure ? "API URL" : "API KEY"}
+                    {isProxy || isAzure ? t("apiUrlLink") : t("apiKeyLink")}
                   </a>
                 </Text>
 
@@ -229,8 +225,8 @@ export default function ProviderCreationModal({
                   {(isProxy || isAzure) && (
                     <TextFormField
                       name="api_url"
-                      label="API URL"
-                      placeholder="API URL"
+                      label={t("apiUrlLabel")}
+                      placeholder={t("apiUrlPlaceholder")}
                       type="text"
                     />
                   )}
@@ -238,8 +234,10 @@ export default function ProviderCreationModal({
                   {isProxy && (
                     <TextFormField
                       name="model_name"
-                      label={`Model Name ${isProxy ? "(for testing)" : ""}`}
-                      placeholder="Model Name"
+                      label={
+                        isProxy ? t("modelNameLabelTesting") : t("modelNameLabel")
+                      }
+                      placeholder={t("modelNamePlaceholder")}
                       type="text"
                     />
                   )}
@@ -247,8 +245,8 @@ export default function ProviderCreationModal({
                   {isAzure && (
                     <TextFormField
                       name="deployment_name"
-                      label="Deployment Name"
-                      placeholder="Deployment Name"
+                      label={t("deploymentNameLabel")}
+                      placeholder={t("deploymentNamePlaceholder")}
                       type="text"
                     />
                   )}
@@ -256,15 +254,15 @@ export default function ProviderCreationModal({
                   {isAzure && (
                     <TextFormField
                       name="api_version"
-                      label="API Version"
-                      placeholder="API Version"
+                      label={t("apiVersionLabel")}
+                      placeholder={t("apiVersionPlaceholder")}
                       type="text"
                     />
                   )}
 
                   {useFileUpload ? (
                     <>
-                      <Label>Upload JSON File</Label>
+                      <Label>{t("uploadJsonFile")}</Label>
                       <input
                         ref={fileInputRef}
                         type="file"
@@ -272,15 +270,15 @@ export default function ProviderCreationModal({
                         onChange={(e) => handleFileUpload(e, setFieldValue)}
                         className="text-lg w-full p-1"
                       />
-                      {fileName && <p>Uploaded file: {fileName}</p>}
+                      {fileName && <p>{t("uploadedFile", { name: fileName })}</p>}
                     </>
                   ) : (
                     <TextFormField
                       name="api_key"
-                      label={`API Key ${
-                        isProxy ? "(for non-local deployments)" : ""
-                      }`}
-                      placeholder="API Key"
+                      label={
+                        isProxy ? t("apiKeyLabelNonLocal") : t("apiKeyLabel")
+                      }
+                      placeholder={t("apiKeyPlaceholder")}
                       type="password"
                     />
                   )}
@@ -291,12 +289,12 @@ export default function ProviderCreationModal({
                     className="underline cursor-pointer"
                     rel="noreferrer"
                   >
-                    Learn more here
+                    {t("learnMoreHere")}
                   </a>
                 </div>
 
                 {errorMsg && (
-                  <Callout title="Error" type="danger">
+                  <Callout title={t("error")} type="danger">
                     {errorMsg}
                   </Callout>
                 )}
@@ -308,10 +306,10 @@ export default function ProviderCreationModal({
                   icon={isSubmitting ? SimpleLoader : undefined}
                 >
                   {isSubmitting
-                    ? "Submitting"
+                    ? t("submitting")
                     : existingProvider
-                      ? "Update"
-                      : "Create"}
+                      ? t("update")
+                      : t("create")}
                 </Button>
               </Form>
             )}

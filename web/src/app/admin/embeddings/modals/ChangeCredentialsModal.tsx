@@ -17,6 +17,7 @@ import { mutate } from "swr";
 import { SWR_KEYS } from "@/lib/swr-keys";
 import { testEmbedding } from "@/app/admin/embeddings/pages/utils";
 import { SvgSettings } from "@opal/icons";
+import { useTranslations } from "next-intl";
 
 export interface ChangeCredentialsModalProps {
   provider: CloudEmbeddingProvider;
@@ -37,6 +38,7 @@ export default function ChangeCredentialsModal({
   isProxy = false,
   isAzure = false,
 }: ChangeCredentialsModalProps) {
+  const t = useTranslations("admin.embeddings");
   const [apiKey, setApiKey] = useState("");
   const [apiUrl, setApiUrl] = useState("");
   const [modelName, setModelName] = useState("");
@@ -68,15 +70,13 @@ export default function ChangeCredentialsModal({
           jsonContent = JSON.parse(fileContent);
           setApiKey(JSON.stringify(jsonContent));
         } catch (parseError) {
-          throw new Error(
-            "Failed to parse JSON file. Please ensure it's a valid JSON."
-          );
+          throw new Error(t("jsonParseError"));
         }
       } catch (error) {
         setTestError(
           error instanceof Error
             ? error.message
-            : "An unknown error occurred while processing the file."
+            : t("fileProcessingError")
         );
         setApiKey("");
         clearFileInput();
@@ -105,7 +105,7 @@ export default function ChangeCredentialsModal({
       onDeleted();
     } catch (error) {
       setDeletionError(
-        error instanceof Error ? error.message : "An unknown error occurred"
+        error instanceof Error ? error.message : t("unknownError")
       );
     }
   };
@@ -117,7 +117,7 @@ export default function ChangeCredentialsModal({
       .split(" ")[0];
 
     if (!normalizedProviderType) {
-      setTestError("Provider type is invalid or missing.");
+      setTestError(t("providerTypeInvalid"));
       return;
     }
 
@@ -152,9 +152,9 @@ export default function ChangeCredentialsModal({
         const errorData = await updateResponse.json();
         throw new Error(
           errorData.detail ||
-            `Failed to update provider- check your ${
-              isProxy ? "API URL" : "API key"
-            }`
+            (isProxy
+              ? t("updateProviderFailedApiUrl")
+              : t("updateProviderFailedApiKey"))
         );
       }
 
@@ -164,7 +164,7 @@ export default function ChangeCredentialsModal({
       onConfirm();
     } catch (error) {
       setTestError(
-        error instanceof Error ? error.message : "An unknown error occurred"
+        error instanceof Error ? error.message : t("unknownError")
       );
     }
   };
@@ -174,9 +174,10 @@ export default function ChangeCredentialsModal({
         <Modal.Header
           icon={SvgSettings}
           title={markdown(
-            `Modify your *${getFormattedProviderName(
-              provider.provider_type
-            )}* ${isProxy ? "configuration" : "key"}`
+            t("modifyConfig", {
+              provider: getFormattedProviderName(provider.provider_type),
+              kind: isProxy ? t("configKindConfiguration") : t("configKindKey"),
+            })
           )}
           onClose={onCancel}
         />
@@ -184,15 +185,15 @@ export default function ChangeCredentialsModal({
           {!isAzure && (
             <>
               <Text as="p">
-                You can modify your configuration by providing a new API key
-                {isProxy ? " or API URL." : "."}
+                {t("modifyConfigPart1")}
+                {isProxy ? t("modifyConfigPart2OrUrl") : t("modifyConfigPart2End")}
               </Text>
 
               <div className="flex flex-col gap-2">
-                <Label className="mt-2">API Key</Label>
+                <Label className="mt-2">{t("apiKeyLabel")}</Label>
                 {useFileUpload ? (
                   <>
-                    <Label className="mt-2">Upload JSON File</Label>
+                    <Label className="mt-2">{t("uploadJsonFile")}</Label>
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -200,7 +201,7 @@ export default function ChangeCredentialsModal({
                       onChange={handleFileUpload}
                       className="text-lg w-full p-1"
                     />
-                    {fileName && <p>Uploaded file: {fileName}</p>}
+                    {fileName && <p>{t("uploadedFile", { name: fileName })}</p>}
                   </>
                 ) : (
                   <>
@@ -209,14 +210,14 @@ export default function ChangeCredentialsModal({
                       className="border border-border rounded w-full py-2 px-3 bg-background-emphasis"
                       value={apiKey}
                       onChange={(e: any) => setApiKey(e.target.value)}
-                      placeholder="Paste your API key here"
+                      placeholder={t("pasteApiKey")}
                     />
                   </>
                 )}
 
                 {isProxy && (
                   <>
-                    <Label className="mt-2">API URL</Label>
+                    <Label className="mt-2">{t("apiUrlLabel")}</Label>
 
                     <input
                       className={`
@@ -230,21 +231,18 @@ export default function ChangeCredentialsModal({
                       `}
                       value={apiUrl}
                       onChange={(e: any) => setApiUrl(e.target.value)}
-                      placeholder="Paste your API URL here"
+                      placeholder={t("pasteApiUrl")}
                     />
 
                     {deletionError && (
-                      <Callout type="danger" title="Error">
+                      <Callout type="danger" title={t("error")}>
                         {deletionError}
                       </Callout>
                     )}
 
                     <div>
-                      <Label className="mt-2">Test Model</Label>
-                      <Text as="p">
-                        Since you are using a liteLLM proxy, we&apos;ll need a
-                        model name to test the connection with.
-                      </Text>
+                      <Label className="mt-2">{t("testModelLabel")}</Label>
+                      <Text as="p">{t("liteLLMTestModelDesc")}</Text>
                     </div>
                     <input
                       className={`
@@ -258,13 +256,13 @@ export default function ChangeCredentialsModal({
                    `}
                       value={modelName}
                       onChange={(e: any) => setModelName(e.target.value)}
-                      placeholder="Paste your model name here"
+                      placeholder={t("pasteModelName")}
                     />
                   </>
                 )}
 
                 {testError && (
-                  <Callout type="danger" title="Error">
+                  <Callout type="danger" title={t("error")}>
                     {testError}
                   </Callout>
                 )}
@@ -275,7 +273,7 @@ export default function ChangeCredentialsModal({
                   onClick={() => handleSubmit()}
                   disabled={!apiKey}
                 >
-                  Update Configuration
+                  {t("updateConfiguration")}
                 </Button>
 
                 <Divider />
@@ -284,19 +282,16 @@ export default function ChangeCredentialsModal({
           )}
 
           <Text as="p" className="mt-4 font-bold">
-            You can delete your configuration.
+            {t("deleteConfigIntro")}
           </Text>
-          <Text as="p">
-            This is only possible if you have already switched to a different
-            embedding type!
-          </Text>
+          <Text as="p">{t("deleteConfigOnlyIfSwitched")}</Text>
 
           {/* TODO(@raunakab): migrate to opal Button once className/iconClassName is resolved */}
           <Button className="mr-auto" onClick={handleDelete} danger>
-            Delete Configuration
+            {t("deleteConfiguration")}
           </Button>
           {deletionError && (
-            <Callout type="danger" title="Error">
+            <Callout type="danger" title={t("error")}>
               {deletionError}
             </Callout>
           )}

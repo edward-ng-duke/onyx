@@ -2,6 +2,8 @@ import Modal from "@/refresh-components/Modal";
 import { Button } from "@opal/components";
 import Text from "@/refresh-components/texts/Text";
 import { SvgAlertTriangle } from "@opal/icons";
+import { useTranslations } from "next-intl";
+
 export interface InstantSwitchConfirmModalProps {
   onClose: () => void;
   onConfirm: () => void;
@@ -11,28 +13,26 @@ export default function InstantSwitchConfirmModal({
   onClose,
   onConfirm,
 }: InstantSwitchConfirmModalProps) {
+  const t = useTranslations("admin.embeddings");
+  const tCommon = useTranslations("common.actions");
   return (
     <Modal open onOpenChange={onClose}>
       <Modal.Content width="sm" height="sm">
         <Modal.Header
           icon={SvgAlertTriangle}
-          title="Are you sure you want to do an instant switch?"
+          title={t("instantSwitchConfirmTitle")}
           onClose={onClose}
         />
         <Modal.Body>
+          <Text as="p">{t("instantSwitchConfirmBody")}</Text>
           <Text as="p">
-            Instant switching will immediately change the embedding model
-            without re-indexing. Searches will be over a partial set of
-            documents (starting with 0 documents) until re-indexing is complete.
-          </Text>
-          <Text as="p">
-            <strong>This is not reversible.</strong>
+            <strong>{t("notReversible")}</strong>
           </Text>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={onConfirm}>Confirm</Button>
+          <Button onClick={onConfirm}>{tCommon("confirm")}</Button>
           <Button prominence="secondary" onClick={onClose}>
-            Cancel
+            {tCommon("cancel")}
           </Button>
         </Modal.Footer>
       </Modal.Content>

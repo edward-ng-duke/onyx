@@ -1,9 +1,11 @@
 import Modal from "@/refresh-components/Modal";
 import Text from "@/refresh-components/texts/Text";
 import { Callout } from "@/components/ui/callout";
-import { Button } from "@opal/components";
+import { Button, Text as OpalText } from "@opal/components";
 import { HostedEmbeddingModel } from "@/components/embedding/interfaces";
 import { SvgServer } from "@opal/icons";
+import { useTranslations } from "next-intl";
+import { markdown } from "@opal/utils";
 
 export interface ModelSelectionConfirmationModalProps {
   selectedModel: HostedEmbeddingModel;
@@ -18,47 +20,39 @@ export default function ModelSelectionConfirmationModal({
   onConfirm,
   onCancel,
 }: ModelSelectionConfirmationModalProps) {
+  const t = useTranslations("admin.embeddings");
+  const tCommon = useTranslations("common.actions");
   return (
     <Modal open onOpenChange={onCancel}>
       <Modal.Content width="sm" height="lg">
         <Modal.Header
           icon={SvgServer}
-          title="Update Embedding Model"
+          title={t("updateEmbeddingModel")}
           onClose={onCancel}
         />
         <Modal.Body>
-          <Text as="p">
-            You have selected: <strong>{selectedModel.model_name}</strong>. Are
-            you sure you want to update to this new embedding model?
-          </Text>
-          <Text as="p">
-            We will re-index all your documents in the background so you will be
-            able to continue to use Onyx as normal with the old model in the
-            meantime. Depending on how many documents you have indexed, this may
-            take a while.
-          </Text>
-          <Text as="p">
-            <i>NOTE:</i> this re-indexing process will consume more resources
-            than normal. If you are self-hosting, we recommend that you allocate
-            at least 16GB of RAM to Onyx during this process.
-          </Text>
+          <OpalText as="p" font="main-ui-body">
+            {markdown(
+              t("updateModelConfirm", { model: selectedModel.model_name })
+            )}
+          </OpalText>
+          <Text as="p">{t("reindexBackgroundNotice")}</Text>
+          <OpalText as="p" font="main-ui-body">
+            {markdown(t("noteRamRequirement"))}
+          </OpalText>
 
           {isCustom && (
-            <Callout type="warning" title="IMPORTANT">
-              We&apos;ve detected that this is a custom-specified embedding
-              model. Since we have to download the model files before verifying
-              the configuration&apos;s correctness, we won&apos;t be able to let
-              you know if the configuration is valid until{" "}
-              <strong>after</strong> we start re-indexing your documents. If
-              there is an issue, it will show up on this page as an indexing
-              error on this page after clicking Confirm.
+            <Callout type="warning" title={t("important")}>
+              <OpalText font="main-ui-body">
+                {markdown(t("customModelWarning"))}
+              </OpalText>
             </Callout>
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={onConfirm}>Confirm</Button>
+          <Button onClick={onConfirm}>{tCommon("confirm")}</Button>
           <Button prominence="secondary" onClick={onCancel}>
-            Cancel
+            {tCommon("cancel")}
           </Button>
         </Modal.Footer>
       </Modal.Content>

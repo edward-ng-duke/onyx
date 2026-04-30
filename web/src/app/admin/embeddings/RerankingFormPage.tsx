@@ -59,6 +59,7 @@ const RerankingDetailsForm = forwardRef<
     const gpuEnabled = combinedSettings?.settings.gpu_enabled;
     const tValShared = useTranslations("validation.shared");
     const tValReranking = useTranslations("validation.reranking");
+    const t = useTranslations("admin.embeddings");
 
     // Define the validation schema
     const validationSchema = Yup.object().shape({
@@ -147,10 +148,7 @@ const RerankingDetailsForm = forwardRef<
 
           return (
             <div className="p-2 rounded-lg max-w-4xl mx-auto">
-              <p className="mb-4">
-                Select from cloud, self-hosted models, or use no reranking
-                model.
-              </p>
+              <p className="mb-4">{t("selectModelIntro")}</p>
               <div className="text-sm mr-auto mb-6 divide-x-2 flex">
                 {originalRerankingDetails.rerank_model_name && (
                   <button
@@ -161,7 +159,7 @@ const RerankingDetailsForm = forwardRef<
                         : " hover:underline bg-background-100"
                     }`}
                   >
-                    Current
+                    {t("currentTab")}
                   </button>
                 )}
                 <div
@@ -177,7 +175,7 @@ const RerankingDetailsForm = forwardRef<
                         : " hover:underline bg-neutral-100 dark:bg-neutral-900"
                     }`}
                   >
-                    Cloud-based
+                    {t("cloudBased")}
                   </button>
                 </div>
 
@@ -190,7 +188,7 @@ const RerankingDetailsForm = forwardRef<
                         : "hover:underline bg-neutral-100 dark:bg-neutral-900"
                     }`}
                   >
-                    Self-hosted
+                    {t("selfHosted")}
                   </button>
                 </div>
                 {values.rerank_model_name && (
@@ -199,7 +197,7 @@ const RerankingDetailsForm = forwardRef<
                       onClick={() => resetRerankingValues()}
                       className={`mx-2 p-2 font-bold rounded bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 hover:underline`}
                     >
-                      Remove Reranking
+                      {t("removeReranking")}
                     </button>
                   </div>
                 )}
@@ -309,7 +307,7 @@ const RerankingDetailsForm = forwardRef<
                           {card.description}
                         </p>
                         <div className="text-xs text-text-500">
-                          {card.cloud ? "Cloud-based" : "Self-hosted"}
+                          {card.cloud ? t("cloudBased") : t("selfHosted")}
                         </div>
                       </div>
                     );
@@ -324,24 +322,20 @@ const RerankingDetailsForm = forwardRef<
                     <Modal.Content width="sm" height="sm">
                       <Modal.Header
                         icon={SvgAlertTriangle}
-                        title="GPU Not Enabled"
+                        title={t("gpuNotEnabled")}
                         onClose={() => setShowGpuWarningModalModel(null)}
                       />
                       <Modal.Body>
-                        <p className="text-error font-semibold">Warning:</p>
-                        <p>
-                          Local reranking models require significant
-                          computational resources and may perform slowly without
-                          GPU acceleration. Consider switching to GPU-enabled
-                          infrastructure or using a cloud-based alternative for
-                          better performance.
+                        <p className="text-error font-semibold">
+                          {t("gpuWarningLabel")}
                         </p>
+                        <p>{t("gpuWarningBody")}</p>
                       </Modal.Body>
                       <Modal.Footer>
                         <Button
                           onClick={() => setShowGpuWarningModalModel(null)}
                         >
-                          Understood
+                          {t("understood")}
                         </Button>
                       </Modal.Footer>
                     </Modal.Content>
@@ -359,7 +353,7 @@ const RerankingDetailsForm = forwardRef<
                     <Modal.Content>
                       <Modal.Header
                         icon={SvgKey}
-                        title="API Key Configuration"
+                        title={t("apiKeyConfig")}
                         onClose={() => {
                           resetForm();
                           setShowLiteLLMConfigurationModal(false);
@@ -368,7 +362,7 @@ const RerankingDetailsForm = forwardRef<
                       <Modal.Body>
                         <div className="w-full flex flex-col gap-y-4">
                           <TextFormField
-                            subtext="Set the URL at which your LiteLLM Proxy is hosted"
+                            subtext={t("litellmProxyUrlSubtext")}
                             placeholder={values.rerank_api_url || undefined}
                             onChange={(
                               e: React.ChangeEvent<HTMLInputElement>
@@ -381,12 +375,12 @@ const RerankingDetailsForm = forwardRef<
                               setFieldValue("rerank_api_url", value);
                             }}
                             type="text"
-                            label="LiteLLM Proxy  URL"
+                            label={t("litellmProxyUrlLabel")}
                             name="rerank_api_url"
                           />
 
                           <TextFormField
-                            subtext="Set the key to access your LiteLLM Proxy"
+                            subtext={t("litellmProxyKeySubtext")}
                             placeholder={
                               values.rerank_api_key
                                 ? "*".repeat(values.rerank_api_key.length)
@@ -403,13 +397,13 @@ const RerankingDetailsForm = forwardRef<
                               setFieldValue("rerank_api_key", value);
                             }}
                             type="password"
-                            label="LiteLLM Proxy Key"
+                            label={t("litellmProxyKeyLabel")}
                             name="rerank_api_key"
                             optional
                           />
 
                           <TextFormField
-                            subtext="Set the model name to use for LiteLLM Proxy"
+                            subtext={t("litellmModelNameSubtext")}
                             placeholder={
                               values.rerank_model_name
                                 ? "*".repeat(values.rerank_model_name.length)
@@ -425,7 +419,7 @@ const RerankingDetailsForm = forwardRef<
                               });
                               setFieldValue("rerank_model_name", value);
                             }}
-                            label="LiteLLM Model Name"
+                            label={t("litellmModelNameLabel")}
                             name="rerank_model_name"
                             optional
                           />
@@ -437,7 +431,7 @@ const RerankingDetailsForm = forwardRef<
                             setShowLiteLLMConfigurationModal(false);
                           }}
                         >
-                          Update
+                          {t("update")}
                         </Button>
                       </Modal.Footer>
                     </Modal.Content>
@@ -463,7 +457,7 @@ const RerankingDetailsForm = forwardRef<
                     <Modal.Content>
                       <Modal.Header
                         icon={SvgKey}
-                        title="API Key Configuration"
+                        title={t("apiKeyConfig")}
                         onClose={() => {
                           Object.keys(originalRerankingDetails).forEach(
                             (key) => {
@@ -488,7 +482,7 @@ const RerankingDetailsForm = forwardRef<
                                 : values.rerank_provider_type ===
                                     RerankerProvider.BEDROCK
                                   ? "aws_ACCESSKEY_SECRETKEY_REGION"
-                                  : "Enter your API key"
+                                  : t("enterApiKeyPlaceholder")
                             }
                             onChange={(
                               e: React.ChangeEvent<HTMLInputElement>
@@ -504,8 +498,8 @@ const RerankingDetailsForm = forwardRef<
                             label={
                               values.rerank_provider_type ===
                               RerankerProvider.BEDROCK
-                                ? "AWS Credentials in format: aws_ACCESSKEY_SECRETKEY_REGION"
-                                : "Cohere API Key"
+                                ? t("awsCredentialsLabel")
+                                : t("cohereApiKeyLabel")
                             }
                             name="rerank_api_key"
                           />
@@ -513,7 +507,7 @@ const RerankingDetailsForm = forwardRef<
                       </Modal.Body>
                       <Modal.Footer>
                         <Button onClick={() => setIsApiKeyModalOpen(false)}>
-                          Update
+                          {t("update")}
                         </Button>
                       </Modal.Footer>
                     </Modal.Content>
