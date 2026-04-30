@@ -199,4 +199,67 @@ Onyx 整体可拆分为三层。所有跨层调用都走容器网络（service n
 
 ---
 
-*[功能模块清单 + 网络隔离建议见下半部分（T6 续写）]*
+## 4. 功能模块清单
+
+下表盘点 Onyx 主要可见功能在私有化场景下的「默认状态」。`✅ 启用`表示开箱即用且无外部依赖；`⚠️ 可选`表示功能存在但需要管理员显式打开或额外资源；`❌ 不启用`表示默认关闭，启用会带来出网或外部账号依赖；`🚫 不内置`表示当前 Onyx 版本未提供该能力，需自行集成。
+
+| 模块 | 状态 | 说明 / 私有化建议 |
+| --- | --- | --- |
+| LLM Chat | ✅ 启用 | 走内网 OpenAI 兼容代理；通过 LiteLLM 桥接，任何兼容 endpoint（One-API、企业 LLM gateway、自建 LiteLLM proxy 等）均可直接对接。 |
+| Embedding | ✅ 启用 | 通过 admin UI 选 LiteLLM provider 指向同一代理；不走本地 `model_server` 推理，仅做协议适配。 |
+| Reranker | ⚠️ 可选 | 可走 Cohere / LiteLLM 兼容 rerank API，或在 admin UI 中关闭。关闭后搜索质量会略有下降，但不影响整体可用性。 |
+| Vision（图像理解） | ⚠️ 可选 | 如果 enterprise proxy 支持 vision 模型则启用，否则索引图像时自动跳过（不影响纯文本索引链路）。 |
+| OCR | ✅ 启用 | 内置离线库（PyMuPDF、unstructured 等，见 `backend/onyx/file_processing/`），无外部依赖。 |
+| TTS / STT | 🚫 不内置 | Onyx 当前版本未内置语音功能；如确需语音，需自行集成（不在私有化资源清单内）。 |
+| Web 搜索 | ⚠️ 可选 | 推荐 SearXNG（容器内可控、唯一出网容器）；可叠加 Serper / Brave / Google PSE / Exa SaaS API（注意会让 `api_server` 也出网）。 |
+| Web Connector（爬虫式索引） | ⚠️ 可选 | 谨慎启用；会出网爬指定 URL，与「仅 SearXNG 出网」的安全约束冲突；私有化场景一般禁用，仅在白名单内网站点使用。 |
+| OAuth Connectors（GDrive / Slack / Confluence / Jira / Notion / GitHub 等） | ❌ 不启用 | 默认禁用；不配 OAuth client id / secret 即不工作，连接器在 admin UI 中也不会显示授权按钮。 |
+| 本地文件 Connector | ✅ 启用 | 上传压缩包 / Markdown / PDF 等到 MinIO，由 `docprocessing` worker 索引，全程不出网。 |
+| 本地 Wiki / 自建 Discourse / MediaWiki | ✅ 启用 | 走 connector 内部 HTTP 调用，不出公网；与企业内网知识库直连即可。 |
+| Knowledge Graph | ⚠️ 可选 | 需要 Postgres `pg_trgm` 扩展；OSS 私有化场景建议默认关闭以避免额外资源（KG 抽取/聚类对 LLM 调用量贡献明显）。 |
+| Slack Bot / Discord Bot | ❌ 不启用 | 默认不启用；启用后会出网到 Slack / Discord API，与「仅 SearXNG 出网」约束冲突。 |
+| MCP Server | ⚠️ 可选 | 不影响出网（默认仅本地 MCP client 接入）；通过 `MCP_SERVER_ENABLED=true` 打开，可暴露 Onyx 检索能力给外部 MCP 客户端。 |
+| 遥测 / PostHog / Sentry | ❌ 不启用 | 关闭；保持 `DISABLE_TELEMETRY=true`，`POSTHOG_API_KEY` 留空即可，避免任何使用数据外发。 |
+
+### 状态约定与默认收敛
+
+表格中的颜色/符号约定如下：`✅ 启用`= 上线即可用，无需任何外部 SaaS；`⚠️ 可选`= 默认关闭或半启用，需要管理员有意识地开启并评估出网/资源影响；`❌ 不启用`= 默认关闭、与私有化目标冲突、不建议在不放白名单的前提下开启；`🚫 不内置`= Onyx 当前版本压根没有该能力，列在此处只是为了在审批阶段澄清「不要按其他产品的 feature 列表来对照」。
+
+需要强调的是：**默认状态已经针对私有化做了收敛，无需主动禁用即可达到最小出网面**。换言之，只要按 `docker-compose.private.override.yml` 的默认配置部署、不去 admin UI 主动配置 OAuth client / Slack bot token / 联网搜索 SaaS key，整套系统的出网面就只有 `searxng` 一个容器。表中所有 `❌`、`🚫` 行无需运维额外做事，只要「不去打开它」即可。
+
+---
+
+## 5. 网络隔离建议
+
+### 5.1 目标
+
+在主机层 / Kubernetes NetworkPolicy 层**强制**收敛出网面，仅放行 SearXNG（必要时再放行 `api_server`，前提是配置了 Serper / Brave / Google PSE / Exa 等 SaaS 搜索）。理由：应用层的「不配 token 即不出网」是软约束（依赖管理员不去 admin UI 启用相关功能），而硬隔离（防火墙 / NetworkPolicy）是最后一道闸门——即使后续误配置或遭到攻击篡改了 admin 设置，出方向也仍然被网络层兜住。
+
+### 5.2 Docker 主机层（iptables / ufw 思路）
+
+具体规则代码示例放在 `SETUP.md` 中，这里仅给思路（按部署顺序）：
+
+1. **网段隔离**：给 `searxng` 容器分配独立的 docker network 或独立 IP（`compose` 中可加 `networks:` 段把 searxng 单独挂到一个 bridge），方便后续按 IP 做白名单。
+2. **默认 deny outbound**：在主网卡（或 docker bridge 出口）上挂 `iptables -P FORWARD DROP` / `ufw default deny outgoing`，仅放行 docker bridge → public 的指定来源 IP（即 SearXNG 容器 IP）。
+3. **SearXNG 出方向放行**：明确允许 SearXNG 容器出方向 80/443/53（HTTP/HTTPS + DNS）；搜索引擎域名通过 DNS 解析自然命中。
+4. **审计日志**：其他容器尝试出公网应被防火墙日志记录（`-j LOG --log-prefix "[onyx-egress-block]"`），用作合规审计与事中告警。
+5. **SaaS 搜索特例**：如果配置了 Serper / Brave / Google PSE / Exa 等 SaaS 搜索，单独放行 `api_server` → 对应 SaaS API 域名的 443 出方向（建议固定到具体域名而不是放全网）。
+
+### 5.3 Kubernetes NetworkPolicy 思路
+
+具体 YAML 放在 `SETUP.md`，这里仅列规则结构：
+
+- **默认 deny**：在 Onyx 所在的 namespace 加一条 `default-deny-egress` NetworkPolicy，匹配所有 pod，`policyTypes: [Egress]`，`egress: []`。
+- **SearXNG 放行**：给 `searxng` pod 加一条 `allow-egress-internet` NetworkPolicy（`to: [{ ipBlock: { cidr: 0.0.0.0/0 } }]`，或在企业有 egress namespace 时改为 `egress to namespaceSelector`）。
+- **api_server 内网 LLM**：给 `api_server` pod 加一条 `allow-egress-internal-llm-proxy`，指向企业内部 LLM 代理 service / IP（CIDR 限定到企业内网段）；同时放行集群内 DNS、Postgres / Vespa / MinIO / Redis 等 service。
+- **SaaS 搜索单独放行**：如启用 SaaS 搜索，给 `api_server` 单独加一条 NetworkPolicy 放行对应 SaaS 域名（建议用 egress gateway / Cilium FQDN policy 收敛域名白名单，而不是放全 0.0.0.0/0）。
+
+### 5.4 验证清单
+
+部署完成后，逐个容器跑一遍连通性测试，确认硬隔离生效。
+
+在每个容器里执行 `docker exec <container> curl -m 5 https://www.google.com`（或 k8s 下的 `kubectl exec`）。预期只有 `searxng`（以及按需放行的 `api_server`）能成功，其余容器应当超时或被拒绝；详细命令与排错路径见 [SETUP.md](SETUP.md)。
+
+---
+
+更详细的部署上手步骤、admin UI 配置流程和故障排查见 [SETUP.md](SETUP.md)。
