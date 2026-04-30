@@ -48,6 +48,7 @@ import { ValidSources } from "@/lib/types";
 import { ConnectorCredentialPairStatus } from "@/app/admin/connector/[ccPairId]/types";
 import Text from "@/refresh-components/texts/Text";
 import ConfirmationModalLayout from "@/refresh-components/layouts/ConfirmationModalLayout";
+import { LanguageSelect } from "@/components/i18n/LanguageSelect";
 import Code from "@/refresh-components/Code";
 import CharacterCount from "@/refresh-components/CharacterCount";
 import { InputPrompt } from "@/app/app/interfaces";
@@ -401,6 +402,14 @@ function GeneralSettings() {
                   </InputSelect.Item>
                 </InputSelect.Content>
               </InputSelect>
+            </InputHorizontal>
+            <InputHorizontal
+              title="Language / 语言"
+              description="Choose the language used throughout the UI."
+              center
+              withLabel
+            >
+              <LanguageSelect />
             </InputHorizontal>
             <InputVertical title="Chat Background">
               <div className="flex flex-wrap gap-2">
