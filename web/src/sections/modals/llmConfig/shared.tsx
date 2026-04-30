@@ -59,16 +59,17 @@ export interface DisplayNameFieldProps {
   disabled?: boolean;
 }
 export function DisplayNameField({ disabled = false }: DisplayNameFieldProps) {
+  const t = useTranslations("modals.llmConfig.shared");
   return (
     <InputPadder>
       <InputVertical
         withLabel="name"
-        title="Display Name"
-        subDescription="Used to identify this provider in the app."
+        title={t("displayName")}
+        subDescription={t("displayNameDescription")}
       >
         <InputTypeInField
           name="name"
-          placeholder="Display Name"
+          placeholder={t("displayNamePlaceholder")}
           variant={disabled ? "disabled" : undefined}
         />
       </InputVertical>
@@ -91,11 +92,12 @@ export function APIKeyField({
   providerName,
   subDescription,
 }: APIKeyFieldProps) {
+  const t = useTranslations("modals.llmConfig.shared");
   return (
     <InputPadder>
       <InputVertical
         withLabel={name}
-        title="API Key"
+        title={t("apiKey")}
         subDescription={
           subDescription
             ? subDescription
@@ -123,11 +125,12 @@ export function APIBaseField({
   subDescription,
   placeholder = "https://",
 }: APIBaseFieldProps) {
+  const t = useTranslations("modals.llmConfig.shared");
   return (
     <InputPadder>
       <InputVertical
         withLabel="api_base"
-        title="API Base URL"
+        title={t("apiBaseUrl")}
         subDescription={subDescription}
         suffix={optional ? "optional" : undefined}
       >
@@ -144,6 +147,7 @@ const GROUP_PREFIX = "group:";
 const AGENT_PREFIX = "agent:";
 
 export function ModelAccessField() {
+  const t = useTranslations("modals.llmConfig.shared");
   const formikProps = useFormikContext<BaseLLMFormValues>();
   const { agents } = useAgents();
   const { data: userGroups, isLoading: userGroupsIsLoading } = useUserGroups();
@@ -163,14 +167,14 @@ export function ModelAccessField() {
       ? userGroups.map((g) => ({
           value: `${GROUP_PREFIX}${g.id}`,
           label: g.name,
-          description: "Group",
+          description: t("group"),
         }))
       : [];
 
   const agentOptions = agents.map((a) => ({
     value: `${AGENT_PREFIX}${a.id}`,
     label: a.name,
-    description: "Agent",
+    description: t("agent"),
   }));
 
   // Exclude already-selected items from the dropdown
@@ -230,20 +234,20 @@ export function ModelAccessField() {
       <InputPadder>
         <InputHorizontal
           withLabel="is_public"
-          title="Models Access"
-          description="Who can access this provider."
+          title={t("modelsAccess")}
+          description={t("modelsAccessDescription")}
         >
           <InputSelect
             value={isPublic ? "public" : "private"}
             onValueChange={handleAccessChange}
           >
-            <InputSelect.Trigger placeholder="Select access level" />
+            <InputSelect.Trigger placeholder={t("accessLevelPlaceholder")} />
             <InputSelect.Content>
               <InputSelect.Item value="public" icon={SvgOrganization}>
-                All Users & Agents
+                {t("allUsersAndAgents")}
               </InputSelect.Item>
               <InputSelect.Item value="private" icon={SvgUsers}>
-                Named Groups & Agents
+                {t("namedGroupsAndAgents")}
               </InputSelect.Item>
             </InputSelect.Content>
           </InputSelect>
@@ -254,7 +258,7 @@ export function ModelAccessField() {
         <Card background="light" border="none" padding="sm">
           <Section gap={0.5}>
             <InputComboBox
-              placeholder="Add groups and agents"
+              placeholder={t("addGroupsAgentsPlaceholder")}
               value=""
               onChange={() => {}}
               onValueChange={handleSelect}
@@ -266,15 +270,13 @@ export function ModelAccessField() {
             <Card background="heavy" border="none" padding="sm">
               <ContentAction
                 icon={SvgUserManage}
-                title="Admin"
-                description={`${adminCount} ${
-                  adminCount === 1 ? "member" : "members"
-                }`}
+                title={t("admin")}
+                description={t("memberCount", { count: adminCount })}
                 sizePreset="main-ui"
                 variant="section"
                 rightChildren={
                   <Text secondaryBody text03>
-                    Always shared
+                    {t("alwaysShared")}
                   </Text>
                 }
                 padding="fit"
@@ -291,9 +293,9 @@ export function ModelAccessField() {
                         <ContentAction
                           icon={SvgUsers}
                           title={group?.name ?? `Group ${id}`}
-                          description={`${memberCount} ${
-                            memberCount === 1 ? "member" : "members"
-                          }`}
+                          description={t("memberCount", {
+                            count: memberCount,
+                          })}
                           sizePreset="main-ui"
                           variant="section"
                           rightChildren={
@@ -330,7 +332,7 @@ export function ModelAccessField() {
                               : SvgSparkle
                           }
                           title={agent?.name ?? `Agent ${id}`}
-                          description="Agent"
+                          description={t("agent")}
                           sizePreset="main-ui"
                           variant="section"
                           rightChildren={
@@ -353,8 +355,8 @@ export function ModelAccessField() {
               <div className="w-full p-2">
                 <Content
                   icon={SvgOnyxOctagon}
-                  title="No agents added"
-                  description="This provider will not be used by any agents."
+                  title={t("noAgentsAdded")}
+                  description={t("noAgentsDescription")}
                   variant="section"
                   sizePreset="main-ui"
                 />
@@ -427,6 +429,7 @@ export function ModelSelectionField({
   onRefetch,
   onAddModel,
 }: ModelSelectionFieldProps) {
+  const t = useTranslations("modals.llmConfig.shared");
   const formikProps = useFormikContext<BaseLLMFormValues>();
   const [newModelName, setNewModelName] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
@@ -488,8 +491,8 @@ export function ModelSelectionField({
     <Card background="light" border="none" padding="sm">
       <Section gap={0.5}>
         <InputHorizontal
-          title="Models"
-          description="Select models to make available for this provider."
+          title={t("models")}
+          description={t("modelsDescription")}
           center
         >
           <Section flexDirection="row" gap={0}>
@@ -499,14 +502,14 @@ export function ModelSelectionField({
               size="md"
               onClick={handleToggleSelectAll}
             >
-              {allSelected ? "Deselect All" : "Select All"}
+              {allSelected ? t("deselectAll") : t("selectAll")}
             </Button>
             {onRefetch && <RefetchButton onRefetch={onRefetch} />}
           </Section>
         </InputHorizontal>
 
         {models.length === 0 ? (
-          <EmptyMessageCard title="No models available." padding="sm" />
+          <EmptyMessageCard title={t("noModelsAvailable")} padding="sm" />
         ) : (
           <Section gap={0.25}>
             {(() => {
@@ -554,7 +557,7 @@ export function ModelSelectionField({
                         <Content
                           sizePreset="secondary"
                           variant="body"
-                          title={isExpanded ? "Fold Models" : "More Models"}
+                          title={isExpanded ? t("foldModels") : t("moreModels")}
                           icon={() => (
                             <SvgChevronDown
                               className={cn(
@@ -578,7 +581,7 @@ export function ModelSelectionField({
           <Section flexDirection="row" gap={0.5}>
             <div className="flex-1">
               <InputTypeIn
-                placeholder="Enter model name"
+                placeholder={t("enterModelNamePlaceholder")}
                 value={newModelName}
                 onChange={(e) => setNewModelName(e.target.value)}
                 onKeyDown={(e) => {
@@ -610,15 +613,15 @@ export function ModelSelectionField({
                 }
               }}
             >
-              Add Model
+              {t("addModel")}
             </Button>
           </Section>
         )}
 
         {shouldShowAutoUpdateToggle && (
           <InputHorizontal
-            title="Auto Update"
-            description="Update the available models when new models are released."
+            title={t("autoUpdate")}
+            description={t("autoUpdateDescription")}
             withLabel
           >
             <Switch
@@ -694,6 +697,8 @@ function ModalWrapperInner({
   children,
   description: descriptionOverride,
 }: ModalWrapperInnerProps) {
+  const t = useTranslations("modals.llmConfig.shared");
+  const tCommon = useTranslations("common.actions");
   const { isValid, dirty, isSubmitting, status, setFieldValue, values } =
     useFormikContext<BaseLLMFormValues>();
 
@@ -751,7 +756,7 @@ function ModalWrapperInner({
           </Modal.Body>
           <Modal.Footer>
             <Button prominence="secondary" onClick={onClose} type="button">
-              Cancel
+              {tCommon("cancel")}
             </Button>
             <Button
               disabled={!isValid || !dirty || busy}
@@ -761,11 +766,11 @@ function ModalWrapperInner({
             >
               {llmProvider?.name
                 ? busy
-                  ? "Updating"
-                  : "Update"
+                  ? t("updating")
+                  : tCommon("update")
                 : busy
-                  ? "Connecting"
-                  : "Connect"}
+                  ? t("connecting")
+                  : t("connect")}
             </Button>
           </Modal.Footer>
         </Form>

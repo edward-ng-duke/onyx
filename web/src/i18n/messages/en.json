@@ -2,6 +2,7 @@
   "common": {
     "actions": {
       "save": "Save",
+      "update": "Update",
       "cancel": "Cancel",
       "delete": "Delete",
       "edit": "Edit",
@@ -2496,6 +2497,61 @@
         "maxTokensDefault": "Default",
         "noModelsAdded": "No models added yet.",
         "addModel": "Add Model"
+      },
+      "shared": {
+        "displayName": "Display Name",
+        "displayNameDescription": "Used to identify this provider in the app.",
+        "displayNamePlaceholder": "Display Name",
+        "apiKey": "API Key",
+        "apiBaseUrl": "API Base URL",
+        "modelsAccess": "Models Access",
+        "modelsAccessDescription": "Who can access this provider.",
+        "accessLevelPlaceholder": "Select access level",
+        "allUsersAndAgents": "All Users & Agents",
+        "namedGroupsAndAgents": "Named Groups & Agents",
+        "addGroupsAgentsPlaceholder": "Add groups and agents",
+        "admin": "Admin",
+        "alwaysShared": "Always shared",
+        "memberCount": "{count, plural, one {# member} other {# members}}",
+        "group": "Group",
+        "agent": "Agent",
+        "noAgentsAdded": "No agents added",
+        "noAgentsDescription": "This provider will not be used by any agents.",
+        "models": "Models",
+        "modelsDescription": "Select models to make available for this provider.",
+        "deselectAll": "Deselect All",
+        "selectAll": "Select All",
+        "noModelsAvailable": "No models available.",
+        "foldModels": "Fold Models",
+        "moreModels": "More Models",
+        "enterModelNamePlaceholder": "Enter model name",
+        "addModel": "Add Model",
+        "autoUpdate": "Auto Update",
+        "autoUpdateDescription": "Update the available models when new models are released.",
+        "connecting": "Connecting",
+        "updating": "Updating",
+        "connect": "Connect"
+      },
+      "azure": {
+        "targetUri": "Target URI",
+        "targetUriDescription": "Paste your endpoint target URI from Azure OpenAI (including API endpoint base, deployment name, and API version)."
+      },
+      "bedrock": {
+        "awsRegion": "AWS Region",
+        "awsRegionDescription": "Region where your Amazon Bedrock models are hosted.",
+        "regionPlaceholder": "Select a region",
+        "authMethod": "Authentication Method",
+        "authMethodDescription": "Choose how Onyx should authenticate with Bedrock.",
+        "awsRecommended": "Recommended for AWS environments",
+        "awsNonRecommended": "For non-AWS environments",
+        "awsAccessKeyId": "AWS Access Key ID",
+        "awsSecretAccessKey": "AWS Secret Access Key",
+        "iamDescription": "Onyx will use the IAM role attached to the environment it's running in to authenticate.",
+        "longTermApiKey": "Long-term API Key",
+        "longTermApiKeyPlaceholder": "Your long-term API key"
+      },
+      "bifrost": {
+        "endpointDescription": "Paste your Bifrost gateway endpoint URL (including API version)."
       }
     }
   },

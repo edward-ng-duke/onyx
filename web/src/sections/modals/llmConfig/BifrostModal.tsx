@@ -44,6 +44,7 @@ function BifrostModalInternals({
   existingLlmProvider,
   isOnboarding,
 }: BifrostModalInternalsProps) {
+  const t = useTranslations("modals.llmConfig.bifrost");
   const formikProps = useFormikContext<BifrostModalValues>();
 
   const isFetchDisabled = !formikProps.values.api_base;
@@ -69,7 +70,7 @@ function BifrostModalInternals({
   return (
     <>
       <APIBaseField
-        subDescription="Paste your Bifrost gateway endpoint URL (including API version)."
+        subDescription={t("endpointDescription")}
         placeholder="https://your-bifrost-gateway.com/v1"
       />
 

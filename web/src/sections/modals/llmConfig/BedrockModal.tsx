@@ -78,6 +78,7 @@ function BedrockModalInternals({
   existingLlmProvider,
   isOnboarding,
 }: BedrockModalInternalsProps) {
+  const t = useTranslations("modals.llmConfig.bedrock");
   const formikProps = useFormikContext<BedrockModalValues>();
   const authMethod = formikProps.values.custom_config?.BEDROCK_AUTH_METHOD;
 
@@ -134,11 +135,11 @@ function BedrockModalInternals({
         <Section gap={1}>
           <InputVertical
             withLabel={FIELD_AWS_REGION_NAME}
-            title="AWS Region"
-            subDescription="Region where your Amazon Bedrock models are hosted."
+            title={t("awsRegion")}
+            subDescription={t("awsRegionDescription")}
           >
             <InputSelectField name={FIELD_AWS_REGION_NAME}>
-              <InputSelect.Trigger placeholder="Select a region" />
+              <InputSelect.Trigger placeholder={t("regionPlaceholder")} />
               <InputSelect.Content>
                 {AWS_REGION_OPTIONS.map((option) => (
                   <InputSelect.Item key={option.value} value={option.value}>
@@ -151,8 +152,8 @@ function BedrockModalInternals({
 
           <InputVertical
             withLabel={FIELD_BEDROCK_AUTH_METHOD}
-            title="Authentication Method"
-            subDescription="Choose how Onyx should authenticate with Bedrock."
+            title={t("authMethod")}
+            subDescription={t("authMethodDescription")}
           >
             <InputSelect
               value={authMethod || AUTH_METHOD_ACCESS_KEY}
@@ -164,19 +165,19 @@ function BedrockModalInternals({
               <InputSelect.Content>
                 <InputSelect.Item
                   value={AUTH_METHOD_IAM}
-                  description="Recommended for AWS environments"
+                  description={t("awsRecommended")}
                 >
                   Environment IAM Role
                 </InputSelect.Item>
                 <InputSelect.Item
                   value={AUTH_METHOD_ACCESS_KEY}
-                  description="For non-AWS environments"
+                  description={t("awsNonRecommended")}
                 >
                   Access Key
                 </InputSelect.Item>
                 <InputSelect.Item
                   value={AUTH_METHOD_LONG_TERM_API_KEY}
-                  description="For non-AWS environments"
+                  description={t("awsNonRecommended")}
                 >
                   Long-term API Key
                 </InputSelect.Item>
@@ -191,7 +192,7 @@ function BedrockModalInternals({
           <Section gap={1}>
             <InputVertical
               withLabel={FIELD_AWS_ACCESS_KEY_ID}
-              title="AWS Access Key ID"
+              title={t("awsAccessKeyId")}
             >
               <InputTypeInField
                 name={FIELD_AWS_ACCESS_KEY_ID}
@@ -200,7 +201,7 @@ function BedrockModalInternals({
             </InputVertical>
             <InputVertical
               withLabel={FIELD_AWS_SECRET_ACCESS_KEY}
-              title="AWS Secret Access Key"
+              title={t("awsSecretAccessKey")}
             >
               <PasswordInputTypeInField
                 name={FIELD_AWS_SECRET_ACCESS_KEY}
@@ -213,10 +214,7 @@ function BedrockModalInternals({
 
       {authMethod === AUTH_METHOD_IAM && (
         <InputPadder>
-          <MessageCard
-            variant="info"
-            title="Onyx will use the IAM role attached to the environment it’s running in to authenticate."
-          />
+          <MessageCard variant="info" title={t("iamDescription")} />
         </InputPadder>
       )}
 
@@ -225,11 +223,11 @@ function BedrockModalInternals({
           <Section gap={0.5}>
             <InputVertical
               withLabel={FIELD_AWS_BEARER_TOKEN_BEDROCK}
-              title="Long-term API Key"
+              title={t("longTermApiKey")}
             >
               <PasswordInputTypeInField
                 name={FIELD_AWS_BEARER_TOKEN_BEDROCK}
-                placeholder="Your long-term API key"
+                placeholder={t("longTermApiKeyPlaceholder")}
               />
             </InputVertical>
           </Section>

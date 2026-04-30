@@ -107,6 +107,7 @@ export default function AzureModal({
   onOpenChange,
   onSuccess,
 }: LLMProviderFormProps) {
+  const t = useTranslations("modals.llmConfig.azure");
   const tToast = useTranslations("toasts.admin.llm");
   const tValLlm = useTranslations("validation.llm");
   const isOnboarding = variant === "onboarding";
@@ -188,8 +189,8 @@ export default function AzureModal({
       <InputPadder>
         <InputVertical
           withLabel="target_uri"
-          title="Target URI"
-          subDescription="Paste your endpoint target URI from Azure OpenAI (including API endpoint base, deployment name, and API version)."
+          title={t("targetUri")}
+          subDescription={t("targetUriDescription")}
         >
           <InputTypeInField
             name="target_uri"
