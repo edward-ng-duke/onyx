@@ -853,6 +853,139 @@
         }
       }
     },
+    "connectorDetail": {
+      "header": {
+        "manage": "Manage",
+        "reIndex": "Re-Index",
+        "resume": "Resume",
+        "pause": "Pause",
+        "delete": "Delete",
+        "fetchInfoFailed": "Failed to fetch info on Connector with ID {ccPairId}",
+        "unknownError": "Unknown error",
+        "tooltipReindexInProgress": "Cannot re-index while indexing is already in progress",
+        "tooltipResumeBeforeReindex": "Resume the connector before re-indexing",
+        "tooltipFixBeforeReindex": "Fix the connector configuration before re-indexing",
+        "tooltipStatusUpdating": "Status update in progress",
+        "tooltipPauseBeforeDelete": "Pause the connector before deleting"
+      },
+      "deleteModal": {
+        "entityType": "connector",
+        "additionalDetails": "Deleting this connector schedules a deletion job that removes its indexed documents and deletes it for every user."
+      },
+      "editProperty": {
+        "refreshFrequencyTitle": "Refresh Frequency",
+        "refreshFrequencyDetails": "How often the connector should refresh (in minutes)",
+        "pruningFrequencyTitle": "Pruning Frequency",
+        "pruningFrequencyDetails": "How often the connector should be pruned (in hours)"
+      },
+      "invalidState": {
+        "title": "Invalid Connector State",
+        "description": "This connector is in an invalid state. Please update your credentials or create a new connector before re-indexing."
+      },
+      "errorAlert": {
+        "title": "Some documents failed to index",
+        "resolvingFailures": "Resolving failures",
+        "ranIntoIssues": "We ran into some issues while processing some documents.",
+        "viewDetails": "View details."
+      },
+      "indexingSection": {
+        "title": "Indexing",
+        "status": "Status",
+        "documentsIndexed": "Documents Indexed",
+        "lastIndexed": "Last Indexed",
+        "permissionSyncing": "Permission Syncing",
+        "lastSynced": "Last Synced",
+        "docsPerMinute": "({speed} docs / min)"
+      },
+      "credential": {
+        "title": "Credential"
+      },
+      "connectorConfig": {
+        "title": "Connector Configuration"
+      },
+      "advanced": {
+        "title": "Advanced",
+        "configurationTitle": "Advanced Configuration",
+        "indexingAttemptsTitle": "Indexing Attempts"
+      },
+      "reIndexModal": {
+        "title": "Run Indexing",
+        "updateDescription": "This will pull in and index all documents that have changed and/or have been added since the last successful indexing run.",
+        "runUpdate": "Run Update",
+        "completeDescription": "This will cause a complete re-indexing of all documents from the source.",
+        "noteLabel": "NOTE:",
+        "noteDescription": "depending on the number of documents stored in the source, this may take a long time.",
+        "runComplete": "Run Complete Re-Indexing"
+      },
+      "attemptsTable": {
+        "noAttemptsTitle": "No indexing attempts scheduled yet",
+        "noAttemptsBody": "Index attempts are scheduled in the background, and may take some time to appear. Try refreshing the page in ~30 seconds!",
+        "columnTimeStarted": "Time Started",
+        "columnStatus": "Status",
+        "columnNewDocs": "New Docs",
+        "columnTotalDocs": "Total Docs",
+        "columnErrorMessage": "Error Message",
+        "totalDocsTooltip": "Total number of documents replaced in the index during this indexing attempt",
+        "viewStageMetricsTooltip": "View stage metrics",
+        "viewFullTrace": "View full trace",
+        "docsPerMinute": "{speed} docs / min",
+        "noAdditionalDocs": "No additional docs processed",
+        "alsoRemoved": "(also removed {count} docs that were detected as deleted in the source)",
+        "reindexTooltipInProgress": "This index attempt is a full re-index. All documents from the source are being synced into the system.",
+        "reindexTooltipPast": "This index attempt was a full re-index. All documents from the source were synced into the system."
+      },
+      "errorsModal": {
+        "title": "Indexing Errors",
+        "resolvingDescription": "Currently attempting to resolve all errors by performing a full re-index. This may take some time to complete.",
+        "intro": "Below are the errors encountered during indexing. Each row represents a failed document or entity.",
+        "ctaHint": "Click the button below to kick off a full re-index to try and resolve these errors. This full re-index may take much longer than a normal update.",
+        "columnTime": "Time",
+        "columnDocumentId": "Document ID",
+        "columnErrorMessage": "Error Message",
+        "columnStatus": "Status",
+        "unknown": "Unknown",
+        "resolved": "Resolved",
+        "unresolved": "Unresolved",
+        "noErrorsOnPage": "No errors found on this page",
+        "resolveAll": "Resolve All"
+      },
+      "stageMetricsModal": {
+        "title": "Indexing stage metrics",
+        "description": "Per-batch and per-attempt timing for this index attempt."
+      },
+      "stageMetricsPanel": {
+        "loading": "Loading stage metrics…",
+        "loadFailedTitle": "Failed to load stage metrics",
+        "loadFailedDescription": "Stage timing data could not be loaded for this attempt. The pipeline runs even when metric recording is unavailable, so this does not indicate a problem with the indexing run itself.",
+        "noData": "No stage timing data has been recorded for this attempt yet. Older attempts that ran before stage instrumentation was deployed will not have metrics."
+      },
+      "fileManagement": {
+        "errorLoadingFiles": "Error loading files: {message}",
+        "filesCountSingular": "Files ({count} file)",
+        "filesCountPlural": "Files ({count} files)",
+        "edit": "Edit",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "saveChanges": "Save Changes",
+        "noFiles": "No files in this connector",
+        "columnFileName": "File Name",
+        "columnSize": "Size",
+        "columnUploadDate": "Upload Date",
+        "removing": "Removing",
+        "removeFile": "Remove file",
+        "newBadge": "New",
+        "addFiles": "Add Files",
+        "confirmTitle": "Confirm File Changes",
+        "confirmDescription": "When you save these changes, the following will happen:",
+        "filesRemovedSingular": "🗑️ {count} file will be removed",
+        "filesRemovedPlural": "🗑️ {count} files will be removed",
+        "filesRemovedDetail": "Documents from these files will be pruned from the Document Index",
+        "filesAddedSingular": "{count} file will be added",
+        "filesAddedPlural": "{count} files will be added",
+        "filesAddedDetail": "New files will be uploaded, chunked, embedded, and indexed in the Document Index",
+        "confirmAndSave": "Confirm & Save"
+      }
+    },
     "standardAnswer": {
       "categoryDropdown": {
         "errorTitle": "Something went wrong :(",

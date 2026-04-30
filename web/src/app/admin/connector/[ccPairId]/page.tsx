@@ -98,6 +98,7 @@ const PAGES_PER_BATCH = 8;
 function Main({ ccPairId }: { ccPairId: number }) {
   const router = useRouter();
   const { user } = useUser();
+  const t = useTranslations("admin.connectorDetail");
   const tT = useTranslations("toasts.admin.connectors");
   const tValConnectors = useTranslations("validation.connectors");
   const RefreshFrequencySchema = useMemo(
@@ -357,11 +358,11 @@ function Main({ ccPairId }: { ccPairId: number }) {
   if (!ccPair || (!hasLoadedOnce && ccPairError)) {
     return (
       <ErrorCallout
-        errorTitle={`Failed to fetch info on Connector with ID ${ccPairId}`}
+        errorTitle={t("header.fetchInfoFailed", { ccPairId })}
         errorMsg={
           ccPairError?.info?.detail ||
           ccPairError?.toString() ||
-          "Unknown error"
+          t("header.unknownError")
         }
       />
     );
@@ -384,9 +385,9 @@ function Main({ ccPairId }: { ccPairId: number }) {
       {showDeleteConnectorConfirmModal && (
         <ConfirmEntityModal
           danger
-          entityType="connector"
+          entityType={t("deleteModal.entityType")}
           entityName={ccPair.name}
-          additionalDetails="Deleting this connector schedules a deletion job that removes its indexed documents and deletes it for every user."
+          additionalDetails={t("deleteModal.additionalDetails")}
           onClose={() => {
             setShowDeleteConnectorConfirmModal(false);
           }}
@@ -396,8 +397,8 @@ function Main({ ccPairId }: { ccPairId: number }) {
 
       {editingRefreshFrequency && (
         <EditPropertyModal
-          propertyTitle="Refresh Frequency"
-          propertyDetails="How often the connector should refresh (in minutes)"
+          propertyTitle={t("editProperty.refreshFrequencyTitle")}
+          propertyDetails={t("editProperty.refreshFrequencyDetails")}
           propertyName="refresh_frequency"
           propertyValue={String(Math.round((refreshFreq || 0) / 60))}
           validationSchema={RefreshFrequencySchema}
@@ -408,8 +409,8 @@ function Main({ ccPairId }: { ccPairId: number }) {
 
       {editingPruningFrequency && (
         <EditPropertyModal
-          propertyTitle="Pruning Frequency"
-          propertyDetails="How often the connector should be pruned (in hours)"
+          propertyTitle={t("editProperty.pruningFrequencyTitle")}
+          propertyDetails={t("editProperty.pruningFrequencyDetails")}
           propertyName="pruning_frequency"
           propertyValue={String(
             ((pruneFreq || 0) / 3600).toFixed(3).replace(/\.?0+$/, "")
@@ -462,7 +463,7 @@ function Main({ ccPairId }: { ccPairId: number }) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button prominence="secondary" icon={SvgSettings}>
-                  Manage
+                  {t("header.manage")}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -484,17 +485,17 @@ function Main({ ccPairId }: { ccPairId: number }) {
                   className="flex items-center gap-x-2 cursor-pointer px-3 py-2"
                   tooltip={
                     ccPair.indexing
-                      ? "Cannot re-index while indexing is already in progress"
+                      ? t("header.tooltipReindexInProgress")
                       : ccPair.status === ConnectorCredentialPairStatus.PAUSED
-                        ? "Resume the connector before re-indexing"
+                        ? t("header.tooltipResumeBeforeReindex")
                         : ccPair.status ===
                             ConnectorCredentialPairStatus.INVALID
-                          ? "Fix the connector configuration before re-indexing"
+                          ? t("header.tooltipFixBeforeReindex")
                           : undefined
                   }
                 >
                   <RefreshCwIcon className="h-4 w-4" />
-                  <span>Re-Index</span>
+                  <span>{t("header.reIndex")}</span>
                 </DropdownMenuItemWithTooltip>
                 {!isDeleting && (
                   <DropdownMenuItemWithTooltip
@@ -508,7 +509,9 @@ function Main({ ccPairId }: { ccPairId: number }) {
                     disabled={isStatusUpdating}
                     className="flex items-center gap-x-2 cursor-pointer px-3 py-2"
                     tooltip={
-                      isStatusUpdating ? "Status update in progress" : undefined
+                      isStatusUpdating
+                        ? t("header.tooltipStatusUpdating")
+                        : undefined
                     }
                   >
                     {statusIsNotCurrentlyActive(ccPair.status) ? (
@@ -518,8 +521,8 @@ function Main({ ccPairId }: { ccPairId: number }) {
                     )}
                     <span>
                       {statusIsNotCurrentlyActive(ccPair.status)
-                        ? "Resume"
-                        : "Pause"}
+                        ? t("header.resume")
+                        : t("header.pause")}
                     </span>
                   </DropdownMenuItemWithTooltip>
                 )}
@@ -532,12 +535,12 @@ function Main({ ccPairId }: { ccPairId: number }) {
                     className="flex items-center gap-x-2 cursor-pointer px-3 py-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                     tooltip={
                       !statusIsNotCurrentlyActive(ccPair.status)
-                        ? "Pause the connector before deleting"
+                        ? t("header.tooltipPauseBeforeDelete")
                         : undefined
                     }
                   >
                     <Trash2Icon className="h-4 w-4" />
-                    <span>Delete</span>
+                    <span>{t("header.delete")}</span>
                   </DropdownMenuItemWithTooltip>
                 )}
               </DropdownMenuContent>
@@ -558,9 +561,8 @@ function Main({ ccPairId }: { ccPairId: number }) {
 
       {ccPair.status === ConnectorCredentialPairStatus.INVALID && (
         <div className="mt-6">
-          <Callout type="warning" title="Invalid Connector State">
-            This connector is in an invalid state. Please update your
-            credentials or create a new connector before re-indexing.
+          <Callout type="warning" title={t("invalidState.title")}>
+            {t("invalidState.description")}
           </Callout>
         </div>
       )}
@@ -569,23 +571,23 @@ function Main({ ccPairId }: { ccPairId: number }) {
         <Alert className="border-alert bg-yellow-50 dark:bg-yellow-800 my-2 mt-6">
           <AlertCircle className="h-4 w-4 text-yellow-700 dark:text-yellow-500" />
           <AlertTitle className="text-yellow-950 dark:text-yellow-200 font-semibold">
-            Some documents failed to index
+            {t("errorAlert.title")}
           </AlertTitle>
           <AlertDescription className="text-yellow-900 dark:text-yellow-300">
             {isResolvingErrors ? (
               <span>
                 <span className="text-sm text-yellow-700 dark:text-yellow-400 da animate-pulse">
-                  Resolving failures
+                  {t("errorAlert.resolvingFailures")}
                 </span>
               </span>
             ) : (
               <>
-                We ran into some issues while processing some documents.{" "}
+                {t("errorAlert.ranIntoIssues")}{" "}
                 <b
                   className="text-link cursor-pointer dark:text-blue-300"
                   onClick={() => setShowIndexAttemptErrors(true)}
                 >
-                  View details.
+                  {t("errorAlert.viewDetails")}
                 </b>
               </>
             )}
@@ -594,13 +596,15 @@ function Main({ ccPairId }: { ccPairId: number }) {
       )}
 
       <Title className="mb-2 mt-6" size="md">
-        Indexing
+        {t("indexingSection.title")}
       </Title>
 
       <Card className="px-8 py-12">
         <div className="flex">
           <div className="w-[200px]">
-            <div className="text-sm font-medium mb-1">Status</div>
+            <div className="text-sm font-medium mb-1">
+              {t("indexingSection.status")}
+            </div>
             <CCPairStatus
               ccPairStatus={ccPair.status}
               inRepeatedErrorState={ccPair.in_repeated_error_state}
@@ -609,7 +613,9 @@ function Main({ ccPairId }: { ccPairId: number }) {
           </div>
 
           <div className="w-[200px]">
-            <div className="text-sm font-medium mb-1">Documents Indexed</div>
+            <div className="text-sm font-medium mb-1">
+              {t("indexingSection.documentsIndexed")}
+            </div>
             <div className="text-sm text-text-default flex items-center gap-x-1">
               {ccPair.num_docs_indexed.toLocaleString()}
               {ccPair.status ===
@@ -617,14 +623,18 @@ function Main({ ccPairId }: { ccPairId: number }) {
                 ccPair.overall_indexing_speed !== null &&
                 ccPair.num_docs_indexed > 0 && (
                   <div className="ml-0.5 text-xs font-medium">
-                    ({ccPair.overall_indexing_speed.toFixed(1)} docs / min)
+                    {t("indexingSection.docsPerMinute", {
+                      speed: ccPair.overall_indexing_speed.toFixed(1),
+                    })}
                   </div>
                 )}
             </div>
           </div>
 
           <div className="w-[200px]">
-            <div className="text-sm font-medium mb-1">Last Indexed</div>
+            <div className="text-sm font-medium mb-1">
+              {t("indexingSection.lastIndexed")}
+            </div>
             <div className="text-sm text-text-default">
               {timeAgo(ccPair?.last_indexed) ?? "-"}
             </div>
@@ -635,7 +645,7 @@ function Main({ ccPairId }: { ccPairId: number }) {
               <div className="w-[200px]">
                 {/* TODO: Remove className and switch to text03 once Text is fully integrated across this page */}
                 <Text as="p" className="text-sm font-medium mb-1">
-                  Permission Syncing
+                  {t("indexingSection.permissionSyncing")}
                 </Text>
                 {ccPair.permission_syncing ||
                 ccPair.last_permission_sync_attempt_status ? (
@@ -651,7 +661,7 @@ function Main({ ccPairId }: { ccPairId: number }) {
               <div className="w-[200px]">
                 {/* TODO: Remove className and switch to text03 once Text is fully integrated across this page */}
                 <Text as="p" className="text-sm font-medium mb-1">
-                  Last Synced
+                  {t("indexingSection.lastSynced")}
                 </Text>
                 <Text as="p" className="text-sm text-text-default">
                   {ccPair.last_permission_sync_attempt_finished
@@ -668,7 +678,7 @@ function Main({ ccPairId }: { ccPairId: number }) {
         ccPair.is_editable_for_current_user && (
           <>
             <Title size="md" className="mt-10 mb-2">
-              Credential
+              {t("credential.title")}
             </Title>
 
             <div className="mt-2">
@@ -685,7 +695,7 @@ function Main({ ccPairId }: { ccPairId: number }) {
         Object.keys(ccPair.connector.connector_specific_config).length > 0 && (
           <>
             <Title size="md" className="mt-10 mb-2">
-              Connector Configuration
+              {t("connectorConfig.title")}
             </Title>
 
             <Card className="px-8 py-4">
@@ -714,7 +724,7 @@ function Main({ ccPairId }: { ccPairId: number }) {
           <AdvancedOptionsToggle
             showAdvancedOptions={showAdvancedOptions}
             setShowAdvancedOptions={setShowAdvancedOptions}
-            title="Advanced"
+            title={t("advanced.title")}
           />
         </div>
         {showAdvancedOptions && (
@@ -722,7 +732,7 @@ function Main({ ccPairId }: { ccPairId: number }) {
             {(pruneFreq || indexingStart || refreshFreq) && (
               <>
                 <Title size="md" className="mt-3 mb-2">
-                  Advanced Configuration
+                  {t("advanced.configurationTitle")}
                 </Title>
                 <Card className="px-8 py-4">
                   <div>
@@ -739,7 +749,7 @@ function Main({ ccPairId }: { ccPairId: number }) {
             )}
 
             <Title size="md" className="mt-6 mb-2">
-              Indexing Attempts
+              {t("advanced.indexingAttemptsTitle")}
             </Title>
             {indexAttempts && (
               <IndexAttemptsTable

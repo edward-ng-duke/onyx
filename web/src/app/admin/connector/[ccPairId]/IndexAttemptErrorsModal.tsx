@@ -1,4 +1,5 @@
 import Modal from "@/refresh-components/Modal";
+import { useTranslations } from "next-intl";
 import {
   Table,
   TableBody,
@@ -32,6 +33,7 @@ export default function IndexAttemptErrorsModal({
   onResolveAll,
   isResolvingErrors = false,
 }: IndexAttemptErrorsModalProps) {
+  const t = useTranslations("admin.connectorDetail.errorsModal");
   const observerRef = useRef<ResizeObserver | null>(null);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -101,11 +103,9 @@ export default function IndexAttemptErrorsModal({
       <Modal.Content width="full" height="full">
         <Modal.Header
           icon={SvgAlertTriangle}
-          title="Indexing Errors"
+          title={t("title")}
           description={
-            isResolvingErrors
-              ? "Currently attempting to resolve all errors by performing a full re-index. This may take some time to complete."
-              : undefined
+            isResolvingErrors ? t("resolvingDescription") : undefined
           }
           onClose={onClose}
           height="fit"
@@ -113,15 +113,8 @@ export default function IndexAttemptErrorsModal({
         <Modal.Body height="full">
           {!isResolvingErrors && (
             <div className="flex flex-col gap-2 flex-shrink-0">
-              <Text as="p">
-                Below are the errors encountered during indexing. Each row
-                represents a failed document or entity.
-              </Text>
-              <Text as="p">
-                Click the button below to kick off a full re-index to try and
-                resolve these errors. This full re-index may take much longer
-                than a normal update.
-              </Text>
+              <Text as="p">{t("intro")}</Text>
+              <Text as="p">{t("ctaHint")}</Text>
             </div>
           )}
 
@@ -132,10 +125,12 @@ export default function IndexAttemptErrorsModal({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Time</TableHead>
-                  <TableHead>Document ID</TableHead>
-                  <TableHead className="w-1/2">Error Message</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>{t("columnTime")}</TableHead>
+                  <TableHead>{t("columnDocumentId")}</TableHead>
+                  <TableHead className="w-1/2">
+                    {t("columnErrorMessage")}
+                  </TableHead>
+                  <TableHead>{t("columnStatus")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -153,10 +148,14 @@ export default function IndexAttemptErrorsModal({
                             rel="noopener noreferrer"
                             className="text-link hover:underline"
                           >
-                            {error.document_id || error.entity_id || "Unknown"}
+                            {error.document_id ||
+                              error.entity_id ||
+                              t("unknown")}
                           </a>
                         ) : (
-                          error.document_id || error.entity_id || "Unknown"
+                          error.document_id ||
+                          error.entity_id ||
+                          t("unknown")
                         )}
                       </TableCell>
                       <TableCell>
@@ -172,7 +171,7 @@ export default function IndexAttemptErrorsModal({
                               : "bg-red-100 text-red-800"
                           }`}
                         >
-                          {error.is_resolved ? "Resolved" : "Unresolved"}
+                          {error.is_resolved ? t("resolved") : t("unresolved")}
                         </span>
                       </TableCell>
                     </TableRow>
@@ -183,7 +182,7 @@ export default function IndexAttemptErrorsModal({
                       colSpan={4}
                       className="text-center py-8 text-gray-500"
                     >
-                      No errors found on this page
+                      {t("noErrorsOnPage")}
                     </TableCell>
                   </TableRow>
                 )}
@@ -205,7 +204,7 @@ export default function IndexAttemptErrorsModal({
           {hasUnresolvedErrors && !isResolvingErrors && (
             // TODO(@raunakab): migrate to opal Button once className/iconClassName is resolved
             <Button onClick={onResolveAll} className="ml-4 whitespace-nowrap">
-              Resolve All
+              {t("resolveAll")}
             </Button>
           )}
         </Modal.Footer>

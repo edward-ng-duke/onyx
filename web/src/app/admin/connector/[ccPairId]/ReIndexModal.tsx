@@ -77,6 +77,7 @@ export interface ReIndexModalProps {
 }
 
 export default function ReIndexModal({ hide, onRunIndex }: ReIndexModalProps) {
+  const t = useTranslations("admin.connectorDetail.reIndexModal");
   const tT = useTranslations("toasts.admin.connectors");
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -109,29 +110,26 @@ export default function ReIndexModal({ hide, onRunIndex }: ReIndexModalProps) {
   return (
     <Modal open onOpenChange={hide}>
       <Modal.Content width="sm" height="sm">
-        <Modal.Header icon={SvgRefreshCw} title="Run Indexing" onClose={hide} />
+        <Modal.Header
+          icon={SvgRefreshCw}
+          title={t("title")}
+          onClose={hide}
+        />
         <Modal.Body>
-          <Text as="p">
-            This will pull in and index all documents that have changed and/or
-            have been added since the last successful indexing run.
-          </Text>
+          <Text as="p">{t("updateDescription")}</Text>
           <Button disabled={isProcessing} onClick={() => handleRunIndex(false)}>
-            Run Update
+            {t("runUpdate")}
           </Button>
 
           <Divider />
 
+          <Text as="p">{t("completeDescription")}</Text>
           <Text as="p">
-            This will cause a complete re-indexing of all documents from the
-            source.
-          </Text>
-          <Text as="p">
-            <strong>NOTE:</strong> depending on the number of documents stored
-            in the source, this may take a long time.
+            <strong>{t("noteLabel")}</strong> {t("noteDescription")}
           </Text>
 
           <Button disabled={isProcessing} onClick={() => handleRunIndex(true)}>
-            Run Complete Re-Indexing
+            {t("runComplete")}
           </Button>
         </Modal.Body>
       </Modal.Content>

@@ -41,6 +41,7 @@ export default function InlineFileManagement({
   connectorId,
   onRefresh,
 }: InlineFileManagementProps) {
+  const t = useTranslations("admin.connectorDetail.fileManagement");
   const tT = useTranslations("toasts.admin.connectors");
   const [isEditing, setIsEditing] = useState(false);
   const [selectedFilesToRemove, setSelectedFilesToRemove] = useState<
@@ -152,7 +153,7 @@ export default function InlineFileManagement({
   if (error) {
     return (
       <Text as="p" className="text-error">
-        Error loading files: {error.message}
+        {t("errorLoadingFiles", { message: error.message })}
       </Text>
     );
   }
@@ -167,7 +168,9 @@ export default function InlineFileManagement({
       {/* Header with Edit/Save buttons */}
       <div className="flex justify-between items-center mb-4">
         <Text as="p" mainUiBody>
-          Files ({totalFiles} file{totalFiles !== 1 ? "s" : ""})
+          {totalFiles === 1
+            ? t("filesCountSingular", { count: totalFiles })
+            : t("filesCountPlural", { count: totalFiles })}
         </Text>
         <div className="flex gap-2">
           {!isEditing ? (
@@ -176,7 +179,7 @@ export default function InlineFileManagement({
               onClick={() => setIsEditing(true)}
               icon={SvgEdit}
             >
-              Edit
+              {t("edit")}
             </Button>
           ) : (
             <>
@@ -186,7 +189,7 @@ export default function InlineFileManagement({
                 onClick={handleCancel}
                 icon={SvgX}
               >
-                Cancel
+                {t("cancel")}
               </Button>
               <Button
                 disabled={
@@ -196,7 +199,7 @@ export default function InlineFileManagement({
                 onClick={handleSaveClick}
                 icon={SvgCheck}
               >
-                {isSaving ? "Saving..." : "Save Changes"}
+                {isSaving ? t("saving") : t("saveChanges")}
               </Button>
             </>
           )}
@@ -206,7 +209,7 @@ export default function InlineFileManagement({
       {/* File List */}
       {files.length === 0 && filesToAdd.length === 0 ? (
         <Text as="p" mainUiMuted className="text-center py-8">
-          No files in this connector
+          {t("noFiles")}
         </Text>
       ) : (
         <div className="border rounded-lg overflow-hidden mb-4">
@@ -216,9 +219,9 @@ export default function InlineFileManagement({
               <TableHeader className="sticky top-0 bg-background z-10">
                 <TableRow>
                   {isEditing && <TableHead className="w-12"></TableHead>}
-                  <TableHead>File Name</TableHead>
-                  <TableHead>Size</TableHead>
-                  <TableHead>Upload Date</TableHead>
+                  <TableHead>{t("columnFileName")}</TableHead>
+                  <TableHead>{t("columnSize")}</TableHead>
+                  <TableHead>{t("columnUploadDate")}</TableHead>
                   {isEditing && <TableHead className="w-12"></TableHead>}
                 </TableRow>
               </TableHeader>
@@ -257,7 +260,7 @@ export default function InlineFileManagement({
                         </span>
                         {isMarkedForRemoval && (
                           <span className="ml-2 text-xs font-semibold text-red-600 dark:text-red-400">
-                            Removing
+                            {t("removing")}
                           </span>
                         )}
                       </TableCell>
@@ -296,15 +299,15 @@ export default function InlineFileManagement({
                           prominence="tertiary"
                           size="sm"
                           onClick={() => handleRemoveNewFile(index)}
-                          tooltip="Remove file"
-                          title="Remove file"
+                          tooltip={t("removeFile")}
+                          title={t("removeFile")}
                         />
                       </TableCell>
                     )}
                     <TableCell className="font-medium">
                       {file.name}
                       <Text as="p" figureSmallValue>
-                        New
+                        {t("newBadge")}
                       </Text>
                     </TableCell>
                     <TableCell>{formatBytes(file.size)}</TableCell>
@@ -335,7 +338,7 @@ export default function InlineFileManagement({
             onClick={() => fileInputRef.current?.click()}
             icon={SvgPlusCircle}
           >
-            Add Files
+            {t("addFiles")}
           </Button>
         </div>
       )}
@@ -345,8 +348,8 @@ export default function InlineFileManagement({
         <Modal.Content width="sm">
           <Modal.Header
             icon={SvgFolderPlus}
-            title="Confirm File Changes"
-            description="When you save these changes, the following will happen:"
+            title={t("confirmTitle")}
+            description={t("confirmDescription")}
           />
 
           <Modal.Body>
@@ -357,15 +360,20 @@ export default function InlineFileManagement({
                   mainUiBody
                   className="font-semibold text-red-800 dark:text-red-200"
                 >
-                  🗑️ {selectedFilesToRemove.size} file(s) will be removed
+                  {selectedFilesToRemove.size === 1
+                    ? t("filesRemovedSingular", {
+                        count: selectedFilesToRemove.size,
+                      })
+                    : t("filesRemovedPlural", {
+                        count: selectedFilesToRemove.size,
+                      })}
                 </Text>
                 <Text
                   as="p"
                   secondaryBody
                   className="text-red-700 dark:text-red-300 mt-1"
                 >
-                  Documents from these files will be pruned from the Document
-                  Index
+                  {t("filesRemovedDetail")}
                 </Text>
               </div>
             )}
@@ -377,15 +385,16 @@ export default function InlineFileManagement({
                   mainUiBody
                   className="font-semibold text-green-800 dark:text-green-200"
                 >
-                  {filesToAdd.length} file(s) will be added
+                  {filesToAdd.length === 1
+                    ? t("filesAddedSingular", { count: filesToAdd.length })
+                    : t("filesAddedPlural", { count: filesToAdd.length })}
                 </Text>
                 <Text
                   as="p"
                   secondaryBody
                   className="text-green-700 dark:text-green-300 mt-1"
                 >
-                  New files will be uploaded, chunked, embedded, and indexed in
-                  the Document Index
+                  {t("filesAddedDetail")}
                 </Text>
               </div>
             )}
@@ -397,10 +406,10 @@ export default function InlineFileManagement({
               prominence="secondary"
               onClick={() => setShowSaveConfirm(false)}
             >
-              Cancel
+              {t("cancel")}
             </Button>
             <Button disabled={isSaving} onClick={handleConfirmSave}>
-              {isSaving ? "Saving..." : "Confirm & Save"}
+              {isSaving ? t("saving") : t("confirmAndSave")}
             </Button>
           </Modal.Footer>
         </Modal.Content>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Modal from "@/refresh-components/Modal";
 import { SvgBarChartSmall } from "@opal/icons";
 import StageMetricsPanel from "./stage-metrics/StageMetricsPanel";
@@ -13,13 +14,14 @@ export default function StageMetricsModal({
   indexAttemptId,
   onClose,
 }: StageMetricsModalProps) {
+  const t = useTranslations("admin.connectorDetail.stageMetricsModal");
   return (
     <Modal open onOpenChange={(isOpen) => !isOpen && onClose()}>
       <Modal.Content width="lg" height="lg">
         <Modal.Header
           icon={SvgBarChartSmall}
-          title="Indexing stage metrics"
-          description="Per-batch and per-attempt timing for this index attempt."
+          title={t("title")}
+          description={t("description")}
           onClose={onClose}
         />
         <Modal.Body>

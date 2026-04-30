@@ -853,6 +853,139 @@
         }
       }
     },
+    "connectorDetail": {
+      "header": {
+        "manage": "管理",
+        "reIndex": "重新索引",
+        "resume": "恢复",
+        "pause": "暂停",
+        "delete": "删除",
+        "fetchInfoFailed": "无法获取 ID 为 {ccPairId} 的连接器信息",
+        "unknownError": "未知错误",
+        "tooltipReindexInProgress": "索引正在进行中，无法重新索引",
+        "tooltipResumeBeforeReindex": "请先恢复连接器再重新索引",
+        "tooltipFixBeforeReindex": "请先修复连接器配置再重新索引",
+        "tooltipStatusUpdating": "状态更新进行中",
+        "tooltipPauseBeforeDelete": "删除前请先暂停连接器"
+      },
+      "deleteModal": {
+        "entityType": "连接器",
+        "additionalDetails": "删除此连接器将安排一个删除任务，移除其已索引的文档，并对所有用户删除该连接器。"
+      },
+      "editProperty": {
+        "refreshFrequencyTitle": "刷新频率",
+        "refreshFrequencyDetails": "连接器刷新的频率（以分钟为单位）",
+        "pruningFrequencyTitle": "清理频率",
+        "pruningFrequencyDetails": "连接器进行清理的频率（以小时为单位）"
+      },
+      "invalidState": {
+        "title": "连接器状态无效",
+        "description": "该连接器处于无效状态。请在重新索引前更新凭据或新建连接器。"
+      },
+      "errorAlert": {
+        "title": "部分文档索引失败",
+        "resolvingFailures": "正在解决失败项",
+        "ranIntoIssues": "处理部分文档时遇到了一些问题。",
+        "viewDetails": "查看详情。"
+      },
+      "indexingSection": {
+        "title": "索引",
+        "status": "状态",
+        "documentsIndexed": "已索引文档",
+        "lastIndexed": "最后索引时间",
+        "permissionSyncing": "权限同步",
+        "lastSynced": "最后同步时间",
+        "docsPerMinute": "({speed} 文档 / 分钟)"
+      },
+      "credential": {
+        "title": "凭据"
+      },
+      "connectorConfig": {
+        "title": "连接器配置"
+      },
+      "advanced": {
+        "title": "高级",
+        "configurationTitle": "高级配置",
+        "indexingAttemptsTitle": "索引尝试"
+      },
+      "reIndexModal": {
+        "title": "运行索引",
+        "updateDescription": "这将拉取并索引自上次成功索引以来发生变化或新增的所有文档。",
+        "runUpdate": "运行更新",
+        "completeDescription": "这将对来自数据源的所有文档进行完整的重新索引。",
+        "noteLabel": "注意：",
+        "noteDescription": "取决于数据源中存储的文档数量，此操作可能需要较长时间。",
+        "runComplete": "运行完整重新索引"
+      },
+      "attemptsTable": {
+        "noAttemptsTitle": "尚未安排索引任务",
+        "noAttemptsBody": "索引任务在后台调度，可能需要一些时间才会出现。请在约 30 秒后刷新页面！",
+        "columnTimeStarted": "开始时间",
+        "columnStatus": "状态",
+        "columnNewDocs": "新文档",
+        "columnTotalDocs": "文档总数",
+        "columnErrorMessage": "错误信息",
+        "totalDocsTooltip": "本次索引任务中索引内被替换的文档总数",
+        "viewStageMetricsTooltip": "查看阶段指标",
+        "viewFullTrace": "查看完整堆栈",
+        "docsPerMinute": "{speed} 文档 / 分钟",
+        "noAdditionalDocs": "未处理新增文档",
+        "alsoRemoved": "（同时移除了 {count} 个在数据源中被检测为已删除的文档）",
+        "reindexTooltipInProgress": "本次索引任务是一次完整的重新索引。来自数据源的所有文档正在同步到系统中。",
+        "reindexTooltipPast": "本次索引任务是一次完整的重新索引。来自数据源的所有文档已同步到系统中。"
+      },
+      "errorsModal": {
+        "title": "索引错误",
+        "resolvingDescription": "当前正在通过执行完整的重新索引来尝试解决所有错误。此过程可能需要一些时间才能完成。",
+        "intro": "下面是索引过程中遇到的错误。每行代表一个失败的文档或实体。",
+        "ctaHint": "点击下方按钮启动一次完整的重新索引以尝试解决这些错误。完整重新索引所需时间可能远长于普通更新。",
+        "columnTime": "时间",
+        "columnDocumentId": "文档 ID",
+        "columnErrorMessage": "错误信息",
+        "columnStatus": "状态",
+        "unknown": "未知",
+        "resolved": "已解决",
+        "unresolved": "未解决",
+        "noErrorsOnPage": "本页未发现错误",
+        "resolveAll": "全部解决"
+      },
+      "stageMetricsModal": {
+        "title": "索引阶段指标",
+        "description": "本次索引尝试的逐批次和整体计时数据。"
+      },
+      "stageMetricsPanel": {
+        "loading": "正在加载阶段指标…",
+        "loadFailedTitle": "无法加载阶段指标",
+        "loadFailedDescription": "无法为本次尝试加载阶段计时数据。即使指标记录不可用，索引流程仍会运行，因此这并不代表索引本身存在问题。",
+        "noData": "本次尝试尚未记录阶段计时数据。在阶段埋点部署之前运行的较早尝试不会有指标数据。"
+      },
+      "fileManagement": {
+        "errorLoadingFiles": "加载文件时出错：{message}",
+        "filesCountSingular": "文件（共 {count} 个文件）",
+        "filesCountPlural": "文件（共 {count} 个文件）",
+        "edit": "编辑",
+        "cancel": "取消",
+        "saving": "保存中...",
+        "saveChanges": "保存更改",
+        "noFiles": "此连接器中没有文件",
+        "columnFileName": "文件名",
+        "columnSize": "大小",
+        "columnUploadDate": "上传日期",
+        "removing": "正在移除",
+        "removeFile": "移除文件",
+        "newBadge": "新增",
+        "addFiles": "添加文件",
+        "confirmTitle": "确认文件更改",
+        "confirmDescription": "保存这些更改后，将执行以下操作：",
+        "filesRemovedSingular": "🗑️ 将移除 {count} 个文件",
+        "filesRemovedPlural": "🗑️ 将移除 {count} 个文件",
+        "filesRemovedDetail": "这些文件中的文档将从文档索引中清理",
+        "filesAddedSingular": "将新增 {count} 个文件",
+        "filesAddedPlural": "将新增 {count} 个文件",
+        "filesAddedDetail": "新文件将被上传、分块、嵌入并索引到文档索引中",
+        "confirmAndSave": "确认并保存"
+      }
+    },
     "standardAnswer": {
       "categoryDropdown": {
         "errorTitle": "出错了 :(",
