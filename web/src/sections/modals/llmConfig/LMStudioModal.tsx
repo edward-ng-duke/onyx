@@ -47,6 +47,7 @@ function LMStudioModalInternals({
   existingLlmProvider,
   isOnboarding,
 }: LMStudioModalInternalsProps) {
+  const t = useTranslations("modals.llmConfig.lmStudio");
   const formikProps = useFormikContext<LMStudioModalValues>();
 
   const isFetchDisabled = !formikProps.values.api_base;
@@ -75,14 +76,14 @@ function LMStudioModalInternals({
   return (
     <>
       <APIBaseField
-        subDescription="The base URL for your LM Studio server."
-        placeholder="Your LM Studio API base URL"
+        subDescription={t("endpointDescription")}
+        placeholder={t("endpointPlaceholder")}
       />
 
       <APIKeyField
         name="custom_config.LM_STUDIO_API_KEY"
         optional
-        subDescription="Optional API key if your LM Studio server requires authentication."
+        subDescription={t("apiKeyDescription")}
       />
 
       {!isOnboarding && (

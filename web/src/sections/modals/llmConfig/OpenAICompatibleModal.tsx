@@ -44,6 +44,7 @@ function OpenAICompatibleModalInternals({
   existingLlmProvider,
   isOnboarding,
 }: OpenAICompatibleModalInternalsProps) {
+  const t = useTranslations("modals.llmConfig.openAICompatible");
   const formikProps = useFormikContext<OpenAICompatibleModalValues>();
 
   const isFetchDisabled = !formikProps.values.api_base;
@@ -69,15 +70,13 @@ function OpenAICompatibleModalInternals({
   return (
     <>
       <APIBaseField
-        subDescription={markdown(
-          "Paste your OpenAI-compatible endpoint URL. [Learn More](https://docs.litellm.ai/docs/providers/openai_compatible)"
-        )}
+        subDescription={markdown(t("endpointDescription"))}
         placeholder="http://localhost:8000/v1"
       />
 
       <APIKeyField
         optional
-        subDescription="Paste your API key if your model provider requires authentication."
+        subDescription={t("apiKeyDescription")}
       />
 
       {!isOnboarding && (
@@ -110,6 +109,7 @@ export default function OpenAICompatibleModal({
   onOpenChange,
   onSuccess,
 }: LLMProviderFormProps) {
+  const t = useTranslations("modals.llmConfig.openAICompatible");
   const tToast = useTranslations("toasts.admin.llm");
   const tValLlm = useTranslations("validation.llm");
   const isOnboarding = variant === "onboarding";
@@ -133,7 +133,7 @@ export default function OpenAICompatibleModal({
       llmProvider={existingLlmProvider}
       onClose={onClose}
       initialValues={initialValues}
-      description="Connect from other cloud or self-hosted models via OpenAI-compatible endpoints."
+      description={t("providerCardDescription")}
       validationSchema={validationSchema}
       onSubmit={async (values, { setSubmitting, setStatus }) => {
         await submitProvider({

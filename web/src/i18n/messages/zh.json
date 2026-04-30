@@ -2563,6 +2563,25 @@
       "bifrost": {
         "endpointDescription": "粘贴你的 Bifrost 网关端点 URL（包含 API 版本）。",
         "apiKeyDescription": "粘贴你来自 [Bifrost](https://docs.getbifrost.ai/overview) 的 API Key 以访问模型。"
+      },
+      "liteLLMProxy": {
+        "endpointDescription": "你的 LiteLLM Proxy 服务器的基础 URL。"
+      },
+      "lmStudio": {
+        "endpointDescription": "你的 LM Studio 服务器的基础 URL。",
+        "endpointPlaceholder": "你的 LM Studio API 基础 URL",
+        "apiKeyDescription": "可选项：如果你的 LM Studio 服务器需要身份验证，请填写 API Key。"
+      },
+      "ollama": {
+        "selfHostedTabLabel": "自托管 Ollama",
+        "endpointDescription": "你的 Ollama 实例的基础 URL。",
+        "endpointPlaceholder": "你的 Ollama API 基础 URL",
+        "cloudApiKeyDescription": "你的 Ollama Cloud API Key。"
+      },
+      "openAICompatible": {
+        "endpointDescription": "粘贴你的 OpenAI 兼容端点 URL。[了解更多](https://docs.litellm.ai/docs/providers/openai_compatible)",
+        "apiKeyDescription": "如果你的模型提供方需要身份验证，请粘贴 API Key。",
+        "providerCardDescription": "通过 OpenAI 兼容端点连接其他云或自托管模型。"
       }
     }
   },

@@ -2563,6 +2563,25 @@
       "bifrost": {
         "endpointDescription": "Paste your Bifrost gateway endpoint URL (including API version).",
         "apiKeyDescription": "Paste your API key from [Bifrost](https://docs.getbifrost.ai/overview) to access your models."
+      },
+      "liteLLMProxy": {
+        "endpointDescription": "The base URL for your LiteLLM Proxy server."
+      },
+      "lmStudio": {
+        "endpointDescription": "The base URL for your LM Studio server.",
+        "endpointPlaceholder": "Your LM Studio API base URL",
+        "apiKeyDescription": "Optional API key if your LM Studio server requires authentication."
+      },
+      "ollama": {
+        "selfHostedTabLabel": "Self-hosted Ollama",
+        "endpointDescription": "The base URL for your Ollama instance.",
+        "endpointPlaceholder": "Your Ollama API base URL",
+        "cloudApiKeyDescription": "Your Ollama Cloud API key."
+      },
+      "openAICompatible": {
+        "endpointDescription": "Paste your OpenAI-compatible endpoint URL. [Learn More](https://docs.litellm.ai/docs/providers/openai_compatible)",
+        "apiKeyDescription": "Paste your API key if your model provider requires authentication.",
+        "providerCardDescription": "Connect from other cloud or self-hosted models via OpenAI-compatible endpoints."
       }
     }
   },

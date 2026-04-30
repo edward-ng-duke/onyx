@@ -61,6 +61,8 @@ function OllamaModalInternals({
   tab,
   setTab,
 }: OllamaModalInternalsProps) {
+  const t = useTranslations("modals.llmConfig.ollama");
+  const tShared = useTranslations("modals.llmConfig.shared");
   const formikProps = useFormikContext<OllamaModalValues>();
 
   const isFetchDisabled = useMemo(
@@ -100,19 +102,19 @@ function OllamaModalInternals({
         <Tabs value={tab} onValueChange={(value) => setTab(value as Tab)}>
           <Tabs.List>
             <Tabs.Trigger value={Tab.TAB_SELF_HOSTED}>
-              Self-hosted Ollama
+              {t("selfHostedTabLabel")}
             </Tabs.Trigger>
             <Tabs.Trigger value={Tab.TAB_CLOUD}>Ollama Cloud</Tabs.Trigger>
           </Tabs.List>
           <Tabs.Content value={Tab.TAB_SELF_HOSTED} padding={0}>
             <InputVertical
               withLabel="api_base"
-              title="API Base URL"
-              subDescription="The base URL for your Ollama instance."
+              title={tShared("apiBaseUrl")}
+              subDescription={t("endpointDescription")}
             >
               <InputTypeInField
                 name="api_base"
-                placeholder="Your Ollama API base URL"
+                placeholder={t("endpointPlaceholder")}
               />
             </InputVertical>
           </Tabs.Content>
@@ -120,12 +122,12 @@ function OllamaModalInternals({
           <Tabs.Content value={Tab.TAB_CLOUD}>
             <InputVertical
               withLabel="custom_config.OLLAMA_API_KEY"
-              title="API Key"
-              subDescription="Your Ollama Cloud API key."
+              title={tShared("apiKey")}
+              subDescription={t("cloudApiKeyDescription")}
             >
               <PasswordInputTypeInField
                 name="custom_config.OLLAMA_API_KEY"
-                placeholder="API Key"
+                placeholder={tShared("apiKey")}
               />
             </InputVertical>
           </Tabs.Content>

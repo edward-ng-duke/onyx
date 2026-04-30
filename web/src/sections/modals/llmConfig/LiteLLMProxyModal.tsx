@@ -45,6 +45,7 @@ function LiteLLMProxyModalInternals({
   existingLlmProvider,
   isOnboarding,
 }: LiteLLMProxyModalInternalsProps) {
+  const t = useTranslations("modals.llmConfig.liteLLMProxy");
   const formikProps = useFormikContext<LiteLLMProxyModalValues>();
 
   const isFetchDisabled =
@@ -71,7 +72,7 @@ function LiteLLMProxyModalInternals({
   return (
     <>
       <APIBaseField
-        subDescription="The base URL for your LiteLLM Proxy server."
+        subDescription={t("endpointDescription")}
         placeholder="https://your-litellm-proxy.com"
       />
 
