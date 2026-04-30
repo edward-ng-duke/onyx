@@ -1,5 +1,8 @@
 // Always require withSentryConfig
 const { withSentryConfig } = require("@sentry/nextjs");
+const createNextIntlPlugin = require("next-intl/plugin");
+
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const cspHeader = `
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
@@ -190,4 +193,7 @@ const sentryWebpackPluginOptions = {
 };
 
 // Export the module with conditional Sentry configuration
-module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);
+module.exports = withSentryConfig(
+  withNextIntl(nextConfig),
+  sentryWebpackPluginOptions
+);
