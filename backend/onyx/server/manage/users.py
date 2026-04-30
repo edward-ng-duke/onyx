@@ -1052,6 +1052,16 @@ def update_user_personalization_api(
         else user.user_preferences
     )
 
+    # NOTE(i18n): `request.language` is accepted on the wire so the front-end
+    # language switcher does not get a 422 and so the field survives a Pydantic
+    # round-trip. Persistence requires a dedicated column on `User` (the
+    # existing `user_preferences` column is a free-form Text blob injected into
+    # LLM prompts and cannot be repurposed as a JSON store). Adding that column
+    # needs an alembic migration, which is intentionally out of scope for this
+    # change. Until then `language` is a no-op server-side and the front-end
+    # falls back to `localStorage`. See web i18n plan T4 / follow-up.
+    _ = request.language
+
     update_user_personalization(
         user.id,
         personal_name=new_name,

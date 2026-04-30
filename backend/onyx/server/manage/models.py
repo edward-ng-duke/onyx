@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 from enum import Enum
 from typing import Any
+from typing import Literal
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
@@ -105,6 +106,10 @@ class UserPersonalization(BaseModel):
     enable_memory_tool: bool = True
     memories: list[MemoryItem] = Field(default_factory=list)
     user_preferences: str = ""
+    # Selected UI locale. Persisted across logins so a user's language choice
+    # follows them between devices. None means "no preference set" — the web
+    # client will fall back to its default locale.
+    language: Literal["en", "zh"] | None = None
 
 
 class TenantSnapshot(BaseModel):
@@ -258,6 +263,9 @@ class PersonalizationUpdateRequest(BaseModel):
     enable_memory_tool: bool | None = None
     memories: list[MemoryItem] | None = None
     user_preferences: str | None = Field(default=None, max_length=500)
+    # Optional UI locale chosen by the user. Accepted values are kept in sync
+    # with the front-end Locale union (`en` | `zh`).
+    language: Literal["en", "zh"] | None = None
 
     @field_validator("memories", mode="before")
     @classmethod
