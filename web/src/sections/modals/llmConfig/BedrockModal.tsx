@@ -167,19 +167,19 @@ function BedrockModalInternals({
                   value={AUTH_METHOD_IAM}
                   description={t("awsRecommended")}
                 >
-                  Environment IAM Role
+                  {t("iamRoleLabel")}
                 </InputSelect.Item>
                 <InputSelect.Item
                   value={AUTH_METHOD_ACCESS_KEY}
                   description={t("awsNonRecommended")}
                 >
-                  Access Key
+                  {t("accessKeyLabel")}
                 </InputSelect.Item>
                 <InputSelect.Item
                   value={AUTH_METHOD_LONG_TERM_API_KEY}
                   description={t("awsNonRecommended")}
                 >
-                  Long-term API Key
+                  {t("longTermApiKeyLabel")}
                 </InputSelect.Item>
               </InputSelect.Content>
             </InputSelect>

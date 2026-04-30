@@ -2503,6 +2503,8 @@
         "displayNameDescription": "Used to identify this provider in the app.",
         "displayNamePlaceholder": "Display Name",
         "apiKey": "API Key",
+        "apiKeyDescription": "Paste your API key to access your models.",
+        "apiKeyDescriptionWithProvider": "Paste your API key from {providerName} to access your models.",
         "apiBaseUrl": "API Base URL",
         "modelsAccess": "Models Access",
         "modelsAccessDescription": "Who can access this provider.",
@@ -2530,7 +2532,12 @@
         "autoUpdateDescription": "Update the available models when new models are released.",
         "connecting": "Connecting",
         "updating": "Updating",
-        "connect": "Connect"
+        "connect": "Connect",
+        "pleaseFillRequired": "Please fill in all required fields.",
+        "noChangesToSave": "No changes to save.",
+        "setupTitle": "Set up {providerProductName}",
+        "setupDescription": "Connect to {providerDisplayName} and set up your {providerProductName} models.",
+        "editTitle": "Configure *{providerName}*"
       },
       "azure": {
         "targetUri": "Target URI",
@@ -2548,10 +2555,14 @@
         "awsSecretAccessKey": "AWS Secret Access Key",
         "iamDescription": "Onyx will use the IAM role attached to the environment it's running in to authenticate.",
         "longTermApiKey": "Long-term API Key",
-        "longTermApiKeyPlaceholder": "Your long-term API key"
+        "longTermApiKeyPlaceholder": "Your long-term API key",
+        "iamRoleLabel": "Environment IAM Role",
+        "accessKeyLabel": "Access Key",
+        "longTermApiKeyLabel": "Long-term API Key"
       },
       "bifrost": {
-        "endpointDescription": "Paste your Bifrost gateway endpoint URL (including API version)."
+        "endpointDescription": "Paste your Bifrost gateway endpoint URL (including API version).",
+        "apiKeyDescription": "Paste your API key from [Bifrost](https://docs.getbifrost.ai/overview) to access your models."
       }
     }
   },

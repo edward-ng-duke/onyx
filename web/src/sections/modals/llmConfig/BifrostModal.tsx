@@ -76,9 +76,7 @@ function BifrostModalInternals({
 
       <APIKeyField
         optional
-        subDescription={markdown(
-          "Paste your API key from [Bifrost](https://docs.getbifrost.ai/overview) to access your models."
-        )}
+        subDescription={markdown(t("apiKeyDescription"))}
       />
 
       {!isOnboarding && (

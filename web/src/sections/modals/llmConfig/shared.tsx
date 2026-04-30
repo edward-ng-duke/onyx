@@ -102,8 +102,8 @@ export function APIKeyField({
           subDescription
             ? subDescription
             : providerName
-              ? `Paste your API key from ${providerName} to access your models.`
-              : "Paste your API key to access your models."
+              ? t("apiKeyDescriptionWithProvider", { providerName })
+              : t("apiKeyDescription")
         }
         suffix={optional ? "optional" : undefined}
       >
@@ -721,9 +721,9 @@ function ModalWrapperInner({
   const disabledTooltip = busy
     ? undefined
     : !isValid
-      ? "Please fill in all required fields."
+      ? t("pleaseFillRequired")
       : !dirty
-        ? "No changes to save."
+        ? t("noChangesToSave")
         : undefined;
 
   const {
@@ -733,11 +733,11 @@ function ModalWrapperInner({
   } = getProvider(providerName);
 
   const title = llmProvider
-    ? markdown(`Configure *${llmProvider.name}*`)
-    : `Set up ${providerProductName}`;
+    ? markdown(t("editTitle", { providerName: llmProvider.name }))
+    : t("setupTitle", { providerProductName });
   const description =
     descriptionOverride ??
-    `Connect to ${providerDisplayName} and set up your ${providerProductName} models.`;
+    t("setupDescription", { providerDisplayName, providerProductName });
 
   return (
     <Modal open onOpenChange={onClose}>
