@@ -21,6 +21,7 @@ import {
   SelectorFormField,
 } from "@/components/Field";
 import MultiSelectDropdown from "@/components/MultiSelectDropdown";
+import { useTranslations } from "next-intl";
 
 function mapKeywordSelectToMatchAny(keywordSelect: "any" | "all"): boolean {
   return keywordSelect == "any";
@@ -39,6 +40,7 @@ export const StandardAnswerCreationForm = ({
 }) => {
   const isUpdate = existingStandardAnswer !== undefined;
   const router = useRouter();
+  const t = useTranslations("admin.standardAnswer.form");
 
   return (
     <div>
@@ -110,45 +112,45 @@ export const StandardAnswerCreationForm = ({
               {values.matchRegex ? (
                 <TextFormField
                   name="keyword"
-                  label="Regex pattern"
+                  label={t("regexLabel")}
                   isCode
-                  tooltip="Triggers if the question matches this regex pattern (using Python `re.search()`)"
-                  placeholder="(?:it|support)\s*ticket"
+                  tooltip={t("regexTooltip")}
+                  placeholder={t("regexPlaceholder")}
                 />
               ) : values.matchAnyKeywords == "any" ? (
                 <TextFormField
                   name="keyword"
-                  label="Any of these keywords, separated by spaces"
-                  tooltip="A question must match these keywords in order to trigger the answer."
-                  placeholder="ticket problem issue"
+                  label={t("anyKeywordsLabel")}
+                  tooltip={t("keywordsTooltip")}
+                  placeholder={t("anyKeywordsPlaceholder")}
                 />
               ) : (
                 <TextFormField
                   name="keyword"
-                  label="All of these keywords, in any order, separated by spaces"
-                  tooltip="A question must match these keywords in order to trigger the answer."
-                  placeholder="it ticket"
+                  label={t("allKeywordsLabel")}
+                  tooltip={t("keywordsTooltip")}
+                  placeholder={t("allKeywordsPlaceholder")}
                 />
               )}
               <BooleanFormField
-                subtext="Match a regex pattern instead of an exact keyword"
+                subtext={t("matchRegexSubtext")}
                 optional
-                label="Match regex"
+                label={t("matchRegexLabel")}
                 name="matchRegex"
               />
               {values.matchRegex ? null : (
                 <SelectorFormField
                   defaultValue={`all`}
-                  label="Keyword detection strategy"
-                  subtext="Choose whether to require the user's question to contain any or all of the keywords above to show this answer."
+                  label={t("keywordStrategyLabel")}
+                  subtext={t("keywordStrategySubtext")}
                   name="matchAnyKeywords"
                   options={[
                     {
-                      name: "All keywords",
+                      name: t("allKeywordsOption"),
                       value: "all",
                     },
                     {
-                      name: "Any keywords",
+                      name: t("anyKeywordsOption"),
                       value: "any",
                     },
                   ]}
@@ -160,14 +162,14 @@ export const StandardAnswerCreationForm = ({
               <div className="w-full">
                 <MarkdownFormField
                   name="answer"
-                  label="Answer"
-                  placeholder="The answer in Markdown. Example: If you need any help from the IT team, please email internalsupport@company.com"
+                  label={t("answerLabel")}
+                  placeholder={t("answerPlaceholder")}
                 />
               </div>
               <div className="w-4/12">
                 <MultiSelectDropdown
                   name="categories"
-                  label="Categories:"
+                  label={t("categoriesLabel")}
                   onChange={(selected_options) => {
                     const selected_categories = selected_options.map(
                       (option) => {
@@ -204,7 +206,7 @@ export const StandardAnswerCreationForm = ({
                   disabled={isSubmitting}
                   className="mx-auto w-64"
                 >
-                  {isUpdate ? "Update!" : "Create!"}
+                  {isUpdate ? t("update") : t("create")}
                 </Button>
               </div>
             </Form>

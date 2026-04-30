@@ -27,6 +27,7 @@ import { ConnectorMultiSelect } from "@/components/ConnectorMultiSelect";
 import { NonSelectableConnectors } from "@/components/NonSelectableConnectors";
 import { FederatedConnectorSelector } from "@/components/FederatedConnectorSelector";
 import { useFederatedConnectors } from "@/lib/hooks";
+import { useTranslations } from "next-intl";
 
 interface SetCreationPopupProps {
   ccPairs: ConnectorStatus<any, any>[];
@@ -46,6 +47,8 @@ export const DocumentSetCreationForm = ({
   const [localCcPairs, setLocalCcPairs] = useState(ccPairs);
   const { user } = useUser();
   const { data: federatedConnectors } = useFederatedConnectors();
+  const t = useTranslations("admin.documents.sets");
+  const tForm = useTranslations("admin.documents.sets.form");
 
   useEffect(() => {
     if (existingDocumentSet?.is_public) {
@@ -178,20 +181,20 @@ export const DocumentSetCreationForm = ({
               <div className="space-y-4 w-full">
                 <TextFormField
                   name="name"
-                  label="Name:"
-                  placeholder="A name for the document set"
+                  label={tForm("nameLabel")}
+                  placeholder={tForm("namePlaceholder")}
                 />
                 <TextFormField
                   name="description"
-                  label="Description:"
-                  placeholder="Describe what the document set represents"
+                  label={tForm("descriptionLabel")}
+                  placeholder={tForm("descriptionPlaceholder")}
                   optional={true}
                 />
 
                 {isPaidEnterpriseFeaturesEnabled && (
                   <IsPublicGroupSelector
                     formikProps={props}
-                    objectName="document set"
+                    objectName={t("objectName")}
                   />
                 )}
               </div>
@@ -203,41 +206,41 @@ export const DocumentSetCreationForm = ({
                   <>
                     <ConnectorMultiSelect
                       name="cc_pair_ids"
-                      label={`Connectors available to ${
+                      label={
                         userGroups && userGroups.length > 1
-                          ? "the selected group"
-                          : "the group you curate"
-                      }`}
+                          ? tForm("connectorsAvailableSelectedGroup")
+                          : tForm("connectorsAvailableCuratedGroup")
+                      }
                       connectors={visibleCcPairs}
                       selectedIds={props.values.cc_pair_ids}
                       onChange={(selectedIds) => {
                         props.setFieldValue("cc_pair_ids", selectedIds);
                       }}
-                      placeholder="Search for connectors..."
+                      placeholder={tForm("searchConnectorsPlaceholder")}
                     />
 
                     <NonSelectableConnectors
                       connectors={nonVisibleCcPairs}
-                      title={`Connectors not available to the ${
+                      title={
                         userGroups && userGroups.length > 1
-                          ? `group${
-                              props.values.groups.length > 1 ? "s" : ""
-                            } you have selected`
-                          : "group you curate"
-                      }`}
-                      description="Only connectors that are directly assigned to the group you are trying to add the document set to will be available."
+                          ? props.values.groups.length > 1
+                            ? tForm("connectorsNotAvailableSelectedGroups")
+                            : tForm("connectorsNotAvailableSelectedGroup")
+                          : tForm("connectorsNotAvailableCuratedGroup")
+                      }
+                      description={tForm("connectorsNotAvailableDescription")}
                     />
                   </>
                 ) : (
                   <ConnectorMultiSelect
                     name="cc_pair_ids"
-                    label="Pick your connectors"
+                    label={tForm("pickConnectors")}
                     connectors={visibleCcPairs}
                     selectedIds={props.values.cc_pair_ids}
                     onChange={(selectedIds) => {
                       props.setFieldValue("cc_pair_ids", selectedIds);
                     }}
-                    placeholder="Search for connectors..."
+                    placeholder={tForm("searchConnectorsPlaceholder")}
                   />
                 )}
 
@@ -247,7 +250,7 @@ export const DocumentSetCreationForm = ({
                     <div className="my-4 border-t border-border-02" />
                     <FederatedConnectorSelector
                       name="federated_connectors"
-                      label="Federated Connectors"
+                      label={tForm("federatedConnectorsLabel")}
                       federatedConnectors={federatedConnectors}
                       selectedConfigs={props.values.federated_connectors}
                       onChange={(selectedConfigs) => {
@@ -256,7 +259,9 @@ export const DocumentSetCreationForm = ({
                           selectedConfigs
                         );
                       }}
-                      placeholder="Search for federated connectors..."
+                      placeholder={tForm(
+                        "searchFederatedConnectorsPlaceholder"
+                      )}
                     />
                   </>
                 )}
@@ -270,7 +275,9 @@ export const DocumentSetCreationForm = ({
                   className="w-56 mx-auto"
                   primary
                 >
-                  {isUpdate ? "Update Document Set" : "Create Document Set"}
+                  {isUpdate
+                    ? tForm("updateDocumentSet")
+                    : tForm("createDocumentSet")}
                 </Button>
               </div>
             </Form>

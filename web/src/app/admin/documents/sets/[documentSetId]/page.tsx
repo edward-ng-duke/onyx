@@ -11,12 +11,14 @@ import CardSection from "@/components/admin/CardSection";
 import { DocumentSetCreationForm } from "../DocumentSetCreationForm";
 import { useRouter } from "next/navigation";
 import { useVectorDbEnabled } from "@/providers/SettingsProvider";
+import { useTranslations } from "next-intl";
 
 const route = ADMIN_ROUTES.DOCUMENT_SETS;
 
 function Main({ documentSetId }: { documentSetId: number }) {
   const router = useRouter();
   const vectorDbEnabled = useVectorDbEnabled();
+  const t = useTranslations("admin.documents.sets");
 
   const {
     data: documentSets,
@@ -48,7 +50,7 @@ function Main({ documentSetId }: { documentSetId: number }) {
   if (documentSetsError || !documentSets) {
     return (
       <ErrorCallout
-        errorTitle="Failed to fetch document sets"
+        errorTitle={t("fetchDocumentSetsFailed")}
         errorMsg={documentSetsError}
       />
     );
@@ -57,7 +59,7 @@ function Main({ documentSetId }: { documentSetId: number }) {
   if (vectorDbEnabled && (ccPairsError || !ccPairs)) {
     return (
       <ErrorCallout
-        errorTitle="Failed to fetch Connectors"
+        errorTitle={t("fetchConnectorsFailed")}
         errorMsg={ccPairsError}
       />
     );
@@ -69,8 +71,8 @@ function Main({ documentSetId }: { documentSetId: number }) {
   if (!documentSet) {
     return (
       <ErrorCallout
-        errorTitle="Document set not found"
-        errorMsg={`Document set with id ${documentSetId} not found`}
+        errorTitle={t("documentSetNotFound")}
+        errorMsg={t("documentSetNotFoundDetail", { id: documentSetId })}
       />
     );
   }
@@ -95,12 +97,13 @@ export default function Page(props: {
 }) {
   const params = use(props.params);
   const documentSetId = parseInt(params.documentSetId);
+  const t = useTranslations("admin.documents.sets");
 
   return (
     <SettingsLayouts.Root>
       <SettingsLayouts.Header
         icon={route.icon}
-        title="Edit Document Set"
+        title={t("editTitle")}
         divider
         backButton
       />

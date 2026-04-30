@@ -33,6 +33,8 @@ import CreateButton from "@/refresh-components/buttons/CreateButton";
 import { SvgEdit, SvgTrash } from "@opal/icons";
 import { Button } from "@opal/components";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
+import { useTranslations } from "next-intl";
+import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
 const NUM_RESULTS_PER_PAGE = 10;
 
 const route = ADMIN_ROUTES.STANDARD_ANSWERS;
@@ -71,9 +73,11 @@ const CategoryBubble = ({
 }: {
   name: string;
   onDelete?: () => void;
-}) => (
-  <span
-    className={`
+}) => {
+  const t = useTranslations("admin.standardAnswer");
+  return (
+    <span
+      className={`
       inline-block
       px-2
       py-1
@@ -88,19 +92,20 @@ const CategoryBubble = ({
       w-fit
       ${onDelete ? "cursor-pointer" : ""}
     `}
-    onClick={onDelete}
-  >
-    {name}
-    {onDelete && (
-      <button
-        className="ml-1 text-subtle hover:text-emphasis"
-        aria-label="Remove category"
-      >
-        &times;
-      </button>
-    )}
-  </span>
-);
+      onClick={onDelete}
+    >
+      {name}
+      {onDelete && (
+        <button
+          className="ml-1 text-subtle hover:text-emphasis"
+          aria-label={t("removeCategoryAria")}
+        >
+          &times;
+        </button>
+      )}
+    </span>
+  );
+};
 
 const StandardAnswersTableRow = ({
   standardAnswer,
@@ -109,6 +114,7 @@ const StandardAnswersTableRow = ({
   standardAnswer: StandardAnswer;
   handleDelete: (id: number) => void;
 }) => {
+  const t = useTranslations("admin.standardAnswer");
   return (
     <RowTemplate
       id={standardAnswer.id}
@@ -134,9 +140,9 @@ const StandardAnswersTableRow = ({
           className="flex items-center"
         >
           {standardAnswer.match_regex ? (
-            <span className="text-green-500 font-medium">Yes</span>
+            <span className="text-green-500 font-medium">{t("yes")}</span>
           ) : (
-            <span className="text-gray-500">No</span>
+            <span className="text-gray-500">{t("no")}</span>
           )}
         </div>,
         <ReactMarkdown
@@ -170,12 +176,13 @@ const StandardAnswersTable = ({
   const [selectedCategories, setSelectedCategories] = useState<
     StandardAnswerCategory[]
   >([]);
+  const t = useTranslations("admin.standardAnswer");
   const columns = [
     { name: "", key: "edit" },
-    { name: "Categories", key: "category" },
-    { name: "Keywords/Pattern", key: "keyword" },
-    { name: "Match regex?", key: "match_regex" },
-    { name: "Answer", key: "answer" },
+    { name: t("columnCategories"), key: "category" },
+    { name: t("columnKeywordsPattern"), key: "keyword" },
+    { name: t("columnMatchRegex"), key: "match_regex" },
+    { name: t("columnAnswer"), key: "answer" },
     { name: "", key: "delete" },
   ];
 
@@ -244,7 +251,7 @@ const StandardAnswersTable = ({
           className="flex-grow ml-2 h-6 bg-transparent outline-none placeholder-subtle overflow-hidden whitespace-normal resize-none"
           role="textarea"
           aria-multiline
-          placeholder="Find standard answers by keyword/phrase..."
+          placeholder={t("searchPlaceholder")}
           value={query}
           onChange={(event) => {
             setQuery(event.target.value);
@@ -279,7 +286,7 @@ const StandardAnswersTable = ({
               <FiTag size={16} />
             </div>
           }
-          defaultDisplay="All Categories"
+          defaultDisplay={t("allCategories")}
         />
         <div className="flex flex-wrap pb-4 mt-3">
           {selectedCategories.map((category) => (
@@ -318,18 +325,14 @@ const StandardAnswersTable = ({
         <div>
           {paginatedStandardAnswers.length === 0 && (
             <div className="flex justify-center">
-              <Text as="p">No matching standard answers found...</Text>
+              <Text as="p">{t("noMatchingFound")}</Text>
             </div>
           )}
         </div>
         {paginatedStandardAnswers.length > 0 && (
           <>
             <div className="mt-4">
-              <Text as="p">
-                {markdown(
-                  "Ensure that you have added the category to the relevant [Slack Bot](/admin/bots)."
-                )}
-              </Text>
+              <Text as="p">{markdown(t("categorySlackBotReminder"))}</Text>
             </div>
             <div className="mt-4 flex justify-center">
               <PageSelector
@@ -347,6 +350,7 @@ const StandardAnswersTable = ({
 };
 
 function Main() {
+  const t = useTranslations("admin.standardAnswer");
   const {
     data: standardAnswers,
     error: standardAnswersError,
@@ -366,7 +370,7 @@ function Main() {
   if (standardAnswersError || !standardAnswers) {
     return (
       <ErrorCallout
-        errorTitle="Error loading standard answers"
+        errorTitle={t("errorLoadingTitle")}
         errorMsg={
           standardAnswersError.info?.detail ||
           standardAnswersError.info?.message
@@ -378,7 +382,7 @@ function Main() {
   if (standardAnswerCategoriesError || !standardAnswerCategories) {
     return (
       <ErrorCallout
-        errorTitle="Error loading standard answer categories"
+        errorTitle={t("errorLoadingCategoriesTitle")}
         errorMsg={
           standardAnswerCategoriesError.info?.detail ||
           standardAnswerCategoriesError.info?.message
@@ -389,22 +393,18 @@ function Main() {
 
   return (
     <div className="mb-8">
-      <Text as="p">
-        {markdown(
-          "Manage the standard answers for pre-defined questions.\nNote: Currently, only questions asked from Slack can receive standard answers."
-        )}
-      </Text>
+      <Text as="p">{markdown(t("headerDescription"))}</Text>
       <Spacer rem={0.5} />
       {standardAnswers.length == 0 && (
         <>
-          <Text as="p">Add your first standard answer below!</Text>
+          <Text as="p">{t("addFirstPrompt")}</Text>
           <Spacer rem={0.5} />
         </>
       )}
       <div className="mb-2"></div>
 
       <CreateButton href="/admin/standard-answer/new">
-        New Standard Answer
+        {t("newStandardAnswer")}
       </CreateButton>
 
       <Divider />
@@ -421,9 +421,10 @@ function Main() {
 }
 
 export default function Page() {
+  const { title } = useAdminRouteI18n(route);
   return (
     <SettingsLayouts.Root>
-      <SettingsLayouts.Header icon={route.icon} title={route.title} divider />
+      <SettingsLayouts.Header icon={route.icon} title={title} divider />
       <SettingsLayouts.Body>
         <Main />
       </SettingsLayouts.Body>

@@ -4,10 +4,12 @@ import { ErrorCallout } from "@/components/ErrorCallout";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
 import { StandardAnswer, StandardAnswerCategory } from "@/lib/types";
+import { getTranslations } from "next-intl/server";
 
 const route = ADMIN_ROUTES.STANDARD_ANSWERS;
 
 async function Main({ id }: { id: string }) {
+  const t = await getTranslations("admin.standardAnswer");
   const tasks = [
     fetchSS("/manage/admin/standard-answer"),
     fetchSS(`/manage/admin/standard-answer/category`),
@@ -18,8 +20,8 @@ async function Main({ id }: { id: string }) {
   if (standardAnswersResponse === undefined) {
     return (
       <ErrorCallout
-        errorTitle="Something went wrong :("
-        errorMsg={`Failed to fetch standard answers.`}
+        errorTitle={t("somethingWentWrong")}
+        errorMsg={t("fetchAnswersFailed")}
       />
     );
   }
@@ -27,8 +29,10 @@ async function Main({ id }: { id: string }) {
   if (!standardAnswersResponse.ok) {
     return (
       <ErrorCallout
-        errorTitle="Something went wrong :("
-        errorMsg={`Failed to fetch standard answers - ${await standardAnswersResponse.text()}`}
+        errorTitle={t("somethingWentWrong")}
+        errorMsg={t("fetchAnswersFailedDetail", {
+          error: await standardAnswersResponse.text(),
+        })}
       />
     );
   }
@@ -41,8 +45,8 @@ async function Main({ id }: { id: string }) {
   if (!standardAnswer) {
     return (
       <ErrorCallout
-        errorTitle="Something went wrong :("
-        errorMsg={`Did not find standard answer with ID: ${id}`}
+        errorTitle={t("somethingWentWrong")}
+        errorMsg={t("answerNotFound", { id })}
       />
     );
   }
@@ -50,8 +54,8 @@ async function Main({ id }: { id: string }) {
   if (standardAnswerCategoriesResponse === undefined) {
     return (
       <ErrorCallout
-        errorTitle="Something went wrong :("
-        errorMsg={`Failed to fetch standard answer categories.`}
+        errorTitle={t("somethingWentWrong")}
+        errorMsg={t("fetchCategoriesFailed")}
       />
     );
   }
@@ -59,8 +63,10 @@ async function Main({ id }: { id: string }) {
   if (!standardAnswerCategoriesResponse.ok) {
     return (
       <ErrorCallout
-        errorTitle="Something went wrong :("
-        errorMsg={`Failed to fetch standard answer categories - ${await standardAnswerCategoriesResponse.text()}`}
+        errorTitle={t("somethingWentWrong")}
+        errorMsg={t("fetchCategoriesFailedDetail", {
+          error: await standardAnswerCategoriesResponse.text(),
+        })}
       />
     );
   }
@@ -78,12 +84,13 @@ async function Main({ id }: { id: string }) {
 
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
+  const t = await getTranslations("admin.standardAnswer");
 
   return (
     <SettingsLayouts.Root>
       <SettingsLayouts.Header
         icon={route.icon}
-        title="Edit Standard Answer"
+        title={t("editTitle")}
         backButton
         divider
       />

@@ -8,10 +8,12 @@ import Title from "@/components/ui/title";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
 import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
+import { useTranslations } from "next-intl";
 
 const route = ADMIN_ROUTES.DOCUMENT_FEEDBACK;
 
 function Main() {
+  const t = useTranslations("admin.documents.feedback");
   const {
     data: mostLikedDocuments,
     isLoading: isMostLikedDocumentsLoading,
@@ -32,7 +34,7 @@ function Main() {
   };
 
   if (isMostLikedDocumentsLoading || isMostLikedDocumentLoading) {
-    return <LoadingAnimation text="Loading" />;
+    return <LoadingAnimation text={t("loading")} />;
   }
 
   if (
@@ -43,18 +45,19 @@ function Main() {
   ) {
     return (
       <div className="text-red-600">
-        Error loading documents -{" "}
-        {mostDislikedDocumentsError || mostLikedDocumentsError}
+        {t("errorLoadingDocuments", {
+          error: mostDislikedDocumentsError || mostLikedDocumentsError,
+        })}
       </div>
     );
   }
 
   return (
     <div>
-      <Title className="mb-2">Most Liked Documents</Title>
+      <Title className="mb-2">{t("mostLikedDocuments")}</Title>
       <DocumentFeedbackTable documents={mostLikedDocuments} refresh={refresh} />
 
-      <Title className="mb-2 mt-6">Most Disliked Documents</Title>
+      <Title className="mb-2 mt-6">{t("mostDislikedDocuments")}</Title>
       <DocumentFeedbackTable
         documents={mostDislikedDocuments}
         refresh={refresh}

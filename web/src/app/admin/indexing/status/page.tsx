@@ -20,11 +20,13 @@ import Cookies from "js-cookie";
 import { TOGGLED_CONNECTORS_COOKIE_NAME } from "@/lib/constants";
 import { ConnectorStaggeredSkeleton } from "./ConnectorRowSkeleton";
 import { IndexingStatusRequest } from "@/lib/types";
+import { useTranslations } from "next-intl";
 
 const route = ADMIN_ROUTES.INDEXING_STATUS;
 
 function Main() {
   const vectorDbEnabled = useVectorDbEnabled();
+  const t = useTranslations("admin.indexing.status");
 
   // State for filter management
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
@@ -158,7 +160,7 @@ function Main() {
     return (
       <div className="text-error">
         {ccPairsIndexingStatusesError?.info?.detail ||
-          "Error loading indexing status."}
+          t("errorLoadingIndexingStatus")}
       </div>
     );
   }
@@ -190,11 +192,7 @@ function Main() {
       ) : !ccPairsIndexingStatuses || ccPairsIndexingStatuses.length === 0 ? (
         <div>
           <Spacer rem={3} />
-          <Text as="p">
-            {markdown(
-              "It looks like you don't have any connectors setup yet. Visit the [Add Connector](/admin/add-connector) page to get started!"
-            )}
-          </Text>
+          <Text as="p">{markdown(t("noConnectorsBody"))}</Text>
         </div>
       ) : (
         <CCPairIndexingStatusTable
@@ -218,6 +216,7 @@ export default function Status() {
   });
 
   const { title } = useAdminRouteI18n(route);
+  const t = useTranslations("admin.indexing.status");
 
   return (
     <SettingsLayouts.Root width="full">
@@ -225,7 +224,7 @@ export default function Status() {
         icon={route.icon}
         title={title}
         rightChildren={
-          <Button href="/admin/add-connector">Add Connector</Button>
+          <Button href="/admin/add-connector">{t("addConnector")}</Button>
         }
         divider
       />

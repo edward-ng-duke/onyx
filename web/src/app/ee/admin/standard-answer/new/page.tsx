@@ -4,10 +4,12 @@ import { ErrorCallout } from "@/components/ErrorCallout";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
 import { StandardAnswerCategory } from "@/lib/types";
+import { getTranslations } from "next-intl/server";
 
 const route = ADMIN_ROUTES.STANDARD_ANSWERS;
 
 async function Page() {
+  const t = await getTranslations("admin.standardAnswer");
   const standardAnswerCategoriesResponse = await fetchSS(
     "/manage/admin/standard-answer/category"
   );
@@ -15,8 +17,10 @@ async function Page() {
   if (!standardAnswerCategoriesResponse.ok) {
     return (
       <ErrorCallout
-        errorTitle="Something went wrong :("
-        errorMsg={`Failed to fetch standard answer categories - ${await standardAnswerCategoriesResponse.text()}`}
+        errorTitle={t("somethingWentWrong")}
+        errorMsg={t("fetchCategoriesFailedDetail", {
+          error: await standardAnswerCategoriesResponse.text(),
+        })}
       />
     );
   }
@@ -27,7 +31,7 @@ async function Page() {
     <SettingsLayouts.Root>
       <SettingsLayouts.Header
         icon={route.icon}
-        title="New Standard Answer"
+        title={t("newTitle")}
         backButton
         divider
       />
