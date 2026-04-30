@@ -1,0 +1,60 @@
+# =============================================================================
+# ONYX PRIVATE DEPLOYMENT OVERRIDE
+# =============================================================================
+# This file is an override layer; combine with docker-compose.yml via `make up`
+# (i.e. `docker compose -f docker-compose.yml -f docker-compose.private.override.yml ...`).
+#
+# Goals of this override:
+#   1. Add SearXNG as the (only) outbound-network-permitted service so that
+#      web search functionality can work without exposing other Onyx
+#      services to the public internet.
+#   2. Inject DISABLE_TELEMETRY=true into api_server and background so that
+#      the deployment never phones home.
+#   3. Defensively keep MinIO internal-only (no host port publication).
+#
+# Top-level `version:` is intentionally omitted — modern Compose ignores it.
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # SearXNG: privacy-respecting metasearch engine.
+  # NOTE: SearXNG is the ONLY service in this override permitted to reach the
+  # public internet. All other Onyx services should remain isolated within the
+  # internal Compose network. Only api_server (same network) needs to reach it,
+  # so we use `expose:` rather than `ports:` to avoid host publication.
+  # The ./searxng host path resolves to deployment/docker_compose/searxng/;
+  # T3 will populate settings.yml inside it.
+  # ---------------------------------------------------------------------------
+  searxng:
+    image: searxng/searxng:latest
+    restart: unless-stopped
+    volumes:
+      - ./searxng:/etc/searxng:ro
+    expose:
+      - "8080"
+    environment:
+      - SEARXNG_BASE_URL=http://searxng:8080/
+
+  # ---------------------------------------------------------------------------
+  # api_server: disable telemetry. Base uses list-format environment, so we
+  # append a list entry which Compose merges into the existing list.
+  # ---------------------------------------------------------------------------
+  api_server:
+    environment:
+      - DISABLE_TELEMETRY=true
+
+  # ---------------------------------------------------------------------------
+  # background: disable telemetry. Same list-merge semantics as api_server.
+  # ---------------------------------------------------------------------------
+  background:
+    environment:
+      - DISABLE_TELEMETRY=true
+
+  # ---------------------------------------------------------------------------
+  # minio: ensure no host port publication. The base file currently leaves
+  # MinIO ports commented out, so this is defensive — if anyone uncomments
+  # those lines, this override forces the storage to remain internal-only.
+  # `ports: []` replaces the merged list with an empty one in modern Compose.
+  # ---------------------------------------------------------------------------
+  minio:
+    ports: []
