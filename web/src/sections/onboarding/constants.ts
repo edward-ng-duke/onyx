@@ -1,39 +1,65 @@
 import { OnboardingStep, FinalStepItemProps } from "@/interfaces/onboarding";
 import { SvgGlobe, SvgImage, SvgUsers } from "@opal/icons";
+import type { useTranslations } from "next-intl";
+
+type Translator = ReturnType<typeof useTranslations>;
 
 type StepConfig = {
   index: number;
-  title: string;
-  buttonText: string;
   iconPercentage: number;
 };
 
+type StepTextConfig = {
+  title: string;
+  buttonText: string;
+};
+
+// Numeric/structural step config — kept stable so non-React consumers (e.g. the
+// reducer) can read step indices without needing a translator.
 export const STEP_CONFIG: Record<OnboardingStep, StepConfig> = {
   [OnboardingStep.Welcome]: {
     index: 0,
-    title: "Let's take a moment to get you set up.",
-    buttonText: "Let's Go",
     iconPercentage: 10,
   },
   [OnboardingStep.Name]: {
     index: 1,
-    title: "Let's take a moment to get you set up.",
-    buttonText: "Next",
     iconPercentage: 40,
   },
   [OnboardingStep.LlmSetup]: {
     index: 2,
-    title: "Almost there! Connect your models to start chatting.",
-    buttonText: "Next",
     iconPercentage: 70,
   },
   [OnboardingStep.Complete]: {
     index: 3,
-    title: "You're all set, review the optional settings or click Finish Setup",
-    buttonText: "Finish Setup",
     iconPercentage: 100,
   },
 } as const;
+
+// Translated step text — call from a React component that has a translator
+// scoped to `sections.onboarding`.
+export function getStepTextConfig(
+  t: Translator,
+  tCommon: Translator
+): Record<OnboardingStep, StepTextConfig> {
+  return {
+    [OnboardingStep.Welcome]: {
+      title: t("welcome.title"),
+      buttonText: t("welcome.buttonText"),
+    },
+    [OnboardingStep.Name]: {
+      title: t("name.stepTitle"),
+      buttonText: tCommon("next"),
+    },
+    [OnboardingStep.LlmSetup]: {
+      title: t("llm.stepTitle"),
+      buttonText: tCommon("next"),
+    },
+    [OnboardingStep.Complete]: {
+      title: t("complete.title"),
+      buttonText: t("complete.buttonText"),
+    },
+  };
+}
 
 export const TOTAL_STEPS = 3;
 
@@ -53,26 +79,30 @@ export const STEP_NAVIGATION: Record<
   [OnboardingStep.Complete]: { prev: OnboardingStep.LlmSetup },
 };
 
-export const FINAL_SETUP_CONFIG: FinalStepItemProps[] = [
-  {
-    title: "Select web search provider",
-    description: "Enable Onyx to search the internet for information.",
-    icon: SvgGlobe,
-    buttonText: "Web Search",
-    buttonHref: "/admin/configuration/web-search",
-  },
-  {
-    title: "Enable image generation",
-    description: "Set up models to create images in your chats.",
-    icon: SvgImage,
-    buttonText: "Image Generation",
-    buttonHref: "/admin/configuration/image-generation",
-  },
-  {
-    title: "Invite your team",
-    description: "Manage users and permissions for your team",
-    icon: SvgUsers,
-    buttonText: "Manage Users",
-    buttonHref: "/admin/users",
-  },
-];
+// Translated final-setup items — call from a React component with a translator
+// scoped to `sections.onboarding`.
+export function getFinalSetupConfig(t: Translator): FinalStepItemProps[] {
+  return [
+    {
+      title: t("finalSetup.webSearch.title"),
+      description: t("finalSetup.webSearch.description"),
+      icon: SvgGlobe,
+      buttonText: t("finalSetup.webSearch.buttonText"),
+      buttonHref: "/admin/configuration/web-search",
+    },
+    {
+      title: t("finalSetup.imageGen.title"),
+      description: t("finalSetup.imageGen.description"),
+      icon: SvgImage,
+      buttonText: t("finalSetup.imageGen.buttonText"),
+      buttonHref: "/admin/configuration/image-generation",
+    },
+    {
+      title: t("finalSetup.inviteTeam.title"),
+      description: t("finalSetup.inviteTeam.description"),
+      icon: SvgUsers,
+      buttonText: t("finalSetup.inviteTeam.buttonText"),
+      buttonHref: "/admin/users",
+    },
+  ];
+}

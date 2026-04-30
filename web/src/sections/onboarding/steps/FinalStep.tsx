@@ -1,8 +1,9 @@
 import React from "react";
 import Link from "next/link";
 import type { Route } from "next";
+import { useTranslations } from "next-intl";
 import { Button } from "@opal/components";
-import { FINAL_SETUP_CONFIG } from "@/sections/onboarding/constants";
+import { getFinalSetupConfig } from "@/sections/onboarding/constants";
 import { FinalStepItemProps } from "@/interfaces/onboarding";
 import { SvgExternalLink } from "@opal/icons";
 import { Section } from "@/layouts/general-layouts";
@@ -46,9 +47,11 @@ const FinalStepItem = React.memo(
 FinalStepItem.displayName = "FinalStepItem";
 
 export default function FinalStep() {
+  const t = useTranslations("sections.onboarding");
+  const items = getFinalSetupConfig(t);
   return (
     <Section gap={0.5}>
-      {FINAL_SETUP_CONFIG.map((item) => (
+      {items.map((item) => (
         <FinalStepItem key={item.title} {...item} />
       ))}
     </Section>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
+import { useTranslations } from "next-intl";
 import Text from "@/refresh-components/texts/Text";
 import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
 import {
@@ -22,6 +23,8 @@ export interface NameStepProps {
 
 const NameStep = React.memo(
   ({ state: onboardingState, actions: onboardingActions }: NameStepProps) => {
+    const t = useTranslations("sections.onboarding.name");
+    const tCommon = useTranslations("common.actions");
     const { userName } = onboardingState.data;
     const { updateName, goToStep, setButtonActive, nextStep } =
       onboardingActions;
@@ -48,15 +51,15 @@ const NameStep = React.memo(
       >
         <ContentAction
           icon={SvgUser}
-          title="What should Onyx call you?"
-          description="We will display this name in the app."
+          title={t("promptTitle")}
+          description={t("promptDescription")}
           sizePreset="main-ui"
           variant="section"
           padding="fit"
           rightChildren={
             <InputTypeIn
               ref={inputRef}
-              placeholder="Your name"
+              placeholder={t("placeholder")}
               value={userName || ""}
               onChange={(e) => updateName(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -73,7 +76,7 @@ const NameStep = React.memo(
             setButtonActive(true);
             goToStep(OnboardingStep.Name);
           }}
-          aria-label="Edit display name"
+          aria-label={t("editAriaLabel")}
           role="button"
           tabIndex={0}
         >
@@ -97,7 +100,7 @@ const NameStep = React.memo(
           <div className="p-1 flex items-center gap-1">
             {/* TODO(@raunakab): migrate to opal Button once className/iconClassName is resolved */}
             <Hoverable.Item group="nameStep" variant="appear-on-hover">
-              <IconButton internal icon={SvgEdit} tooltip="Edit" />
+              <IconButton internal icon={SvgEdit} tooltip={tCommon("edit")} />
             </Hoverable.Item>
             <SvgCheckCircle
               className={cn(

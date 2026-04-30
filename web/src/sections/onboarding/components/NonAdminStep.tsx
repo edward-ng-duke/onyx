@@ -17,6 +17,9 @@ import { Hoverable } from "@opal/core";
 
 export default function NonAdminStep() {
   const tToast = useTranslations("toasts.onboarding");
+  const tOnboarding = useTranslations("sections.onboarding");
+  const tName = useTranslations("sections.onboarding.name");
+  const tCommon = useTranslations("common.actions");
   const inputRef = useRef<HTMLInputElement>(null);
   const { user, refreshUser } = useUser();
   const [name, setName] = useState("");
@@ -72,7 +75,7 @@ export default function NonAdminStep() {
                 {...props}
               />
             )}
-            title="You're all set!"
+            title={tOnboarding("nonAdmin.allSet")}
             sizePreset="main-ui"
             variant="body"
             color="muted"
@@ -97,8 +100,8 @@ export default function NonAdminStep() {
         >
           <ContentAction
             icon={SvgUser}
-            title="What should Onyx call you?"
-            description="We will display this name in the app."
+            title={tName("promptTitle")}
+            description={tName("promptDescription")}
             sizePreset="main-ui"
             variant="section"
             padding="fit"
@@ -106,7 +109,7 @@ export default function NonAdminStep() {
               <div className="flex items-center justify-end gap-2">
                 <InputTypeIn
                   ref={inputRef}
-                  placeholder="Your name"
+                  placeholder={tName("placeholder")}
                   value={name || ""}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setName(e.target.value)
@@ -120,7 +123,7 @@ export default function NonAdminStep() {
                   className="w-[26%] min-w-40"
                 />
                 <Button disabled={name === ""} onClick={handleSave}>
-                  Save
+                  {tCommon("save")}
                 </Button>
               </div>
             }
@@ -130,7 +133,7 @@ export default function NonAdminStep() {
         <Hoverable.Root group="nonAdminName" width="full">
           <div
             className={containerClasses}
-            aria-label="Edit display name"
+            aria-label={tName("editAriaLabel")}
             role="button"
             tabIndex={0}
             onClick={() => {
@@ -156,7 +159,7 @@ export default function NonAdminStep() {
             <div className="p-1 flex items-center gap-1">
               {/* TODO(@raunakab): migrate to opal Button once className/iconClassName is resolved */}
               <Hoverable.Item group="nonAdminName" variant="appear-on-hover">
-                <IconButton internal icon={SvgEdit} tooltip="Edit" />
+                <IconButton internal icon={SvgEdit} tooltip={tCommon("edit")} />
               </Hoverable.Item>
               <SvgCheckCircle className="w-4 h-4 stroke-status-success-05" />
             </div>

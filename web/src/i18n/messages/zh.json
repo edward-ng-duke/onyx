@@ -2539,6 +2539,56 @@
       "logIn": "登录",
       "backendUnavailableTitle": "后端服务当前不可用",
       "backendUnavailableDescription": "如果这是首次部署或刚刚升级了 Onyx，通常是后端仍在启动。请等待一两分钟后刷新页面。若仍未恢复，请确认后端已正确部署或联系管理员。"
+    },
+    "onboarding": {
+      "welcome": {
+        "title": "让我们花点时间帮你完成设置。",
+        "buttonText": "开始吧"
+      },
+      "name": {
+        "stepTitle": "让我们花点时间帮你完成设置。",
+        "promptTitle": "Onyx 应该如何称呼你？",
+        "promptDescription": "我们会在应用中展示这个名字。",
+        "placeholder": "你的名字",
+        "editAriaLabel": "编辑显示名"
+      },
+      "llm": {
+        "stepTitle": "马上就好！连接你的模型，即可开始对话。",
+        "headerTitle": "连接你的 LLM 模型",
+        "headerDescription": "Onyx 同时支持自托管模型和主流提供商。",
+        "viewInAdminPanel": "前往管理后台",
+        "customProviderTitle": "自定义 LLM 提供商",
+        "customProviderSubtitle": "LiteLLM 兼容 API",
+        "modelsConnected": "{count, plural, one {已连接 1 个模型} other {已连接 # 个模型}}",
+        "editAriaLabel": "编辑 LLM 提供商"
+      },
+      "complete": {
+        "title": "全部就绪！可查看可选设置，或点击「完成设置」。",
+        "buttonText": "完成设置"
+      },
+      "finalSetup": {
+        "webSearch": {
+          "title": "选择网页搜索服务",
+          "description": "让 Onyx 能够联网检索信息。",
+          "buttonText": "网页搜索"
+        },
+        "imageGen": {
+          "title": "启用图像生成",
+          "description": "配置模型，在对话中创建图像。",
+          "buttonText": "图像生成"
+        },
+        "inviteTeam": {
+          "title": "邀请你的团队",
+          "description": "管理团队成员和权限",
+          "buttonText": "用户管理"
+        }
+      },
+      "header": {
+        "stepIndicator": "第 {stepIndex} 步 / 共 {totalSteps} 步"
+      },
+      "nonAdmin": {
+        "allSet": "一切就绪！"
+      }
     }
   },
   "components": {

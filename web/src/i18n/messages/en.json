@@ -2539,6 +2539,56 @@
       "logIn": "Log In",
       "backendUnavailableTitle": "The backend is currently unavailable",
       "backendUnavailableDescription": "If this is your initial setup or you just updated your Onyx deployment, this is likely because the backend is still starting up. Give it a minute or two, and then refresh the page. If that does not work, make sure the backend is setup and/or contact an administrator."
+    },
+    "onboarding": {
+      "welcome": {
+        "title": "Let's take a moment to get you set up.",
+        "buttonText": "Let's Go"
+      },
+      "name": {
+        "stepTitle": "Let's take a moment to get you set up.",
+        "promptTitle": "What should Onyx call you?",
+        "promptDescription": "We will display this name in the app.",
+        "placeholder": "Your name",
+        "editAriaLabel": "Edit display name"
+      },
+      "llm": {
+        "stepTitle": "Almost there! Connect your models to start chatting.",
+        "headerTitle": "Connect your LLM models",
+        "headerDescription": "Onyx supports both self-hosted models and popular providers.",
+        "viewInAdminPanel": "View in Admin Panel",
+        "customProviderTitle": "Custom LLM Provider",
+        "customProviderSubtitle": "LiteLLM Compatible APIs",
+        "modelsConnected": "{count, plural, one {1 model connected} other {# models connected}}",
+        "editAriaLabel": "Edit LLM providers"
+      },
+      "complete": {
+        "title": "You're all set, review the optional settings or click Finish Setup",
+        "buttonText": "Finish Setup"
+      },
+      "finalSetup": {
+        "webSearch": {
+          "title": "Select web search provider",
+          "description": "Enable Onyx to search the internet for information.",
+          "buttonText": "Web Search"
+        },
+        "imageGen": {
+          "title": "Enable image generation",
+          "description": "Set up models to create images in your chats.",
+          "buttonText": "Image Generation"
+        },
+        "inviteTeam": {
+          "title": "Invite your team",
+          "description": "Manage users and permissions for your team",
+          "buttonText": "Manage Users"
+        }
+      },
+      "header": {
+        "stepIndicator": "Step {stepIndex} of {totalSteps}"
+      },
+      "nonAdmin": {
+        "allSet": "You're all set!"
+      }
     }
   },
   "components": {
