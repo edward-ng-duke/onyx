@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import Card from "@/refresh-components/cards/Card";
 import { Button } from "@opal/components";
 import Text from "@/refresh-components/texts/Text";
@@ -29,6 +30,8 @@ export default function LicenseActivationCard({
   license,
   hideClose,
 }: LicenseActivationCardProps) {
+  const t = useTranslations("admin.billing");
+  const tCommon = useTranslations("common");
   const [licenseKey, setLicenseKey] = useState("");
   const [isActivating, setIsActivating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +52,7 @@ export default function LicenseActivationCard({
 
   const handleActivate = async () => {
     if (!licenseKey.trim()) {
-      setError("Please enter a license key");
+      setError(t("licenseEnterPrompt"));
       return;
     }
 
@@ -65,9 +68,7 @@ export default function LicenseActivationCard({
       }, 1000);
     } catch (err) {
       console.error("Error activating license:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to activate license"
-      );
+      setError(err instanceof Error ? err.message : t("licenseActivateFailed"));
     } finally {
       setIsActivating(false);
     }
@@ -106,25 +107,20 @@ export default function LicenseActivationCard({
               <SvgCheckCircle size={16} className="stroke-status-success-05" />
             )}
             <Text secondaryBody text03>
-              {isExpired ? (
-                <>License key expired</>
-              ) : (
-                <>
-                  License key active until{" "}
-                  <Text secondaryBody text04>
-                    {expirationDate}
-                  </Text>
-                </>
-              )}
+              {isExpired
+                ? t("licenseExpired")
+                : t("licenseActiveUntil", {
+                    date: expirationDate ?? "",
+                  })}
             </Text>
           </Section>
           <Section flexDirection="row" gap={0.5} height="auto" width="auto">
             <Button prominence="secondary" onClick={() => setShowInput(true)}>
-              Update Key
+              {t("updateKey")}
             </Button>
             {!hideClose && (
               <Button prominence="tertiary" onClick={handleClose}>
-                Close
+                {tCommon("actions.close")}
               </Button>
             )}
           </Section>
@@ -144,18 +140,18 @@ export default function LicenseActivationCard({
           alignItems="center"
         >
           <Text headingH3>
-            {hasLicense ? "Update License Key" : "Activate License Key"}
+            {hasLicense ? t("updateLicenseKey") : t("activateLicenseKey")}
           </Text>
           <Button
             disabled={isActivating}
             prominence="secondary"
             onClick={handleClose}
           >
-            Cancel
+            {tCommon("actions.cancel")}
           </Button>
         </Section>
         <Text secondaryBody text03>
-          Manually add and activate a license for this Onyx instance.
+          {t("manuallyAddDescription")}
         </Text>
       </Section>
 
@@ -170,18 +166,16 @@ export default function LicenseActivationCard({
           {success && (
             <div className="billing-success-message">
               <Text secondaryBody>
-                License {hasLicense ? "updated" : "activated"} successfully!
+                {hasLicense
+                  ? t("licenseUpdatedSuccess")
+                  : t("licenseActivatedSuccess")}
               </Text>
             </div>
           )}
 
           <InputVertical
-            title="License Key"
-            subDescription={
-              error
-                ? undefined
-                : "Paste or attach your license key file you received from Onyx."
-            }
+            title={t("licenseKey")}
+            subDescription={error ? undefined : t("licenseKeyDescription")}
             withLabel
           >
             <InputFile
@@ -212,7 +206,7 @@ export default function LicenseActivationCard({
                     rel="noopener noreferrer"
                     className="billing-help-link"
                   >
-                    Billing Help
+                    {t("billingHelp")}
                   </a>
                 </Text>
               </Section>
@@ -228,10 +222,10 @@ export default function LicenseActivationCard({
           onClick={handleActivate}
         >
           {isActivating
-            ? "Activating..."
+            ? t("activatingLicense")
             : hasLicense
-              ? "Update License"
-              : "Activate License"}
+              ? t("updateLicense")
+              : t("activateLicense")}
         </Button>
       </Section>
     </Card>
