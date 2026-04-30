@@ -2,6 +2,7 @@
 
 import { markdown } from "@opal/utils";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Formik, Form } from "formik";
 import useSWR, { mutate } from "swr";
@@ -24,6 +25,7 @@ import {
   SvgRefreshCw,
 } from "@opal/icons";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
+import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
 import {
   Card as CardLayout,
   Content,
@@ -97,6 +99,7 @@ function MCPServerCard({
   onToggleTool,
   onToggleTools,
 }: MCPServerCardProps) {
+  const t = useTranslations("admin.chatPreferences");
   const [isFolded, setIsFolded] = useState(true);
   const {
     query,
@@ -108,9 +111,7 @@ function MCPServerCard({
   const serverEnabled =
     tools.length > 0 && tools.some((t) => isToolEnabled(t.id));
   const needsAuth = !server.is_authenticated;
-  const authTooltip = needsAuth
-    ? "Authenticate this MCP server before enabling its tools."
-    : undefined;
+  const authTooltip = needsAuth ? t("mcpAuthTooltip") : undefined;
 
   const expanded = !isFolded;
   const hasContent = tools.length > 0 && filteredTools.length > 0;
@@ -154,7 +155,7 @@ function MCPServerCard({
           tools.length > 0 ? (
             <Section flexDirection="row" gap={0.5}>
               <InputTypeIn
-                placeholder="Search tools..."
+                placeholder={t("searchToolsPlaceholder")}
                 variant="internal"
                 leftSearchIcon
                 value={query}
@@ -166,7 +167,7 @@ function MCPServerCard({
                 prominence="internal"
                 size="lg"
               >
-                {isFolded ? "Expand" : "Fold"}
+                {isFolded ? t("expand") : t("fold")}
               </Button>
             </Section>
           ) : undefined
@@ -219,6 +220,7 @@ function NumericLimitField({
   maxValue,
   allowZero = false,
 }: NumericLimitFieldProps) {
+  const t = useTranslations("admin.chatPreferences");
   const [value, setValue] = useState(initialValueProp);
   const savedValue = useRef(initialValueProp);
   const restoringRef = useRef(false);
@@ -295,14 +297,18 @@ function NumericLimitField({
         pattern="[0-9]*"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder={allowZero ? "No limit" : `Default: ${defaultValue}`}
+        placeholder={
+          allowZero
+            ? t("noLimitPlaceholder")
+            : t("defaultPlaceholder", { value: defaultValue })
+        }
         variant={isOverMax ? "error" : undefined}
         rightSection={
           (value || "") !== defaultValue ? (
             <Hoverable.Item group="numericLimit" variant="appear-on-hover">
               <Button
                 icon={SvgRefreshCw}
-                tooltip="Restore default"
+                tooltip={t("restoreDefault")}
                 prominence="internal"
                 onClick={handleRestore}
               />
@@ -332,15 +338,16 @@ function FileSizeLimitFields({
   defaultTokenThresholdK,
   maxAllowedUploadSizeMb,
 }: FileSizeLimitFieldsProps) {
+  const t = useTranslations("admin.chatPreferences");
   return (
     <div className="flex gap-4 w-full items-start pt-2">
       <div className="flex-1">
         <InputVertical
-          title="File Size Limit"
-          suffix="(MB)"
+          title={t("fileSizeLimit")}
+          suffix={t("megabytesSuffix")}
           subDescription={
             maxAllowedUploadSizeMb
-              ? `Max: ${maxAllowedUploadSizeMb} MB`
+              ? t("maxMegabytes", { value: maxAllowedUploadSizeMb })
               : undefined
           }
           withLabel
@@ -356,9 +363,9 @@ function FileSizeLimitFields({
       </div>
       <div className="flex-1">
         <InputVertical
-          title="File Token Limit"
+          title={t("fileTokenLimit")}
           withLabel
-          suffix="(thousand tokens)"
+          suffix={t("thousandTokensSuffix")}
         >
           <NumericLimitField
             name="file_token_count_threshold_k"
@@ -374,6 +381,8 @@ function FileSizeLimitFields({
 }
 
 export default function ChatPreferencesPage() {
+  const t = useTranslations("admin.chatPreferences");
+  const { title } = useAdminRouteI18n(route);
   const router = useRouter();
   const settings = useSettingsContext();
   const s = settings.settings;
@@ -551,8 +560,8 @@ export default function ChatPreferencesPage() {
       <SettingsLayouts.Root>
         <SettingsLayouts.Header
           icon={route.icon}
-          title={route.title}
-          description="Organization-wide chat settings and defaults. Users can override some of these in their personal settings."
+          title={title}
+          description={t("headerDescription")}
           divider
         />
 
@@ -565,22 +574,22 @@ export default function ChatPreferencesPage() {
                 allowClick={enterpriseEnabled}
                 tooltip={
                   !enterpriseEnabled
-                    ? "Search Mode is an Enterprise Plan feature."
-                    : "Set up connectors to use Search Mode"
+                    ? t("searchModeEnterpriseTooltip")
+                    : t("searchModeNeedConnectors")
                 }
               >
                 <InputHorizontal
-                  title="Search Mode"
+                  title={t("searchModeTitle")}
                   tag={
                     !enterpriseEnabled
                       ? {
-                          title: "Enterprise Plan",
+                          title: t("enterprisePlanTag"),
                           color: "amber",
                           icon: SvgOrganization,
                         }
-                      : { title: "beta", color: "blue" }
+                      : { title: t("betaTag"), color: "blue" }
                   }
-                  description="UI mode for quick document search across your organization."
+                  description={t("searchModeDescription")}
                   disabled={!enterpriseEnabled || uniqueSources.length === 0}
                   withLabel
                 >
@@ -596,9 +605,9 @@ export default function ChatPreferencesPage() {
                 </InputHorizontal>
               </Disabled>
               <InputHorizontal
-                title="Multi-Model Generation"
-                tag={{ title: "beta", color: "blue" }}
-                description="Allow multiple models to generate responses in parallel in chat."
+                title={t("multiModelGenerationTitle")}
+                tag={{ title: t("betaTag"), color: "blue" }}
+                description={t("multiModelGenerationDescription")}
                 withLabel
               >
                 <Switch
@@ -609,8 +618,8 @@ export default function ChatPreferencesPage() {
                 />
               </InputHorizontal>
               <InputHorizontal
-                title="Deep Research"
-                description="Agentic research system that works across the web and connected sources. Uses significantly more tokens per query."
+                title={t("deepResearchTitle")}
+                description={t("deepResearchDescription")}
                 withLabel
               >
                 <Switch
@@ -621,8 +630,8 @@ export default function ChatPreferencesPage() {
                 />
               </InputHorizontal>
               <InputHorizontal
-                title="Chat Auto-Scroll"
-                description="Automatically scroll to new content as chat generates response. Users can override this in their personal settings."
+                title={t("chatAutoScrollTitle")}
+                description={t("chatAutoScrollDescription")}
                 withLabel
               >
                 <Switch
@@ -640,12 +649,12 @@ export default function ChatPreferencesPage() {
           {/* Team Context */}
           <Section gap={1}>
             <InputVertical
-              title="Team Name"
-              subDescription="This is added to all chat sessions as additional context to provide a richer/customized experience."
+              title={t("teamNameTitle")}
+              subDescription={t("teamNameDescription")}
               withLabel
             >
               <InputTypeIn
-                placeholder="Enter team name"
+                placeholder={t("teamNamePlaceholder")}
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 onBlur={() => {
@@ -660,12 +669,12 @@ export default function ChatPreferencesPage() {
             </InputVertical>
 
             <InputVertical
-              title="Team Context"
-              subDescription="Users can also provide additional individual context in their personal settings."
+              title={t("teamContextTitle")}
+              subDescription={t("teamContextDescription")}
               withLabel
             >
               <InputTextArea
-                placeholder="Describe your team and how Onyx should behave."
+                placeholder={t("teamContextPlaceholder")}
                 rows={4}
                 maxRows={10}
                 autoResize
@@ -684,15 +693,15 @@ export default function ChatPreferencesPage() {
           </Section>
 
           <InputHorizontal
-            title="System Prompt"
-            description="Base prompt for all chats, agents, and projects. Modify with caution: Significant changes may degrade response quality."
+            title={t("systemPromptTitle")}
+            description={t("systemPromptDescription")}
           >
             <Button
               prominence="tertiary"
               icon={SvgAddLines}
               onClick={() => setSystemPromptModalOpen(true)}
             >
-              Modify Prompt
+              {t("modifyPrompt")}
             </Button>
           </InputHorizontal>
 
@@ -704,7 +713,7 @@ export default function ChatPreferencesPage() {
                 {/* Connectors */}
                 <Section gap={0.75}>
                   <Content
-                    title="Connectors"
+                    title={t("connectorsTitle")}
                     sizePreset="main-content"
                     variant="section"
                   />
@@ -718,7 +727,7 @@ export default function ChatPreferencesPage() {
                     {uniqueSources.length === 0 ? (
                       <EmptyMessageCard
                         sizePreset="main-ui"
-                        title="No connectors set up"
+                        title={t("noConnectorsSetUp")}
                       />
                     ) : (
                       <>
@@ -749,7 +758,7 @@ export default function ChatPreferencesPage() {
                           prominence="tertiary"
                           rightIcon={SvgExternalLink}
                         >
-                          Manage All
+                          {t("manageAll")}
                         </Button>
                       </>
                     )}
@@ -759,16 +768,16 @@ export default function ChatPreferencesPage() {
                 {/* Actions & Tools */}
                 <SimpleCollapsible>
                   <SimpleCollapsible.Header
-                    title="Actions & Tools"
-                    description="Tools and capabilities available for chat to use. This does not apply to agents."
+                    title={t("actionsToolsTitle")}
+                    description={t("actionsToolsDescription")}
                   />
                   <SimpleCollapsible.Content>
                     <Section gap={0.5}>
                       {vectorDbEnabled && searchTool && (
                         <Card border="solid" rounding="lg">
                           <InputHorizontal
-                            title="Internal Search"
-                            description="Search through your organization's connected knowledge base and documents."
+                            title={t("internalSearchTitle")}
+                            description={t("internalSearchDescription")}
                             withLabel
                           >
                             <Switch
@@ -783,12 +792,12 @@ export default function ChatPreferencesPage() {
 
                       <Disabled
                         disabled={!imageGenTool}
-                        tooltip="Image generation requires a configured model. Set one up under Configuration > Image Generation, or ask an admin."
+                        tooltip={t("imageGenerationDisabledTooltip")}
                       >
                         <Card border="solid" rounding="lg">
                           <InputHorizontal
-                            title="Image Generation"
-                            description="Generate and manipulate images using AI-powered tools."
+                            title={t("imageGenerationTitle")}
+                            description={t("imageGenerationDescription")}
                             disabled={!imageGenTool}
                             withLabel
                           >
@@ -811,8 +820,8 @@ export default function ChatPreferencesPage() {
                       <Disabled disabled={!webSearchTool}>
                         <Card border="solid" rounding="lg">
                           <InputHorizontal
-                            title="Web Search"
-                            description="Search the web for real-time information and up-to-date results."
+                            title={t("webSearchTitle")}
+                            description={t("webSearchDescription")}
                             disabled={!webSearchTool}
                             withLabel
                           >
@@ -835,8 +844,8 @@ export default function ChatPreferencesPage() {
                       <Disabled disabled={!openURLTool}>
                         <Card border="solid" rounding="lg">
                           <InputHorizontal
-                            title="Open URL"
-                            description="Fetch and read content from web URLs."
+                            title={t("openUrlTitle")}
+                            description={t("openUrlDescription")}
                             disabled={!openURLTool}
                             withLabel
                           >
@@ -859,8 +868,8 @@ export default function ChatPreferencesPage() {
                       <Disabled disabled={!codeInterpreterTool}>
                         <Card border="solid" rounding="lg">
                           <InputHorizontal
-                            title="Code Interpreter"
-                            description="Generate and run code."
+                            title={t("codeInterpreterTitle")}
+                            description={t("codeInterpreterDescription")}
                             disabled={!codeInterpreterTool}
                             withLabel
                           >
@@ -930,22 +939,22 @@ export default function ChatPreferencesPage() {
 
           {/* Advanced Options */}
           <SimpleCollapsible defaultOpen={false}>
-            <SimpleCollapsible.Header title="Advanced Options" />
+            <SimpleCollapsible.Header title={t("advancedOptionsTitle")} />
             <SimpleCollapsible.Content>
               <Section gap={1}>
                 <Card border="solid" rounding="lg">
                   <Section>
                     <Disabled
                       disabled={!enterpriseEnabled}
-                      tooltip="Chat history retention is an Enterprise Plan feature."
+                      tooltip={t("keepChatHistoryEnterpriseTooltip")}
                     >
                       <InputHorizontal
-                        title="Keep Chat History"
-                        description="Specify how long Onyx should retain chats in your organization."
+                        title={t("keepChatHistoryTitle")}
+                        description={t("keepChatHistoryDescription")}
                         tag={
                           !enterpriseEnabled
                             ? {
-                                title: "Enterprise Plan",
+                                title: t("enterprisePlanTag"),
                                 color: "amber",
                                 icon: SvgOrganization,
                               }
@@ -972,19 +981,19 @@ export default function ChatPreferencesPage() {
                           <InputSelect.Trigger />
                           <InputSelect.Content>
                             <InputSelect.Item value="forever">
-                              Forever
+                              {t("retentionForever")}
                             </InputSelect.Item>
                             <InputSelect.Item value="7">
-                              7 days
+                              {t("retentionDays", { count: 7 })}
                             </InputSelect.Item>
                             <InputSelect.Item value="30">
-                              30 days
+                              {t("retentionDays", { count: 30 })}
                             </InputSelect.Item>
                             <InputSelect.Item value="90">
-                              90 days
+                              {t("retentionDays", { count: 90 })}
                             </InputSelect.Item>
                             <InputSelect.Item value="365">
-                              365 days
+                              {t("retentionDays", { count: 365 })}
                             </InputSelect.Item>
                           </InputSelect.Content>
                         </InputSelect>
@@ -992,8 +1001,8 @@ export default function ChatPreferencesPage() {
                     </Disabled>
 
                     <InputHorizontal
-                      title="Query History Visibility"
-                      description="Control how your organization's full chat history appears in the Admin Panel."
+                      title={t("queryHistoryVisibilityTitle")}
+                      description={t("queryHistoryVisibilityDescription")}
                       withLabel
                     >
                       <InputSelect
@@ -1008,21 +1017,23 @@ export default function ChatPreferencesPage() {
                         <InputSelect.Content>
                           <InputSelect.Item
                             value={QueryHistoryType.NORMAL}
-                            description="All queries are visible to admins and linked to individual users."
+                            description={t("queryHistoryNormalDescription")}
                           >
-                            Show with User Info
+                            {t("queryHistoryNormal")}
                           </InputSelect.Item>
                           <InputSelect.Item
                             value={QueryHistoryType.ANONYMIZED}
-                            description="Queries are visible to admins with user identity removed"
+                            description={t(
+                              "queryHistoryAnonymizedDescription"
+                            )}
                           >
-                            Anonymized
+                            {t("queryHistoryAnonymized")}
                           </InputSelect.Item>
                           <InputSelect.Item
                             value={QueryHistoryType.DISABLED}
-                            description="Query history reporting is disabled."
+                            description={t("queryHistoryDisabledDescription")}
                           >
-                            Hidden
+                            {t("queryHistoryDisabled")}
                           </InputSelect.Item>
                         </InputSelect.Content>
                       </InputSelect>
@@ -1032,8 +1043,8 @@ export default function ChatPreferencesPage() {
 
                 <Card border="solid" rounding="lg">
                   <InputVertical
-                    title="File Attachment Size Limit"
-                    description="Files attached in chats and projects must fit within both limits to be accepted. Larger files increase latency, memory usage, and token costs."
+                    title={t("fileAttachmentSizeLimitTitle")}
+                    description={t("fileAttachmentSizeLimitDescription")}
                     withLabel
                   >
                     <FileSizeLimitFields
@@ -1067,8 +1078,8 @@ export default function ChatPreferencesPage() {
 
                 <Card border="solid" rounding="lg">
                   <InputHorizontal
-                    title="Image Extraction & Analysis"
-                    description="Extract embedded images from uploaded files (PDFs, DOCX, etc.) and summarize them with a vision-capable LLM so image-only documents become searchable and answerable. Requires a vision-capable default LLM."
+                    title={t("imageExtractionTitle")}
+                    description={t("imageExtractionDescription")}
                     withLabel
                   >
                     <Switch
@@ -1085,8 +1096,8 @@ export default function ChatPreferencesPage() {
                 <Card border="solid" rounding="lg">
                   <Section>
                     <InputHorizontal
-                      title="Allow Anonymous Users"
-                      description="Allow anyone to start chats without logging in. They do not see any other chats and cannot create agents or update settings."
+                      title={t("allowAnonymousUsersTitle")}
+                      description={t("allowAnonymousUsersDescription")}
                       withLabel
                     >
                       <Switch
@@ -1100,8 +1111,8 @@ export default function ChatPreferencesPage() {
                     </InputHorizontal>
 
                     <InputHorizontal
-                      title="Always Start with an Agent"
-                      description="This removes the default chat. Users will always start in an agent, and new chats will be created in their last active agent. Set featured agents to help new users get started."
+                      title={t("alwaysStartWithAgentTitle")}
+                      description={t("alwaysStartWithAgentDescription")}
                       withLabel
                     >
                       <Switch
@@ -1165,8 +1176,8 @@ export default function ChatPreferencesPage() {
                 <Form>
                   <Modal.Header
                     icon={SvgAddLines}
-                    title="System Prompt"
-                    description="This base prompt is prepended to all chats, agents, and projects."
+                    title={t("systemPromptModalTitle")}
+                    description={t("systemPromptModalDescription")}
                     onClose={() => setSystemPromptModalOpen(false)}
                   />
                   <Modal.Body>
@@ -1174,7 +1185,7 @@ export default function ChatPreferencesPage() {
                       <Hoverable.Root group="systemPromptRestore" width="full">
                         <InputTextAreaField
                           name="system_prompt"
-                          placeholder="Enter your system prompt..."
+                          placeholder={t("systemPromptPlaceholder")}
                           rows={8}
                           maxRows={20}
                           autoResize
@@ -1185,7 +1196,7 @@ export default function ChatPreferencesPage() {
                             >
                               <Button
                                 icon={SvgRefreshCw}
-                                tooltip="Restore default"
+                                tooltip={t("restoreDefault")}
                                 prominence="internal"
                                 onClick={handleRestore}
                               />
@@ -1194,14 +1205,12 @@ export default function ChatPreferencesPage() {
                         />
                       </Hoverable.Root>
                       <Text font="secondary-body" color="text-03">
-                        {markdown(
-                          "You can use the following placeholders in your prompt:\n`{{CURRENT_DATETIME}}` - Current date and day of the week in a human-readable format.\n`{{CITATION_GUIDANCE}}` - Instructions for providing citations when facts are retrieved from search tools.\nOnly included when search tools are used.\n`{{REMINDER_TAG_DESCRIPTION}}` - Instructions for how to interpret system reminders in user messages."
-                        )}
+                        {markdown(t("systemPromptPlaceholdersHelp"))}
                       </Text>
                     </Section>
                     <MessageCard
-                      title="Modify with caution."
-                      description="System prompt affects all chats, agents, and projects. Significant changes may degrade response quality."
+                      title={t("modifyWithCautionTitle")}
+                      description={t("modifyWithCautionDescription")}
                       padding="xs"
                     />
                   </Modal.Body>
@@ -1210,14 +1219,14 @@ export default function ChatPreferencesPage() {
                       prominence="secondary"
                       onClick={() => setSystemPromptModalOpen(false)}
                     >
-                      Cancel
+                      {t("cancel")}
                     </Button>
                     <Button
                       prominence="primary"
                       onClick={submitForm}
                       disabled={!dirty || isSubmitting}
                     >
-                      Save
+                      {t("save")}
                     </Button>
                   </Modal.Footer>
                 </Form>

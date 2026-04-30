@@ -13,10 +13,12 @@ import { cn } from "@opal/utils";
 import { SvgLock } from "@opal/icons";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
 import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
+import { useTranslations } from "next-intl";
 
 const route = ADMIN_ROUTES.DOCUMENT_PROCESSING;
 
 function Main() {
+  const t = useTranslations("admin.documentProcessing");
   const {
     data: isApiKeySet,
     error,
@@ -69,31 +71,30 @@ function Main() {
             text05
             className="border-b border-border-01 pb-2"
           >
-            Process with Unstructured API
+            {t("sectionTitle")}
           </Text>
 
           <div className="flex flex-col gap-2">
             <Text as="p" mainContentBody text04 className="leading-relaxed">
-              Unstructured extracts and transforms complex data from formats
-              like .pdf, .docx, .png, .pptx, etc. into clean text for Onyx to
-              ingest. Provide an API key to enable Unstructured document
-              processing.
+              {t("description")}
             </Text>
             <Text as="p" mainContentMuted text03>
-              <span className="font-main-ui-action text-text-03">Note:</span>{" "}
-              this will send documents to Unstructured servers for processing.
+              <span className="font-main-ui-action text-text-03">
+                {t("noteLabel")}
+              </span>{" "}
+              {t("noteBody")}
             </Text>
             <Text as="p" mainContentBody text04 className="leading-relaxed">
-              Learn more about Unstructured{" "}
+              {t("learnMorePrefix")}{" "}
               <a
                 href="https://docs.unstructured.io/welcome"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-action-link-05 underline-offset-4 hover:underline"
               >
-                here
+                {t("learnMoreLink")}
               </a>
-              .
+              {t("learnMoreSuffix")}
             </Text>
             <div className="pt-1.5">
               {isApiKeySet ? (
@@ -122,7 +123,7 @@ function Main() {
                 </div>
               ) : (
                 <InputTypeIn
-                  placeholder="Enter API Key"
+                  placeholder={t("apiKeyPlaceholder")}
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                 />
@@ -132,15 +133,15 @@ function Main() {
               {isApiKeySet ? (
                 <>
                   <Button variant="danger" onClick={handleDelete}>
-                    Delete API Key
+                    {t("deleteApiKey")}
                   </Button>
                   <Text as="p" mainContentBody text04 className="sm:mt-0">
-                    Delete the current API key before updating.
+                    {t("deleteBeforeUpdate")}
                   </Text>
                 </>
               ) : (
                 <Button variant="action" onClick={handleSave}>
-                  Save API Key
+                  {t("saveApiKey")}
                 </Button>
               )}
             </div>

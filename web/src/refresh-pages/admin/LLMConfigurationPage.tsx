@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSWRConfig } from "swr";
+import { useTranslations } from "next-intl";
 import { toast } from "@/hooks/useToast";
 import { useAdminLLMProviders } from "@/hooks/useLLMProviders";
 import { ThreeDotsLoader } from "@/components/Loading";
@@ -18,6 +19,7 @@ import { Hoverable } from "@opal/core";
 import { SvgArrowExchange, SvgSettings, SvgTrash } from "@opal/icons";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
+import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
 import * as GeneralLayouts from "@/layouts/general-layouts";
 import { getProvider } from "@/lib/llmConfig";
 import { refreshLlmProviderCaches } from "@/lib/llmConfig/cache";
@@ -67,6 +69,8 @@ function ExistingProviderCard({
   isDefault,
   isLastProvider,
 }: ExistingProviderCardProps) {
+  const t = useTranslations("admin.configurationLlm");
+  const tCommon = useTranslations("common.actions");
   const { mutate } = useSWRConfig();
   const [isOpen, setIsOpen] = useState(false);
   const deleteModal = useCreateModal();
@@ -94,7 +98,7 @@ function ExistingProviderCard({
       {deleteModal.isOpen && (
         <ConfirmationModalLayout
           icon={SvgTrash}
-          title={markdown(`Delete *${provider.name}*`)}
+          title={markdown(t("deleteTitle", { name: provider.name }))}
           onClose={() => deleteModal.toggle(false)}
           submit={
             <Button
@@ -102,26 +106,25 @@ function ExistingProviderCard({
               onClick={handleDelete}
               disabled={isDefault && !isLastProvider}
             >
-              Delete
+              {tCommon("delete")}
             </Button>
           }
         >
           <Section alignItems="start" gap={0.5}>
             {isDefault && !isLastProvider ? (
               <Text font="main-ui-body" color="text-03">
-                Cannot delete the default provider. Select another provider as
-                the default prior to deleting this one.
+                {t("cannotDeleteDefault")}
               </Text>
             ) : (
               <>
                 <Text font="main-ui-body" color="text-03">
                   {markdown(
-                    `All LLM models from provider **${provider.name}** will be removed and unavailable for future chats. Chat history will be preserved.`
+                    t("deleteWarning", { name: provider.name })
                   )}
                 </Text>
                 {isLastProvider && (
                   <Text font="main-ui-body" color="text-03">
-                    Connect another provider to continue using chats.
+                    {t("connectAnotherProvider")}
                   </Text>
                 )}
               </>
@@ -147,7 +150,9 @@ function ExistingProviderCard({
             sizePreset="main-ui"
             variant="section"
             padding="lg"
-            tag={isDefault ? { title: "Default", color: "blue" } : undefined}
+            tag={
+              isDefault ? { title: t("defaultTag"), color: "blue" } : undefined
+            }
             rightChildren={
               <div className="flex flex-row">
                 <Hoverable.Item
@@ -157,7 +162,7 @@ function ExistingProviderCard({
                   <Button
                     icon={SvgTrash}
                     prominence="tertiary"
-                    aria-label={`Delete ${provider.name}`}
+                    aria-label={t("deleteProviderAria", { name: provider.name })}
                     onClick={(e) => {
                       e.stopPropagation();
                       deleteModal.toggle(true);
@@ -167,7 +172,7 @@ function ExistingProviderCard({
                 <Button
                   icon={SvgSettings}
                   prominence="tertiary"
-                  aria-label={`Edit ${provider.name}`}
+                  aria-label={t("editProviderAria", { name: provider.name })}
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsOpen(true);
@@ -195,6 +200,7 @@ function NewProviderCard({
   providerName,
   isFirstProvider,
 }: NewProviderCardProps) {
+  const t = useTranslations("admin.configurationLlm");
   const [isOpen, setIsOpen] = useState(false);
   const { icon, productName, companyName, Modal } = getProvider(providerName);
 
@@ -221,7 +227,7 @@ function NewProviderCard({
               setIsOpen(true);
             }}
           >
-            Connect
+            {t("connect")}
           </Button>
         }
       />
@@ -243,6 +249,7 @@ interface NewCustomProviderCardProps {
 function NewCustomProviderCard({
   isFirstProvider,
 }: NewCustomProviderCardProps) {
+  const t = useTranslations("admin.configurationLlm");
   const [isOpen, setIsOpen] = useState(false);
   const { icon, productName, companyName, Modal } = getProvider("custom");
 
@@ -269,7 +276,7 @@ function NewCustomProviderCard({
               setIsOpen(true);
             }}
           >
-            Set Up
+            {t("setUp")}
           </Button>
         }
       />
@@ -285,6 +292,8 @@ function NewCustomProviderCard({
 // ============================================================================
 
 export default function LLMConfigurationPage() {
+  const t = useTranslations("admin.configurationLlm");
+  const { title } = useAdminRouteI18n(route);
   const { mutate } = useSWRConfig();
   const { llmProviders: existingLlmProviders, defaultText } =
     useAdminLLMProviders();
@@ -335,14 +344,14 @@ export default function LLMConfigurationPage() {
 
   return (
     <SettingsLayouts.Root>
-      <SettingsLayouts.Header icon={route.icon} title={route.title} divider />
+      <SettingsLayouts.Header icon={route.icon} title={title} divider />
 
       <SettingsLayouts.Body>
         {hasProviders ? (
           <Card border="solid" rounding="lg">
             <InputHorizontal
-              title="Default Model"
-              description="This model will be used by Onyx by default in your chats."
+              title={t("defaultModelTitle")}
+              description={t("defaultModelDescription")}
               center
               withLabel
             >
@@ -350,7 +359,9 @@ export default function LLMConfigurationPage() {
                 value={currentDefaultValue}
                 onValueChange={handleDefaultModelChange}
               >
-                <InputSelect.Trigger placeholder="Select a default model" />
+                <InputSelect.Trigger
+                  placeholder={t("defaultModelPlaceholder")}
+                />
                 <InputSelect.Content>
                   {providersWithVisibleModels.map(
                     ({ provider, visibleModels }) => (
@@ -372,10 +383,7 @@ export default function LLMConfigurationPage() {
             </InputHorizontal>
           </Card>
         ) : (
-          <MessageCard
-            variant="info"
-            title="Set up an LLM provider to start chatting."
-          />
+          <MessageCard variant="info" title={t("setUpProviderPrompt")} />
         )}
 
         {/* ── Available Providers (only when providers exist) ── */}
@@ -388,7 +396,7 @@ export default function LLMConfigurationPage() {
               justifyContent="start"
             >
               <Content
-                title="Available Providers"
+                title={t("availableProviders")}
                 sizePreset="main-content"
                 variant="section"
               />
@@ -417,8 +425,8 @@ export default function LLMConfigurationPage() {
           justifyContent="start"
         >
           <Content
-            title="Add Provider"
-            description="Onyx supports both popular providers and self-hosted models."
+            title={t("addProvider")}
+            description={t("addProviderDescription")}
             sizePreset="main-content"
             variant="section"
           />
