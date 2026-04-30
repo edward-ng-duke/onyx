@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { resetPassword } from "../forgot-password/utils";
 import AuthFlowContainer from "@/components/auth/AuthFlowContainer";
 import Title from "@/components/ui/title";
@@ -21,6 +22,7 @@ import {
 import Cookies from "js-cookie";
 
 const ResetPasswordPage: React.FC = () => {
+  const t = useTranslations("auth");
   const [isWorking, setIsWorking] = useState(false);
   const searchParams = useSearchParams();
   const token = searchParams?.get("token");
@@ -44,7 +46,9 @@ const ResetPasswordPage: React.FC = () => {
     <AuthFlowContainer>
       <div className="flex flex-col w-full justify-center">
         <div className="flex">
-          <Title className="mb-2 mx-auto font-bold">Reset Password</Title>
+          <Title className="mb-2 mx-auto font-bold">
+            {t("resetPassword.title")}
+          </Title>
         </div>
         {isWorking && <Spinner />}
         <Formik
@@ -53,32 +57,33 @@ const ResetPasswordPage: React.FC = () => {
             confirmPassword: "",
           }}
           validationSchema={Yup.object().shape({
-            password: Yup.string().required("Password is required"),
+            password: Yup.string().required(t("resetPassword.passwordRequired")),
             confirmPassword: Yup.string()
-              .oneOf([Yup.ref("password"), undefined], "Passwords must match")
-              .required("Confirm Password is required"),
+              .oneOf(
+                [Yup.ref("password"), undefined],
+                t("resetPassword.passwordsMustMatch")
+              )
+              .required(t("resetPassword.confirmPasswordRequired")),
           })}
           onSubmit={async (values) => {
             if (!token) {
-              toast.error("Invalid or missing reset token.");
+              toast.error(t("resetPassword.invalidToken"));
               return;
             }
             setIsWorking(true);
             try {
               await resetPassword(token, values.password);
-              toast.success(
-                "Password reset successfully. Redirecting to login..."
-              );
+              toast.success(t("resetPassword.successToast"));
               setTimeout(() => {
                 redirect("/auth/login");
               }, 1000);
             } catch (error) {
               if (error instanceof Error) {
                 toast.error(
-                  error.message || "An error occurred during password reset."
+                  error.message || t("resetPassword.errorGeneric")
                 );
               } else {
-                toast.error("An unexpected error occurred. Please try again.");
+                toast.error(t("resetPassword.errorUnexpected"));
               }
             } finally {
               setIsWorking(false);
@@ -89,20 +94,20 @@ const ResetPasswordPage: React.FC = () => {
             <Form className="w-full flex flex-col items-stretch mt-2">
               <TextFormField
                 name="password"
-                label="New Password"
+                label={t("resetPassword.newPasswordLabel")}
                 type="password"
-                placeholder="Enter your new password"
+                placeholder={t("resetPassword.newPasswordPlaceholder")}
               />
               <TextFormField
                 name="confirmPassword"
-                label="Confirm New Password"
+                label={t("resetPassword.confirmPasswordLabel")}
                 type="password"
-                placeholder="Confirm your new password"
+                placeholder={t("resetPassword.confirmPasswordPlaceholder")}
               />
 
               <div className="flex">
                 <Button disabled={isSubmitting} type="submit" width="full">
-                  Reset Password
+                  {t("resetPassword.submitButton")}
                 </Button>
               </div>
             </Form>
@@ -111,7 +116,9 @@ const ResetPasswordPage: React.FC = () => {
         <Spacer rem={1} />
         <div className="flex">
           <div className="mx-auto">
-            <Text as="p">{markdown("[Back to Login](/auth/login)")}</Text>
+            <Text as="p">
+              {markdown(`[${t("common.backToLogin")}](/auth/login)`)}
+            </Text>
           </div>
         </div>
       </div>

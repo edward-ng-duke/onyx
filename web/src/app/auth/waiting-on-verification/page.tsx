@@ -4,6 +4,7 @@ import {
   getCurrentUserSS,
 } from "@/lib/userSS";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { User } from "@/lib/types";
 import { RequestNewVerificationEmail } from "./RequestNewVerificationEmail";
 import Logo from "@/refresh-components/Logo";
@@ -33,6 +34,8 @@ export default async function Page() {
     return redirect("/app");
   }
 
+  const t = await getTranslations("auth");
+
   return (
     <main>
       <div className="min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 gap-4">
@@ -40,15 +43,15 @@ export default async function Page() {
         <div className="flex flex-col gap-2">
           <Text as="span">
             {markdown(
-              `Hey, *${currentUser.email}*, it looks like you haven't verified your email yet.\nCheck your inbox for an email from us to get started!`
+              t("verify.waitingHeader", { email: `*${currentUser.email}*` })
             )}
           </Text>
           <div className="flex flex-row items-center gap-1">
-            <Text as="span">If you don't see anything, click</Text>
+            <Text as="span">{t("verify.ifNotSee")}</Text>
             <RequestNewVerificationEmail email={currentUser.email}>
-              <Text as="span">here</Text>
+              <Text as="span">{t("verify.here")}</Text>
             </RequestNewVerificationEmail>
-            <Text as="span">to request a new email.</Text>
+            <Text as="span">{t("verify.toRequestNew")}</Text>
           </div>
         </div>
       </div>

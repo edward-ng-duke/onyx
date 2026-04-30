@@ -27,6 +27,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@opal/components";
 import { AuthType } from "@/lib/constants";
 import { FcGoogle } from "react-icons/fc";
@@ -43,6 +44,7 @@ export default function SignInButton({
   authorizeUrl,
   authType,
 }: SignInButtonProps) {
+  const t = useTranslations("auth");
   const { getCaptchaToken, isCaptchaEnabled } = useCaptcha();
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,12 +53,12 @@ export default function SignInButton({
   let icon: React.FunctionComponent<IconProps> | undefined;
 
   if (authType === AuthType.GOOGLE_OAUTH || authType === AuthType.CLOUD) {
-    button = "Continue with Google";
+    button = t("signIn.continueWithGoogle");
     icon = FcGoogle;
   } else if (authType === AuthType.OIDC) {
-    button = "Continue with OIDC SSO";
+    button = t("signIn.continueWithOidc");
   } else if (authType === AuthType.SAML) {
-    button = "Continue with SAML SSO";
+    button = t("signIn.continueWithSaml");
   }
 
   if (!button) {
@@ -79,7 +81,7 @@ export default function SignInButton({
         console.error(
           "Captcha: grecaptcha.execute returned no token. The widget may not have loaded yet."
         );
-        setError("grecaptcha.execute returned no token");
+        setError(t("signIn.captchaNoToken"));
         return;
       }
       const res = await fetch("/api/auth/captcha/oauth-verify", {
@@ -96,9 +98,7 @@ export default function SignInButton({
             body.detail ?? "(none)"
           }`
         );
-        setError(
-          "Captcha verification failed. Please refresh your browser and try again."
-        );
+        setError(t("signIn.captchaVerifyFailed"));
         return;
       }
       navigating = true;

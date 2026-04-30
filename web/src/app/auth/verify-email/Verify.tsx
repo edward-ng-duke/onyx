@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Text } from "@opal/components";
 import Spacer from "@/refresh-components/Spacer";
 import { RequestNewVerificationEmail } from "../waiting-on-verification/RequestNewVerificationEmail";
@@ -14,6 +15,7 @@ export interface VerifyProps {
 }
 
 export default function Verify({ user }: VerifyProps) {
+  const t = useTranslations("auth");
   const searchParams = useSearchParams();
 
   const [error, setError] = useState("");
@@ -23,9 +25,7 @@ export default function Verify({ user }: VerifyProps) {
     const firstUser =
       searchParams?.get("first_user") === "true" && NEXT_PUBLIC_CLOUD_ENABLED;
     if (!token) {
-      setError(
-        "Missing verification token. Try requesting a new verification email."
-      );
+      setError(t("verify.missingToken"));
       return;
     }
 
@@ -51,11 +51,9 @@ export default function Verify({ user }: VerifyProps) {
       } catch (e) {
         console.error("Failed to parse verification error response:", e);
       }
-      setError(
-        `Failed to verify your email - ${errorDetail}. Please try requesting a new verification email.`
-      );
+      setError(t("verify.verifyFailed", { error: errorDetail }));
     }
-  }, [searchParams]);
+  }, [searchParams, t]);
 
   useEffect(() => {
     verify();
@@ -68,7 +66,7 @@ export default function Verify({ user }: VerifyProps) {
         {!error ? (
           <>
             <Spacer rem={0.5} />
-            <Text as="p">Verifying your email...</Text>
+            <Text as="p">{t("verify.verifying")}</Text>
           </>
         ) : (
           <div>
@@ -80,7 +78,7 @@ export default function Verify({ user }: VerifyProps) {
                 <RequestNewVerificationEmail email={user.email}>
                   {/* TODO(@raunakab): migrate to @opal/components Text */}
                   <p className="text-sm mt-2 text-link">
-                    Get new verification email
+                    {t("verify.getNewVerificationEmail")}
                   </p>
                 </RequestNewVerificationEmail>
               </div>

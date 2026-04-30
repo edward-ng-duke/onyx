@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { AuthTypeMetadata } from "@/hooks/useAuthTypeMetadata";
 import LoginText from "@/app/auth/login/LoginText";
 import SignInButton from "@/app/auth/login/SignInButton";
@@ -27,6 +28,7 @@ export default function LoginPage({
   isFirstUser,
 }: LoginPageProps) {
   useSendAuthRequiredMessage();
+  const t = useTranslations("auth");
 
   // Honor any existing nextUrl; only default to new team flow for first users with no nextUrl
   const effectiveNextUrl =
@@ -37,7 +39,7 @@ export default function LoginPage({
       {verified && (
         <MessageCard
           variant="success"
-          title="Your email has been verified! Please sign in to continue."
+          title={t("signIn.verifiedSuccess")}
         />
       )}
       {authUrl &&
@@ -66,7 +68,7 @@ export default function LoginPage({
               <div className="flex flex-row items-center w-full gap-2">
                 <div className="flex-1 border-t border-text-01" />
                 <Text as="p" text03 mainUiMuted>
-                  or
+                  {t("common.or")}
                 </Text>
                 <div className="flex-1 border-t border-text-01" />
               </div>
@@ -74,7 +76,9 @@ export default function LoginPage({
           )}
           <EmailPasswordForm shouldVerify={true} nextUrl={effectiveNextUrl} />
           {NEXT_PUBLIC_FORGOT_PASSWORD_ENABLED && (
-            <Button href="/auth/forgot-password">Reset Password</Button>
+            <Button href="/auth/forgot-password">
+              {t("signIn.resetPassword")}
+            </Button>
           )}
         </div>
       )}
@@ -88,7 +92,7 @@ export default function LoginPage({
 
       {!hidePageRedirect && (
         <p className="text-center mt-4">
-          Don&apos;t have an account?{" "}
+          {t("signIn.noAccountPrompt")}{" "}
           <span
             onClick={() => {
               if (typeof window !== "undefined" && window.top) {
@@ -99,7 +103,7 @@ export default function LoginPage({
             }}
             className="text-link font-medium cursor-pointer"
           >
-            Create an account
+            {t("signIn.createAccountLink")}
           </span>
         </p>
       )}

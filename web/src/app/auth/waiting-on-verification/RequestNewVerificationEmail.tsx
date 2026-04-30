@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { toast } from "@/hooks/useToast";
 import { requestEmailVerification } from "../lib";
 import { Spinner } from "@/components/Spinner";
@@ -12,6 +13,7 @@ export function RequestNewVerificationEmail({
   children: JSX.Element | string;
   email: string;
 }) {
+  const t = useTranslations("auth");
   const [isRequestingVerification, setIsRequestingVerification] =
     useState(false);
 
@@ -24,12 +26,10 @@ export function RequestNewVerificationEmail({
         setIsRequestingVerification(false);
 
         if (response.ok) {
-          toast.success("A new verification email has been sent!");
+          toast.success(t("verify.newEmailSent"));
         } else {
           const errorDetail = (await response.json()).detail;
-          toast.error(
-            `Failed to send a new verification email - ${errorDetail}`
-          );
+          toast.error(t("verify.newEmailFailed", { error: errorDetail }));
         }
       }}
     >

@@ -6,6 +6,7 @@ import {
   getAuthUrlSS,
 } from "@/lib/userSS";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import EmailPasswordForm from "../login/EmailPasswordForm";
 import SignInButton from "@/app/auth/login/SignInButton";
 import AuthFlowContainer from "@/components/auth/AuthFlowContainer";
@@ -60,6 +61,8 @@ const Page = async (props: {
     authUrl = await getAuthUrlSS(authTypeMetadata.authType, null);
   }
 
+  const t = await getTranslations("auth");
+
   return (
     <AuthFlowContainer authState="signup">
       <AuthErrorDisplay searchParams={searchParams} />
@@ -74,10 +77,12 @@ const Page = async (props: {
         >
           <div className="w-full">
             <Text as="p" headingH2 text05>
-              {cloud ? "Complete your sign up" : "Create account"}
+              {cloud
+                ? t("signUp.completeSignUp")
+                : t("signUp.createAccount")}
             </Text>
             <Text as="p" text03>
-              Get started with Onyx
+              {t("signUp.getStarted")}
             </Text>
           </div>
           {cloud && authUrl && (
@@ -86,7 +91,7 @@ const Page = async (props: {
               <div className="flex items-center w-full my-4">
                 <div className="flex-grow border-t border-border-01" />
                 <Text as="p" mainUiMuted text03 className="mx-2">
-                  or
+                  {t("common.or")}
                 </Text>
                 <div className="flex-grow border-t border-border-01" />
               </div>

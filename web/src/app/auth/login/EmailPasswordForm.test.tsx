@@ -6,6 +6,7 @@
  */
 import React from "react";
 import { render, screen, waitFor, setupUser } from "@tests/setup/test-utils";
+import enMessages from "@/i18n/messages/en.json";
 import EmailPasswordForm from "./EmailPasswordForm";
 
 // Mock next/navigation (not used by this component, but required by dependencies)
@@ -15,6 +16,35 @@ jest.mock("next/navigation", () => ({
     refresh: jest.fn(),
   }),
 }));
+
+// Mock next-intl's useTranslations to read from the en.json bundle so test
+// assertions on English literals (e.g. "Sign in", "Signed in successfully.")
+// continue to work without wiring up a NextIntlClientProvider.
+jest.mock("next-intl", () => {
+  const messages: any = (enMessages as any).auth;
+
+  function resolve(path: string): string {
+    const parts = path.split(".");
+    let cur: any = messages;
+    for (const p of parts) {
+      if (cur == null) return path;
+      cur = cur[p];
+    }
+    return typeof cur === "string" ? cur : path;
+  }
+
+  function format(template: string, values?: Record<string, any>): string {
+    if (!values) return template;
+    return template.replace(/\{(\w+)\}/g, (_match, key) =>
+      values[key] != null ? String(values[key]) : `{${key}}`
+    );
+  }
+
+  return {
+    useTranslations: () => (key: string, values?: Record<string, any>) =>
+      format(resolve(key), values),
+  };
+});
 
 describe("Email/Password Login Workflow", () => {
   let fetchSpy: jest.SpyInstance;

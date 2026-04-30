@@ -6,6 +6,7 @@ import {
   AuthTypeMetadata,
 } from "@/lib/userSS";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import type { Route } from "next";
 import AuthFlowContainer from "@/components/auth/AuthFlowContainer";
 import LoginPage from "./LoginPage";
@@ -82,12 +83,13 @@ export default async function Page(props: PageProps) {
     return redirect(authUrl as Route);
   }
 
+  const t = await getTranslations("auth");
   const ssoLoginFooterContent =
     authTypeMetadata &&
     (authTypeMetadata.authType === AuthType.GOOGLE_OAUTH ||
       authTypeMetadata.authType === AuthType.OIDC ||
       authTypeMetadata.authType === AuthType.SAML) ? (
-      <>Need access? Reach out to your IT admin to get access.</>
+      <>{t("signIn.ssoNeedAccess")}</>
     ) : undefined;
 
   return (

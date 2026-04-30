@@ -39,6 +39,145 @@
       "actions": "Actions"
     }
   },
+  "auth": {
+    "common": {
+      "tagline": "Your open source AI platform for work",
+      "or": "or",
+      "backToLogin": "Back to Login",
+      "emailLabel": "Email",
+      "emailAddressLabel": "Email Address",
+      "passwordLabel": "Password",
+      "emailPlaceholder": "email@yourcompany.com",
+      "passwordPlaceholder": "∗∗∗∗∗∗∗∗∗∗∗∗∗∗",
+      "unknownError": "Unknown error",
+      "tooManyRequests": "Too many requests. Please try again later."
+    },
+    "signIn": {
+      "welcome": "Welcome to {appName}",
+      "verifiedSuccess": "Your email has been verified! Please sign in to continue.",
+      "continueWithGoogle": "Continue with Google",
+      "continueWithOidc": "Continue with OIDC SSO",
+      "continueWithSaml": "Continue with SAML SSO",
+      "resetPassword": "Reset Password",
+      "signInButton": "Sign In",
+      "joinButton": "Join",
+      "createAccountButton": "Create Account",
+      "continueAsGuest": "or continue as guest",
+      "noAccountPrompt": "Don't have an account?",
+      "createAccountLink": "Create an account",
+      "signingIn": "Signing in...",
+      "signedInSuccess": "Signed in successfully.",
+      "creatingAccount": "Creating account...",
+      "accountCreated": "Account created. Signing in...",
+      "joining": "Joining...",
+      "invalidCredentials": "Invalid email or password",
+      "noWebLoginNoPassword": "Create an account to set a password",
+      "loginFailed": "Failed to login - {error}",
+      "captchaNoToken": "grecaptcha.execute returned no token",
+      "captchaVerifyFailed": "Captcha verification failed. Please refresh your browser and try again.",
+      "ssoNeedAccess": "Need access? Reach out to your IT admin to get access.",
+      "passwordMinLength": "Password must be at least {min} characters"
+    },
+    "signUp": {
+      "completeSignUp": "Complete your sign up",
+      "createAccount": "Create account",
+      "getStarted": "Get started with Onyx",
+      "alreadyExists": "An account already exists with the specified email.",
+      "signupFailed": "Failed to sign up - {error}",
+      "accountCreatedToast": "Account created successfully. Please log in.",
+      "referralLabel": "How did you hear about us?",
+      "referralPlaceholder": "Select an option",
+      "referralOptions": {
+        "search": "Search Engine (Google/Bing)",
+        "friend": "Friend/Colleague",
+        "linkedin": "LinkedIn",
+        "twitter": "Twitter",
+        "hackernews": "HackerNews",
+        "reddit": "Reddit",
+        "youtube": "YouTube",
+        "podcast": "Podcast",
+        "blog": "Article/Blog",
+        "ads": "Advertisements",
+        "other": "Other"
+      }
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "submitButton": "Reset Password",
+      "successToast": "Password reset email sent. Please check your inbox.",
+      "errorToast": "An error occurred. Please try again."
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "newPasswordLabel": "New Password",
+      "confirmPasswordLabel": "Confirm New Password",
+      "newPasswordPlaceholder": "Enter your new password",
+      "confirmPasswordPlaceholder": "Confirm your new password",
+      "submitButton": "Reset Password",
+      "passwordRequired": "Password is required",
+      "passwordsMustMatch": "Passwords must match",
+      "confirmPasswordRequired": "Confirm Password is required",
+      "invalidToken": "Invalid or missing reset token.",
+      "successToast": "Password reset successfully. Redirecting to login...",
+      "errorGeneric": "An error occurred during password reset.",
+      "errorUnexpected": "An unexpected error occurred. Please try again."
+    },
+    "verify": {
+      "verifying": "Verifying your email...",
+      "missingToken": "Missing verification token. Try requesting a new verification email.",
+      "verifyFailed": "Failed to verify your email - {error}. Please try requesting a new verification email.",
+      "getNewVerificationEmail": "Get new verification email",
+      "waitingHeader": "Hey, {email}, it looks like you haven't verified your email yet.\nCheck your inbox for an email from us to get started!",
+      "ifNotSee": "If you don't see anything, click",
+      "here": "here",
+      "toRequestNew": "to request a new email.",
+      "newEmailSent": "A new verification email has been sent!",
+      "newEmailFailed": "Failed to send a new verification email - {error}"
+    },
+    "invite": {
+      "title": "Re-authenticate to join team"
+    },
+    "error": {
+      "title": "Authentication Error",
+      "subtitle": "There was a problem with your login attempt.",
+      "possibleIssues": "Possible Issues:",
+      "issueCredentials": "Incorrect or expired login credentials",
+      "issueDisruption": "Temporary authentication system disruption",
+      "issueRestrictions": "Account access restrictions or permissions",
+      "returnToLogin": "Return to Login Page",
+      "supportCloud": "If you continue to experience problems, please reach out to the Onyx team at",
+      "supportSelfHost": "If you continue to experience problems, please reach out to your system administrator for assistance.",
+      "codes": {
+        "accessDenied": "Access was denied by your identity provider.",
+        "loginRequired": "You need to log in with your identity provider first.",
+        "consentRequired": "Your identity provider requires consent before continuing.",
+        "interactionRequired": "Additional interaction with your identity provider is required.",
+        "invalidScope": "The requested permissions are not available.",
+        "serverError": "Your identity provider encountered an error. Please try again.",
+        "temporarilyUnavailable": "Your identity provider is temporarily unavailable. Please try again later."
+      }
+    },
+    "createAccount": {
+      "title": "Account Not Found",
+      "description": "We couldn't find your account in our records. To access Onyx, you need to either:",
+      "optionInvited": "Be invited to an existing Onyx team",
+      "optionCreate": "Create a new Onyx team",
+      "createNewOrg": "Create New Organization",
+      "differentEmail": "Have an account with a different email?",
+      "signIn": "Sign in"
+    },
+    "impersonate": {
+      "title": "Impersonate User",
+      "emailLabel": "Email",
+      "apiKeyLabel": "API Key",
+      "apiKeyPlaceholder": "Enter API Key",
+      "submitButton": "Impersonate User",
+      "invalidEmail": "Invalid email",
+      "required": "Required",
+      "failed": "Failed to impersonate user",
+      "note": "Note: This feature is only available for @onyx.app administrators"
+    }
+  },
   "admin": {
     "routes": {
       "indexingStatus": {

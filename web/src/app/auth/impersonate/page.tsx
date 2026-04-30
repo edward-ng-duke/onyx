@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import AuthFlowContainer from "@/components/auth/AuthFlowContainer";
 
 import { useUser } from "@/providers/UserProvider";
@@ -12,12 +13,8 @@ import { TextFormField } from "@/components/Field";
 import { Button } from "@opal/components";
 import Text from "@/refresh-components/texts/Text";
 
-const ImpersonateSchema = Yup.object().shape({
-  email: Yup.string().email("Invalid email").required("Required"),
-  apiKey: Yup.string().required("Required"),
-});
-
 export default function ImpersonatePage() {
+  const t = useTranslations("auth");
   const router = useRouter();
   const { user, isCloudSuperuser } = useUser();
   if (!user) {
@@ -27,6 +24,13 @@ export default function ImpersonatePage() {
   if (!isCloudSuperuser) {
     redirect("/app" as Route);
   }
+
+  const ImpersonateSchema = Yup.object().shape({
+    email: Yup.string()
+      .email(t("impersonate.invalidEmail"))
+      .required(t("impersonate.required")),
+    apiKey: Yup.string().required(t("impersonate.required")),
+  });
 
   const handleImpersonate = async (
     values: { email: string; apiKey: string },
@@ -45,7 +49,7 @@ export default function ImpersonatePage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.detail || "Failed to impersonate user");
+        toast.error(errorData.detail || t("impersonate.failed"));
         helpers.setSubmitting(false);
       } else {
         helpers.setSubmitting(false);
@@ -53,7 +57,7 @@ export default function ImpersonatePage() {
       }
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to impersonate user"
+        error instanceof Error ? error.message : t("impersonate.failed")
       );
       helpers.setSubmitting(false);
     }
@@ -64,7 +68,7 @@ export default function ImpersonatePage() {
       <div className="flex flex-col w-full justify-center">
         <div className="w-full flex flex-col items-center justify-center">
           <Text as="p" headingH3 className="mb-6 text-center">
-            Impersonate User
+            {t("impersonate.title")}
           </Text>
         </div>
 
@@ -78,19 +82,19 @@ export default function ImpersonatePage() {
               <TextFormField
                 name="email"
                 type="email"
-                label="Email"
-                placeholder="email@yourcompany.com"
+                label={t("impersonate.emailLabel")}
+                placeholder={t("common.emailPlaceholder")}
               />
 
               <TextFormField
                 name="apiKey"
                 type="password"
-                label="API Key"
-                placeholder="Enter API Key"
+                label={t("impersonate.apiKeyLabel")}
+                placeholder={t("impersonate.apiKeyPlaceholder")}
               />
 
               <Button disabled={isSubmitting} type="submit" width="full">
-                Impersonate User
+                {t("impersonate.submitButton")}
               </Button>
             </Form>
           )}
@@ -101,7 +105,9 @@ export default function ImpersonatePage() {
           mainUiMuted
           text03
           className="mt-4 text-center px-4"
-        >{`Note: This feature is only available for @onyx.app administrators`}</Text>
+        >
+          {t("impersonate.note")}
+        </Text>
       </div>
     </AuthFlowContainer>
   );

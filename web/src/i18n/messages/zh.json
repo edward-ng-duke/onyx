@@ -39,6 +39,145 @@
       "actions": "操作"
     }
   },
+  "auth": {
+    "common": {
+      "tagline": "面向工作的开源 AI 平台",
+      "or": "或",
+      "backToLogin": "返回登录",
+      "emailLabel": "邮箱",
+      "emailAddressLabel": "邮箱地址",
+      "passwordLabel": "密码",
+      "emailPlaceholder": "email@yourcompany.com",
+      "passwordPlaceholder": "∗∗∗∗∗∗∗∗∗∗∗∗∗∗",
+      "unknownError": "未知错误",
+      "tooManyRequests": "请求过于频繁，请稍后再试。"
+    },
+    "signIn": {
+      "welcome": "欢迎使用 {appName}",
+      "verifiedSuccess": "邮箱验证成功！请登录以继续。",
+      "continueWithGoogle": "使用 Google 登录",
+      "continueWithOidc": "使用 OIDC SSO 登录",
+      "continueWithSaml": "使用 SAML SSO 登录",
+      "resetPassword": "重置密码",
+      "signInButton": "登录",
+      "joinButton": "加入",
+      "createAccountButton": "创建账号",
+      "continueAsGuest": "或以访客身份继续",
+      "noAccountPrompt": "还没有账号？",
+      "createAccountLink": "创建账号",
+      "signingIn": "登录中…",
+      "signedInSuccess": "登录成功。",
+      "creatingAccount": "创建账号中…",
+      "accountCreated": "账号已创建，正在登录…",
+      "joining": "加入中…",
+      "invalidCredentials": "邮箱或密码错误",
+      "noWebLoginNoPassword": "请先创建账号以设置密码",
+      "loginFailed": "登录失败 - {error}",
+      "captchaNoToken": "grecaptcha.execute 未返回 token",
+      "captchaVerifyFailed": "验证码校验失败。请刷新浏览器后重试。",
+      "ssoNeedAccess": "需要访问权限？请联系你的 IT 管理员。",
+      "passwordMinLength": "密码长度至少为 {min} 位"
+    },
+    "signUp": {
+      "completeSignUp": "完成注册",
+      "createAccount": "创建账号",
+      "getStarted": "开始使用 Onyx",
+      "alreadyExists": "该邮箱已注册账号。",
+      "signupFailed": "注册失败 - {error}",
+      "accountCreatedToast": "账号创建成功，请登录。",
+      "referralLabel": "你是通过什么渠道了解我们的？",
+      "referralPlaceholder": "选择一项",
+      "referralOptions": {
+        "search": "搜索引擎（Google/Bing）",
+        "friend": "朋友/同事",
+        "linkedin": "LinkedIn",
+        "twitter": "Twitter",
+        "hackernews": "HackerNews",
+        "reddit": "Reddit",
+        "youtube": "YouTube",
+        "podcast": "播客",
+        "blog": "文章/博客",
+        "ads": "广告",
+        "other": "其他"
+      }
+    },
+    "forgotPassword": {
+      "title": "忘记密码",
+      "submitButton": "重置密码",
+      "successToast": "重置密码邮件已发送，请查收。",
+      "errorToast": "发生错误，请重试。"
+    },
+    "resetPassword": {
+      "title": "重置密码",
+      "newPasswordLabel": "新密码",
+      "confirmPasswordLabel": "确认新密码",
+      "newPasswordPlaceholder": "输入新密码",
+      "confirmPasswordPlaceholder": "再次输入新密码",
+      "submitButton": "重置密码",
+      "passwordRequired": "请输入密码",
+      "passwordsMustMatch": "两次输入的密码不一致",
+      "confirmPasswordRequired": "请确认密码",
+      "invalidToken": "重置令牌无效或缺失。",
+      "successToast": "密码重置成功，正在跳转到登录页…",
+      "errorGeneric": "重置密码时发生错误。",
+      "errorUnexpected": "发生意外错误，请重试。"
+    },
+    "verify": {
+      "verifying": "正在验证邮箱…",
+      "missingToken": "缺少验证 token，请尝试重新发送验证邮件。",
+      "verifyFailed": "邮箱验证失败 - {error}。请尝试重新发送验证邮件。",
+      "getNewVerificationEmail": "获取新的验证邮件",
+      "waitingHeader": "你好 {email}，看来你还没有验证邮箱。\n请检查邮箱中我们发送的邮件以开始使用！",
+      "ifNotSee": "如果没有收到，请点击",
+      "here": "这里",
+      "toRequestNew": "重新发送邮件。",
+      "newEmailSent": "新的验证邮件已发送！",
+      "newEmailFailed": "发送新的验证邮件失败 - {error}"
+    },
+    "invite": {
+      "title": "重新认证以加入团队"
+    },
+    "error": {
+      "title": "认证错误",
+      "subtitle": "登录过程中遇到了问题。",
+      "possibleIssues": "可能的原因：",
+      "issueCredentials": "登录凭据错误或已过期",
+      "issueDisruption": "认证系统临时故障",
+      "issueRestrictions": "账号访问权限受限",
+      "returnToLogin": "返回登录页",
+      "supportCloud": "如果问题持续存在，请联系 Onyx 团队",
+      "supportSelfHost": "如果问题持续存在，请联系系统管理员寻求帮助。",
+      "codes": {
+        "accessDenied": "身份提供方拒绝了访问。",
+        "loginRequired": "请先在身份提供方处登录。",
+        "consentRequired": "身份提供方需要你确认授权后才能继续。",
+        "interactionRequired": "需要在身份提供方处进行额外操作。",
+        "invalidScope": "所请求的权限不可用。",
+        "serverError": "身份提供方发生错误，请重试。",
+        "temporarilyUnavailable": "身份提供方暂时不可用，请稍后重试。"
+      }
+    },
+    "createAccount": {
+      "title": "未找到账号",
+      "description": "我们没有找到你的账号。要使用 Onyx，你需要：",
+      "optionInvited": "受邀加入已有的 Onyx 团队",
+      "optionCreate": "创建新的 Onyx 团队",
+      "createNewOrg": "创建新组织",
+      "differentEmail": "用其他邮箱注册过账号？",
+      "signIn": "登录"
+    },
+    "impersonate": {
+      "title": "模拟用户",
+      "emailLabel": "邮箱",
+      "apiKeyLabel": "API 密钥",
+      "apiKeyPlaceholder": "输入 API 密钥",
+      "submitButton": "模拟用户",
+      "invalidEmail": "邮箱无效",
+      "required": "必填",
+      "failed": "模拟用户失败",
+      "note": "注意：此功能仅对 @onyx.app 管理员可用"
+    }
+  },
   "admin": {
     "routes": {
       "indexingStatus": {
