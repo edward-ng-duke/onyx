@@ -1,0 +1,33 @@
+use_default_settings: true
+
+general:
+  instance_name: "Onyx Private SearXNG"
+
+server:
+  # IMPORTANT: replace this placeholder with the output of `openssl rand -hex 32`
+  # before exposing the instance. Default placeholder for first boot only.
+  secret_key: "REPLACE_ME_WITH_OPENSSL_RAND_HEX_32"
+  limiter: false
+  image_proxy: false
+  bind_address: "0.0.0.0"
+  port: 8080
+
+search:
+  formats:
+    - html
+    - json
+  safe_search: 0
+  autocomplete: ""
+
+# Engine selection — keep a small, working subset. SearXNG inherits the full
+# engine catalog from `use_default_settings: true`, but disables/enables can
+# be applied here.
+engines:
+  - name: google
+    disabled: false
+  - name: bing
+    disabled: false
+  - name: duckduckgo
+    disabled: false
+  - name: wikipedia
+    disabled: false
