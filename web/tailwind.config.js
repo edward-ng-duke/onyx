@@ -23,5 +23,31 @@ if (fs.existsSync(customThemePath)) {
   customThemes = dynamicRequire(customThemePath);
 }
 
+// CJK font fallback overlay. Appends CJK fonts after the existing English
+// fonts so Chinese characters render with proper glyphs across macOS /
+// Windows / Linux without changing English rendering.
+const cjkFontOverlay = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: [
+          "Hanken Grotesk",
+          "PingFang SC",
+          "Hiragino Sans GB",
+          "Microsoft YaHei",
+          "Noto Sans SC",
+          "Noto Sans CJK SC",
+          "sans-serif",
+        ],
+      },
+    },
+  },
+};
+
 /** @type {import('tailwindcss').Config} */
-module.exports = customThemes ? merge(baseThemes, customThemes) : baseThemes;
+module.exports = merge(
+  {},
+  baseThemes,
+  customThemes || {},
+  cjkFontOverlay
+);
