@@ -12,6 +12,7 @@ import { CSS } from "@dnd-kit/utilities";
 import useOnMount from "@/hooks/useOnMount";
 import AgentAvatar from "@/refresh-components/avatars/AgentAvatar";
 import { SvgPin, SvgX } from "@opal/icons";
+import { useTranslations } from "next-intl";
 
 interface SortableItemProps {
   id: number;
@@ -48,6 +49,7 @@ export interface AgentButtonProps {
 }
 
 const AgentButton = memo(({ agent }: AgentButtonProps) => {
+  const t = useTranslations("nav.sidebar");
   const currentAgent = useCurrentAgent();
   const { pinnedAgents, togglePinnedAgent } = usePinnedAgents();
   const isActuallyPinned = pinnedAgents.some((a) => a.id === agent.id);
@@ -79,7 +81,7 @@ const AgentButton = memo(({ agent }: AgentButtonProps) => {
                 internal
                 onClick={noProp(() => togglePinnedAgent(agent, false))}
                 className={cn("hidden group-hover/SidebarTab:flex")}
-                tooltip={"Unpin Agent"}
+                tooltip={t("unpinAgent")}
               />
             )
           }

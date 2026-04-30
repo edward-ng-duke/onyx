@@ -24,12 +24,14 @@ import {
   SvgMoreHorizontal,
   SvgTrash,
 } from "@opal/icons";
+import { useTranslations } from "next-intl";
 
 export interface ProjectFolderButtonProps {
   project: Project;
 }
 
 const ProjectFolderButton = memo(({ project }: ProjectFolderButtonProps) => {
+  const t = useTranslations("nav.itemMenu");
   const route = useAppRouter();
   const [open, setOpen] = useState(false);
   const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] =
@@ -88,7 +90,7 @@ const ProjectFolderButton = memo(({ project }: ProjectFolderButtonProps) => {
       sizePreset="main-ui"
       rounding="sm"
       icon={SvgEdit}
-      title="Rename Project"
+      title={t("renameProject")}
       onClick={noProp(() => setIsEditing(true))}
     />,
     null,
@@ -98,7 +100,7 @@ const ProjectFolderButton = memo(({ project }: ProjectFolderButtonProps) => {
       rounding="sm"
       color="danger"
       icon={SvgTrash}
-      title="Delete Project"
+      title={t("deleteProject")}
       onClick={noProp(() => setDeleteConfirmationModalOpen(true))}
     />,
   ];
@@ -114,7 +116,7 @@ const ProjectFolderButton = memo(({ project }: ProjectFolderButtonProps) => {
       {/* Confirmation Modal (only for deletion) */}
       {deleteConfirmationModalOpen && (
         <ConfirmationModalLayout
-          title="Delete Project"
+          title={t("deleteProjectTitle")}
           icon={SvgTrash}
           onClose={() => setDeleteConfirmationModalOpen(false)}
           submit={
@@ -125,12 +127,11 @@ const ProjectFolderButton = memo(({ project }: ProjectFolderButtonProps) => {
                 deleteProject(project.id);
               }}
             >
-              Delete
+              {t("delete")}
             </Button>
           }
         >
-          Are you sure you want to delete this project? This action cannot be
-          undone.
+          {t("deleteProjectConfirm")}
         </ConfirmationModalLayout>
       )}
 

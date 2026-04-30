@@ -309,5 +309,84 @@
         "title": "Debug Logs"
       }
     }
+  },
+  "nav": {
+    "sidebar": {
+      "recents": "Recents",
+      "recentsEmpty": "Try sending a message! Your chat history will appear here.",
+      "newSession": "New Session",
+      "craft": "Craft",
+      "searchChats": "Search Chats",
+      "exploreAgents": "Explore Agents",
+      "moreAgents": "More Agents",
+      "newProject": "New Project",
+      "newProjectTooltip": "New Project",
+      "adminPanel": "Admin Panel",
+      "curatorPanel": "Curator Panel",
+      "agentsSection": "Agents",
+      "projectsSection": "Projects",
+      "unpinAgent": "Unpin Agent",
+      "exitAdminPanel": "Exit Admin Panel",
+      "upgradePlan": "Upgrade Plan",
+      "searchFolded": "Search",
+      "searchPlaceholder": "Search...",
+      "openSidebar": "Open Sidebar",
+      "closeSidebar": "Close Sidebar",
+      "sectionAgentsActions": "Agents & Actions",
+      "sectionDocumentsKnowledge": "Documents & Knowledge",
+      "sectionIntegrations": "Integrations",
+      "sectionPermissions": "Permissions",
+      "sectionOrganization": "Organization",
+      "sectionUsage": "Usage"
+    },
+    "userMenu": {
+      "settings": "Settings",
+      "notifications": "Notifications",
+      "helpFaq": "Help & FAQ",
+      "logIn": "Log in",
+      "logOut": "Log Out",
+      "logoutFailed": "Failed to logout"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "unreadCount": "{count} unread",
+      "markAllRead": "Mark All as Read",
+      "markRead": "Mark as Read",
+      "empty": "No notifications",
+      "dividerNew": "New",
+      "dividerOlder": "Older"
+    },
+    "shortcuts": {
+      "searchPlaceholder": "Search chat sessions, projects...",
+      "noResults": "No results found",
+      "emptyState": "No chats or projects yet",
+      "newSession": "New Session",
+      "recentSessions": "Recent Sessions",
+      "recent": "Recent",
+      "sessions": "Sessions",
+      "projects": "Projects",
+      "newProject": "New Project",
+      "createProjectWithName": "Create New Project \"<highlight>{name}</highlight>\"",
+      "noMoreResults": "No more results",
+      "actionShowAll": "Show all",
+      "actionOpen": "Open",
+      "actionSelect": "Select",
+      "openChatSearch": "Open chat search"
+    },
+    "itemMenu": {
+      "share": "Share",
+      "rename": "Rename",
+      "moveToProject": "Move to Project",
+      "removeFromProject": "Remove from {projectName}",
+      "delete": "Delete",
+      "searchProjects": "Search Projects",
+      "createWithName": "Create {name}",
+      "renameProject": "Rename Project",
+      "deleteProject": "Delete Project",
+      "deleteChatTitle": "Delete Chat",
+      "deleteChatConfirm": "Are you sure you want to delete this chat? This action cannot be undone.",
+      "deleteProjectTitle": "Delete Project",
+      "deleteProjectConfirm": "Are you sure you want to delete this project? This action cannot be undone."
+    }
   }
 }

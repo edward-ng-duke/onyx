@@ -4,6 +4,7 @@ import { Button } from "@opal/components";
 import Logo from "@/refresh-components/Logo";
 import { SvgSidebar } from "@opal/icons";
 import { useSettingsContext } from "@/providers/SettingsProvider";
+import { useTranslations } from "next-intl";
 
 interface LogoSectionProps {
   folded?: boolean;
@@ -12,6 +13,7 @@ interface LogoSectionProps {
 
 function LogoSection({ folded, onFoldClick }: LogoSectionProps) {
   const settings = useSettingsContext();
+  const t = useTranslations("nav.sidebar");
   const logoDisplayStyle = settings.enterpriseSettings?.logo_display_style;
 
   const logo = useMemo(
@@ -28,14 +30,14 @@ function LogoSection({ folded, onFoldClick }: LogoSectionProps) {
         <Button
           icon={SvgSidebar}
           prominence="tertiary"
-          tooltip={folded ? "Open Sidebar" : "Close Sidebar"}
+          tooltip={folded ? t("openSidebar") : t("closeSidebar")}
           tooltipSide={folded ? "right" : "bottom"}
           size="md"
           onClick={onFoldClick}
         />
       </div>
     ),
-    [folded, onFoldClick]
+    [folded, onFoldClick, t]
   );
 
   return (

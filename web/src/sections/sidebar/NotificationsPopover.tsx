@@ -22,6 +22,7 @@ import { IllustrationContent } from "@opal/layouts";
 import { SvgEmpty } from "@opal/illustrations";
 import { Hoverable } from "@opal/core";
 import { noProp } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 // ---------------------------------------------------------------------------
 // NotificationItem
@@ -42,6 +43,7 @@ function NotificationItem({
   onClick,
   dismiss,
 }: NotificationItemProps) {
+  const t = useTranslations("nav.notifications");
   return (
     <Hoverable.Root group="notifications-popover/NotificationItem">
       <LineItemButton
@@ -76,7 +78,7 @@ function NotificationItem({
                       size="xs"
                       prominence="tertiary"
                       onClick={noProp(dismiss)}
-                      tooltip="Mark as Read"
+                      tooltip={t("markRead")}
                     />
                   </Hoverable.Item>
                 </div>
@@ -104,6 +106,7 @@ export default function NotificationsPopover({
   onNavigate,
   onShowBuildIntro,
 }: NotificationsPopoverProps) {
+  const t = useTranslations("nav.notifications");
   const router = useRouter();
   const {
     notifications,
@@ -208,13 +211,13 @@ export default function NotificationsPopover({
             prominence="tertiary"
             onClick={onClose}
           />
-          <Text color="text-02">Notifications</Text>
+          <Text color="text-02">{t("title")}</Text>
         </Section>
 
         <Section flexDirection="row" gap={0.25} justifyContent="end">
           {undismissedCount !== 0 && (
             <span className="text-action-link-05 font-secondary-body">
-              {`${undismissedCount} unread`}
+              {t("unreadCount", { count: undismissedCount })}
             </span>
           )}
           <Button
@@ -222,7 +225,7 @@ export default function NotificationsPopover({
             size="sm"
             prominence="tertiary"
             onClick={handleDismissAll}
-            tooltip="Mark All as Read"
+            tooltip={t("markAllRead")}
             disabled={undismissedCount === 0}
           />
         </Section>
@@ -238,7 +241,7 @@ export default function NotificationsPopover({
         <div className="h-[var(--notifications-popover)]">
           <Section>
             <IllustrationContent
-              title="No notifications"
+              title={t("empty")}
               illustration={SvgEmpty}
             />
           </Section>
@@ -247,7 +250,7 @@ export default function NotificationsPopover({
         <div className="max-h-[var(--notifications-popover)] overflow-y-auto flex flex-col gap-1">
           {newNotifications.length > 0 && (
             <>
-              <Divider title="New" />
+              <Divider title={t("dividerNew")} />
               <div className="flex flex-col gap-1">
                 {newNotifications.map((notification) => (
                   <NotificationItem
@@ -264,7 +267,7 @@ export default function NotificationsPopover({
 
           {olderNotifications.length > 0 && (
             <>
-              <Divider title="Older" />
+              <Divider title={t("dividerOlder")} />
               <div className="flex flex-col gap-1">
                 {olderNotifications.map((notification) => (
                   <NotificationItem

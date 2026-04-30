@@ -35,6 +35,7 @@ import UserAvatar from "@/refresh-components/avatars/UserAvatar";
 import useNotifications from "@/hooks/useNotifications";
 import { SvgOnyxLogo } from "@opal/logos";
 import { markdown } from "@opal/utils";
+import { useTranslations } from "next-intl";
 
 interface SettingsPopoverProps {
   onUserSettingsClick: () => void;
@@ -45,6 +46,7 @@ function SettingsPopover({
   onUserSettingsClick,
   onOpenNotifications,
 }: SettingsPopoverProps) {
+  const t = useTranslations("nav.userMenu");
   const { user } = useUser();
   const { undismissedCount } = useNotifications();
   const settings = useSettingsContext();
@@ -68,7 +70,7 @@ function SettingsPopover({
     logout()
       .then((response) => {
         if (!response?.ok) {
-          alert("Failed to logout");
+          alert(t("logoutFailed"));
           return;
         }
 
@@ -84,7 +86,7 @@ function SettingsPopover({
       })
 
       .catch(() => {
-        toast.error("Failed to logout");
+        toast.error(t("logoutFailed"));
       });
   };
 
@@ -101,7 +103,7 @@ function SettingsPopover({
             variant="section"
             rounding="sm"
             icon={SvgSliders}
-            title="Settings"
+            title={t("settings")}
             href="/app/settings"
             onClick={onUserSettingsClick}
           />
@@ -112,7 +114,7 @@ function SettingsPopover({
           variant="section"
           rounding="sm"
           icon={SvgBell}
-          title="Notifications"
+          title={t("notifications")}
           onClick={onOpenNotifications}
           rightChildren={
             !!undismissedCount ? (
@@ -126,7 +128,7 @@ function SettingsPopover({
           variant="section"
           rounding="sm"
           icon={SvgHelpCircle}
-          title="Help & FAQ"
+          title={t("helpFaq")}
           href="https://docs.onyx.app"
           target="_blank"
         />,
@@ -137,7 +139,7 @@ function SettingsPopover({
             variant="section"
             rounding="sm"
             icon={SvgUser}
-            title="Log in"
+            title={t("logIn")}
             onClick={handleLogin}
           />
         ),
@@ -149,7 +151,7 @@ function SettingsPopover({
             color="danger"
             rounding="sm"
             icon={SvgLogOut}
-            title="Log Out"
+            title={t("logOut")}
             onClick={handleLogout}
           />
         ),

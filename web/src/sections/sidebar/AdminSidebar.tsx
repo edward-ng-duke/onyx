@@ -37,14 +37,14 @@ import { IconFunctionComponent } from "@opal/types";
 import AccountPopover from "@/sections/sidebar/AccountPopover";
 import { useTranslations } from "next-intl";
 
-const SECTIONS = {
+const SECTION_KEYS = {
   UNLABELED: "",
-  AGENTS_AND_ACTIONS: "Agents & Actions",
-  DOCUMENTS_AND_KNOWLEDGE: "Documents & Knowledge",
-  INTEGRATIONS: "Integrations",
-  PERMISSIONS: "Permissions",
-  ORGANIZATION: "Organization",
-  USAGE: "Usage",
+  AGENTS_AND_ACTIONS: "sectionAgentsActions",
+  DOCUMENTS_AND_KNOWLEDGE: "sectionDocumentsKnowledge",
+  INTEGRATIONS: "sectionIntegrations",
+  PERMISSIONS: "sectionPermissions",
+  ORGANIZATION: "sectionOrganization",
+  USAGE: "sectionUsage",
 } as const;
 
 interface SidebarItemEntry {
@@ -64,7 +64,8 @@ function buildItems(
   customAnalyticsEnabled: boolean,
   hasSubscription: boolean,
   hooksEnabled: boolean,
-  routeLabel: (route: AdminRouteEntry) => string
+  routeLabel: (route: AdminRouteEntry) => string,
+  upgradePlanLabel: string
 ): SidebarItemEntry[] {
   const vectorDbEnabled = settings?.settings.vector_db_enabled !== false;
   const items: SidebarItemEntry[] = [];
@@ -88,16 +89,16 @@ function buildItems(
 
   // 1. No header — core configuration (admin only)
   if (!isCurator) {
-    add(SECTIONS.UNLABELED, ADMIN_ROUTES.LLM_MODELS);
-    add(SECTIONS.UNLABELED, ADMIN_ROUTES.WEB_SEARCH);
-    add(SECTIONS.UNLABELED, ADMIN_ROUTES.IMAGE_GENERATION);
-    add(SECTIONS.UNLABELED, ADMIN_ROUTES.VOICE);
-    add(SECTIONS.UNLABELED, ADMIN_ROUTES.CODE_INTERPRETER);
-    add(SECTIONS.UNLABELED, ADMIN_ROUTES.CHAT_PREFERENCES);
+    add(SECTION_KEYS.UNLABELED, ADMIN_ROUTES.LLM_MODELS);
+    add(SECTION_KEYS.UNLABELED, ADMIN_ROUTES.WEB_SEARCH);
+    add(SECTION_KEYS.UNLABELED, ADMIN_ROUTES.IMAGE_GENERATION);
+    add(SECTION_KEYS.UNLABELED, ADMIN_ROUTES.VOICE);
+    add(SECTION_KEYS.UNLABELED, ADMIN_ROUTES.CODE_INTERPRETER);
+    add(SECTION_KEYS.UNLABELED, ADMIN_ROUTES.CHAT_PREFERENCES);
 
     if (!enableCloud && customAnalyticsEnabled) {
       addDisabled(
-        SECTIONS.UNLABELED,
+        SECTION_KEYS.UNLABELED,
         ADMIN_ROUTES.CUSTOM_ANALYTICS,
         !enableEnterprise
       );
@@ -105,65 +106,65 @@ function buildItems(
   }
 
   // 2. Agents & Actions
-  add(SECTIONS.AGENTS_AND_ACTIONS, ADMIN_ROUTES.AGENTS);
-  add(SECTIONS.AGENTS_AND_ACTIONS, ADMIN_ROUTES.MCP_ACTIONS);
-  add(SECTIONS.AGENTS_AND_ACTIONS, ADMIN_ROUTES.OPENAPI_ACTIONS);
+  add(SECTION_KEYS.AGENTS_AND_ACTIONS, ADMIN_ROUTES.AGENTS);
+  add(SECTION_KEYS.AGENTS_AND_ACTIONS, ADMIN_ROUTES.MCP_ACTIONS);
+  add(SECTION_KEYS.AGENTS_AND_ACTIONS, ADMIN_ROUTES.OPENAPI_ACTIONS);
 
   // 3. Documents & Knowledge
   if (vectorDbEnabled) {
-    add(SECTIONS.DOCUMENTS_AND_KNOWLEDGE, ADMIN_ROUTES.INDEXING_STATUS);
-    add(SECTIONS.DOCUMENTS_AND_KNOWLEDGE, ADMIN_ROUTES.ADD_CONNECTOR);
-    add(SECTIONS.DOCUMENTS_AND_KNOWLEDGE, ADMIN_ROUTES.DOCUMENT_SETS);
+    add(SECTION_KEYS.DOCUMENTS_AND_KNOWLEDGE, ADMIN_ROUTES.INDEXING_STATUS);
+    add(SECTION_KEYS.DOCUMENTS_AND_KNOWLEDGE, ADMIN_ROUTES.ADD_CONNECTOR);
+    add(SECTION_KEYS.DOCUMENTS_AND_KNOWLEDGE, ADMIN_ROUTES.DOCUMENT_SETS);
     if (!isCurator && !enableCloud) {
       items.push({
         ...localizedItem(ADMIN_ROUTES.INDEX_SETTINGS),
-        section: SECTIONS.DOCUMENTS_AND_KNOWLEDGE,
+        section: SECTION_KEYS.DOCUMENTS_AND_KNOWLEDGE,
         error: settings?.settings.needs_reindexing,
       });
     }
     if (!isCurator && settings?.settings.opensearch_indexing_enabled) {
-      add(SECTIONS.DOCUMENTS_AND_KNOWLEDGE, ADMIN_ROUTES.INDEX_MIGRATION);
+      add(SECTION_KEYS.DOCUMENTS_AND_KNOWLEDGE, ADMIN_ROUTES.INDEX_MIGRATION);
     }
   }
 
   // 4. Integrations (admin only)
   if (!isCurator) {
-    add(SECTIONS.INTEGRATIONS, ADMIN_ROUTES.API_KEYS);
-    add(SECTIONS.INTEGRATIONS, ADMIN_ROUTES.SLACK_BOTS);
-    add(SECTIONS.INTEGRATIONS, ADMIN_ROUTES.DISCORD_BOTS);
+    add(SECTION_KEYS.INTEGRATIONS, ADMIN_ROUTES.API_KEYS);
+    add(SECTION_KEYS.INTEGRATIONS, ADMIN_ROUTES.SLACK_BOTS);
+    add(SECTION_KEYS.INTEGRATIONS, ADMIN_ROUTES.DISCORD_BOTS);
     if (hooksEnabled) {
-      add(SECTIONS.INTEGRATIONS, ADMIN_ROUTES.HOOKS);
+      add(SECTION_KEYS.INTEGRATIONS, ADMIN_ROUTES.HOOKS);
     }
   }
 
   // 5. Permissions
   if (!isCurator) {
-    add(SECTIONS.PERMISSIONS, ADMIN_ROUTES.USERS);
-    addDisabled(SECTIONS.PERMISSIONS, ADMIN_ROUTES.GROUPS, !enableEnterprise);
-    addDisabled(SECTIONS.PERMISSIONS, ADMIN_ROUTES.SCIM, !enableEnterprise);
+    add(SECTION_KEYS.PERMISSIONS, ADMIN_ROUTES.USERS);
+    addDisabled(SECTION_KEYS.PERMISSIONS, ADMIN_ROUTES.GROUPS, !enableEnterprise);
+    addDisabled(SECTION_KEYS.PERMISSIONS, ADMIN_ROUTES.SCIM, !enableEnterprise);
   } else if (enableEnterprise) {
-    add(SECTIONS.PERMISSIONS, ADMIN_ROUTES.GROUPS);
+    add(SECTION_KEYS.PERMISSIONS, ADMIN_ROUTES.GROUPS);
   }
 
   // 6. Organization (admin only)
   if (!isCurator) {
     if (hasSubscription) {
-      add(SECTIONS.ORGANIZATION, ADMIN_ROUTES.BILLING);
+      add(SECTION_KEYS.ORGANIZATION, ADMIN_ROUTES.BILLING);
     }
     addDisabled(
-      SECTIONS.ORGANIZATION,
+      SECTION_KEYS.ORGANIZATION,
       ADMIN_ROUTES.TOKEN_RATE_LIMITS,
       !enableEnterprise
     );
-    addDisabled(SECTIONS.ORGANIZATION, ADMIN_ROUTES.THEME, !enableEnterprise);
+    addDisabled(SECTION_KEYS.ORGANIZATION, ADMIN_ROUTES.THEME, !enableEnterprise);
   }
 
   // 7. Usage (admin only)
   if (!isCurator) {
-    addDisabled(SECTIONS.USAGE, ADMIN_ROUTES.USAGE, !enableEnterprise);
+    addDisabled(SECTION_KEYS.USAGE, ADMIN_ROUTES.USAGE, !enableEnterprise);
     if (settings?.settings.query_history_type !== "disabled") {
       addDisabled(
-        SECTIONS.USAGE,
+        SECTION_KEYS.USAGE,
         ADMIN_ROUTES.QUERY_HISTORY,
         !enableEnterprise
       );
@@ -173,8 +174,8 @@ function buildItems(
   // 8. Upgrade Plan (admin only, no subscription)
   if (!isCurator && !hasSubscription) {
     items.push({
-      section: SECTIONS.UNLABELED,
-      name: "Upgrade Plan",
+      section: SECTION_KEYS.UNLABELED,
+      name: upgradePlanLabel,
       icon: SvgArrowUpCircle,
       link: ADMIN_ROUTES.BILLING.path,
     });
@@ -244,6 +245,7 @@ function AdminSidebarInner({
     enableEnterprise && (settings?.settings.hooks_enabled ?? false);
 
   const tRoutes = useTranslations("admin.routes");
+  const tNav = useTranslations("nav.sidebar");
   const routeLabel = useCallback(
     (route: AdminRouteEntry) =>
       route.sidebarLabelKey
@@ -260,7 +262,8 @@ function AdminSidebarInner({
     customAnalyticsEnabled,
     hasSubscriptionOrLicense,
     hooksEnabled,
-    routeLabel
+    routeLabel,
+    tNav("upgradePlan")
   );
 
   const itemExtractor = useCallback((item: SidebarItemEntry) => item.name, []);
@@ -284,14 +287,14 @@ function AdminSidebarInner({
               setFocusSearch(true);
             }}
           >
-            Search
+            {tNav("searchFolded")}
           </SidebarTab>
         ) : (
           <InputTypeIn
             ref={searchRef}
             variant="internal"
             leftSearchIcon
-            placeholder="Search..."
+            placeholder={tNav("searchPlaceholder")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -316,7 +319,7 @@ function AdminSidebarInner({
           }
 
           return (
-            <SidebarSection key={groupIndex} title={group.section}>
+            <SidebarSection key={groupIndex} title={tNav(group.section as any)}>
               {tabs}
             </SidebarSection>
           );
@@ -327,7 +330,7 @@ function AdminSidebarInner({
         {disabledGroups.map((group, groupIndex) => (
           <SidebarSection
             key={`disabled-${groupIndex}`}
-            title={group.section}
+            title={group.section ? tNav(group.section as any) : ""}
             disabled
           >
             {group.items.map(({ link, icon, name }) => (
@@ -352,7 +355,7 @@ function AdminSidebarInner({
           variant="sidebar-light"
           folded={folded}
         >
-          Exit Admin Panel
+          {tNav("exitAdminPanel")}
         </SidebarTab>
         <AccountPopover folded={folded} />
       </SidebarLayouts.Footer>

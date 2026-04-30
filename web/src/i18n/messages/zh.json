@@ -309,5 +309,84 @@
         "title": "调试日志"
       }
     }
+  },
+  "nav": {
+    "sidebar": {
+      "recents": "近期对话",
+      "recentsEmpty": "发条消息试试吧！你的聊天记录会显示在这里。",
+      "newSession": "新建对话",
+      "craft": "Craft",
+      "searchChats": "搜索对话",
+      "exploreAgents": "探索 Agent",
+      "moreAgents": "更多 Agent",
+      "newProject": "新建项目",
+      "newProjectTooltip": "新建项目",
+      "adminPanel": "管理后台",
+      "curatorPanel": "策展后台",
+      "agentsSection": "Agents",
+      "projectsSection": "项目",
+      "unpinAgent": "取消固定",
+      "exitAdminPanel": "退出管理后台",
+      "upgradePlan": "升级套餐",
+      "searchFolded": "搜索",
+      "searchPlaceholder": "搜索…",
+      "openSidebar": "展开侧边栏",
+      "closeSidebar": "收起侧边栏",
+      "sectionAgentsActions": "Agents 与动作",
+      "sectionDocumentsKnowledge": "文档与知识",
+      "sectionIntegrations": "集成",
+      "sectionPermissions": "权限",
+      "sectionOrganization": "组织",
+      "sectionUsage": "用量"
+    },
+    "userMenu": {
+      "settings": "设置",
+      "notifications": "通知",
+      "helpFaq": "帮助与常见问题",
+      "logIn": "登录",
+      "logOut": "退出登录",
+      "logoutFailed": "退出登录失败"
+    },
+    "notifications": {
+      "title": "通知",
+      "unreadCount": "{count} 条未读",
+      "markAllRead": "全部标为已读",
+      "markRead": "标为已读",
+      "empty": "暂无通知",
+      "dividerNew": "新",
+      "dividerOlder": "更早"
+    },
+    "shortcuts": {
+      "searchPlaceholder": "搜索对话、项目…",
+      "noResults": "未找到匹配结果",
+      "emptyState": "还没有对话或项目",
+      "newSession": "新建对话",
+      "recentSessions": "近期对话",
+      "recent": "近期",
+      "sessions": "对话",
+      "projects": "项目",
+      "newProject": "新建项目",
+      "createProjectWithName": "新建项目 “<highlight>{name}</highlight>”",
+      "noMoreResults": "没有更多结果",
+      "actionShowAll": "查看全部",
+      "actionOpen": "打开",
+      "actionSelect": "选择",
+      "openChatSearch": "打开对话搜索"
+    },
+    "itemMenu": {
+      "share": "分享",
+      "rename": "重命名",
+      "moveToProject": "移动到项目",
+      "removeFromProject": "从 {projectName} 移除",
+      "delete": "删除",
+      "searchProjects": "搜索项目",
+      "createWithName": "新建 {name}",
+      "renameProject": "重命名项目",
+      "deleteProject": "删除项目",
+      "deleteChatTitle": "删除对话",
+      "deleteChatConfirm": "确定要删除这条对话吗？此操作无法撤销。",
+      "deleteProjectTitle": "删除项目",
+      "deleteProjectConfirm": "确定要删除这个项目吗？此操作无法撤销。"
+    }
   }
 }
