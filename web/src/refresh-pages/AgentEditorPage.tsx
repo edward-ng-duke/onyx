@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import * as GeneralLayouts from "@/layouts/general-layouts";
@@ -102,6 +103,7 @@ interface AgentIconEditorProps {
 }
 
 function FormWarningsEffect() {
+  const t = useTranslations("agents.editor");
   const { values, setStatus } = useFormikContext<{
     web_search: boolean;
     open_url: boolean;
@@ -110,16 +112,16 @@ function FormWarningsEffect() {
   useEffect(() => {
     const warnings: Record<string, string> = {};
     if (values.web_search && !values.open_url) {
-      warnings.open_url =
-        "Web Search without the ability to open URLs can lead to significantly worse web based results.";
+      warnings.open_url = t("warningOpenUrl");
     }
     setStatus({ warnings });
-  }, [values.web_search, values.open_url, setStatus]);
+  }, [values.web_search, values.open_url, setStatus, t]);
 
   return null;
 }
 
 function AgentIconEditor({ existingAgent }: AgentIconEditorProps) {
+  const t = useTranslations("agents.editor");
   const { values, setFieldValue } = useFormikContext<{
     name: string;
     icon_name: string | null;
@@ -224,7 +226,7 @@ function AgentIconEditor({ existingAgent }: AgentIconEditorProps) {
               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 mb-2">
                 <Hoverable.Item group="inputAvatar" variant="appear-on-hover">
                   <Button prominence="secondary" size="md">
-                    Edit
+                    {t("avatarEdit")}
                   </Button>
                 </Hoverable.Item>
               </div>
@@ -240,7 +242,7 @@ function AgentIconEditor({ existingAgent }: AgentIconEditorProps) {
                 onClick={() => fileInputRef.current?.click()}
                 emphasized
               >
-                Upload Image
+                {t("uploadImage")}
               </LineItem>,
               null,
               <div className="grid grid-cols-4 gap-1">
@@ -303,6 +305,7 @@ function MCPServerCard({
   tools: enabledTools,
   isLoading,
 }: MCPServerCardProps) {
+  const t = useTranslations("agents.editor");
   const [isFolded, setIsFolded] = useState(false);
   const { values, setFieldValue, getFieldMeta } = useFormikContext<any>();
   const serverFieldName = `mcp_server_${server.id}`;
@@ -375,7 +378,7 @@ function MCPServerCard({
         bottomChildren={
           <GeneralLayouts.Section flexDirection="row" gap={0.5}>
             <InputTypeIn
-              placeholder="Search tools..."
+              placeholder={t("searchToolsPlaceholder")}
               variant="internal"
               leftSearchIcon
               value={query}
@@ -387,7 +390,7 @@ function MCPServerCard({
                 rightIcon={isFolded ? SvgExpand : SvgFold}
                 onClick={() => setIsFolded((prev) => !prev)}
               >
-                {isFolded ? "Expand" : "Fold"}
+                {isFolded ? t("expand") : t("fold")}
               </Button>
             )}
           </GeneralLayouts.Section>
@@ -434,6 +437,7 @@ function MCPServerCard({
 }
 
 function StarterMessages() {
+  const t = useTranslations("agents.editor");
   const max_starters = STARTER_MESSAGES_EXAMPLES.length;
 
   const { values } = useFormikContext<{
@@ -464,8 +468,7 @@ function StarterMessages() {
               key={`starter_messages.${i}`}
               name={`starter_messages.${i}`}
               placeholder={
-                STARTER_MESSAGES_EXAMPLES[i] ||
-                "Enter a conversation starter..."
+                STARTER_MESSAGES_EXAMPLES[i] || t("starterPlaceholder")
               }
               onRemove={() => arrayHelpers.remove(i)}
             />
@@ -485,6 +488,7 @@ export default function AgentEditorPage({
   agent: existingAgent,
   refreshAgent,
 }: AgentEditorPageProps) {
+  const t = useTranslations("agents.editor");
   const router = useRouter();
   const appRouter = useAppRouter();
   const { refresh: refreshAgents } = useAgents();
@@ -570,7 +574,7 @@ export default function AgentEditorPage({
   const isImageGenerationAvailable = !!imageGenTool;
   const imageGenerationDisabledTooltip = isImageGenerationAvailable
     ? undefined
-    : "Image generation requires a configured model. If you have access, set one up under Settings > Image Generation, or ask an admin.";
+    : t("imageGenerationDisabledTooltip");
 
   // Group MCP server tools from availableTools by server ID
   const mcpServersWithTools = mcpServers.map((server) => {
@@ -1004,7 +1008,7 @@ export default function AgentEditorPage({
     <>
       <div
         data-testid="AgentsEditorPage/container"
-        aria-label="Agents Editor Page"
+        aria-label={t("ariaLabel")}
         className="h-full w-full"
       >
         <Formik
@@ -1054,8 +1058,8 @@ export default function AgentEditorPage({
 
                 <userFilesModal.Provider>
                   <UserFilesModal
-                    title="User Files"
-                    description="All files selected for this agent"
+                    title={t("userFilesTitle")}
+                    description={t("userFilesDescription")}
                     recentFiles={values.user_file_ids
                       .map((userFileId: string) => {
                         const rf = allRecentFiles.find(
@@ -1220,20 +1224,17 @@ export default function AgentEditorPage({
                   {deleteAgentModal.isOpen && (
                     <ConfirmationModalLayout
                       icon={SvgTrash}
-                      title="Delete Agent"
+                      title={t("deleteModalTitle")}
                       submit={
                         <Button variant="danger" onClick={handleDeleteAgent}>
-                          Delete Agent
+                          {t("deleteButton")}
                         </Button>
                       }
                       onClose={() => deleteAgentModal.toggle(false)}
                     >
                       <GeneralLayouts.Section alignItems="start" gap={0.5}>
-                        <Text>
-                          Anyone using this agent will no longer be able to
-                          access it. Deletion cannot be undone.
-                        </Text>
-                        <Text>Are you sure you want to delete this agent?</Text>
+                        <Text>{t("deleteModalBodyAccess")}</Text>
+                        <Text>{t("deleteModalBodyConfirm")}</Text>
                       </GeneralLayouts.Section>
                     </ConfirmationModalLayout>
                   )}
@@ -1243,7 +1244,9 @@ export default function AgentEditorPage({
                   <SettingsLayouts.Root>
                     <SettingsLayouts.Header
                       icon={SvgOnyxOctagon}
-                      title={existingAgent ? "Edit Agent" : "Create Agent"}
+                      title={
+                        existingAgent ? t("titleEdit") : t("titleCreate")
+                      }
                       rightChildren={
                         <div className="flex gap-2">
                           <Button
@@ -1251,18 +1254,18 @@ export default function AgentEditorPage({
                             type="button"
                             onClick={() => router.back()}
                           >
-                            Cancel
+                            {t("cancel")}
                           </Button>
                           <Tooltip
                             tooltip={
                               isSubmitting
-                                ? "Saving changes..."
+                                ? t("tooltipSaving")
                                 : !isValid
-                                  ? "Please fix the errors in the form before saving."
+                                  ? t("tooltipFixErrors")
                                   : !dirty
-                                    ? "No changes have been made."
+                                    ? t("tooltipNoChanges")
                                     : hasUploadingFiles
-                                      ? "Please wait for files to finish uploading."
+                                      ? t("tooltipUploading")
                                       : undefined
                             }
                             side="bottom"
@@ -1276,7 +1279,9 @@ export default function AgentEditorPage({
                               }
                               type="submit"
                             >
-                              {existingAgent ? "Save" : "Create"}
+                              {existingAgent
+                                ? t("submitEdit")
+                                : t("submitCreate")}
                             </Button>
                           </Tooltip>
                         </div>
@@ -1293,21 +1298,21 @@ export default function AgentEditorPage({
                         alignItems="start"
                       >
                         <GeneralLayouts.Section>
-                          <InputVertical withLabel="name" title="Name">
+                          <InputVertical withLabel="name" title={t("name")}>
                             <InputTypeInField
                               name="name"
-                              placeholder="Name your agent"
+                              placeholder={t("namePlaceholder")}
                             />
                           </InputVertical>
 
                           <InputVertical
                             withLabel="description"
-                            title="Description"
-                            suffix="optional"
+                            title={t("description")}
+                            suffix={t("optional")}
                           >
                             <InputTextAreaField
                               name="description"
-                              placeholder="What does this agent do?"
+                              placeholder={t("descriptionPlaceholder")}
                             />
                           </InputVertical>
                         </GeneralLayouts.Section>
@@ -1315,7 +1320,7 @@ export default function AgentEditorPage({
                         <GeneralLayouts.Section width="fit">
                           <InputVertical
                             withLabel="agent_avatar"
-                            title="Agent Avatar"
+                            title={t("agentAvatar")}
                           >
                             <AgentIconEditor existingAgent={existingAgent} />
                           </InputVertical>
@@ -1330,21 +1335,21 @@ export default function AgentEditorPage({
                       <GeneralLayouts.Section>
                         <InputVertical
                           withLabel="instructions"
-                          title="Instructions"
-                          suffix="optional"
-                          description="Add instructions to tailor the response for this agent."
+                          title={t("instructions")}
+                          suffix={t("optional")}
+                          description={t("instructionsDescription")}
                         >
                           <InputTextAreaField
                             name="instructions"
-                            placeholder="Think step by step and show reasoning for complex problems. Use specific examples. Emphasize action items, and leave blanks for the human to fill in when you have unknown. Use a polite enthusiastic tone."
+                            placeholder={t("instructionsPlaceholder")}
                           />
                         </InputVertical>
 
                         <InputVertical
                           withLabel="starter_messages"
-                          title="Conversation Starters"
-                          description="Example messages that help users understand what this agent can do and how to interact with it effectively."
-                          suffix="optional"
+                          title={t("conversationStarters")}
+                          description={t("conversationStartersDescription")}
+                          suffix={t("optional")}
                         >
                           <StarterMessages />
                         </InputVertical>
@@ -1405,8 +1410,8 @@ export default function AgentEditorPage({
 
                       <SimpleCollapsible>
                         <SimpleCollapsible.Header
-                          title="Actions"
-                          description="Tools and capabilities available for this agent to use."
+                          title={t("actions")}
+                          description={t("actionsDescription")}
                         />
                         <SimpleCollapsible.Content>
                           <GeneralLayouts.Section gap={0.5}>
@@ -1417,8 +1422,8 @@ export default function AgentEditorPage({
                               <Card border="solid" rounding="lg">
                                 <InputHorizontal
                                   withLabel="image_generation"
-                                  title="Image Generation"
-                                  description="Generate and manipulate images using AI-powered tools."
+                                  title={t("imageGeneration")}
+                                  description={t("imageGenerationDescription")}
                                   disabled={!isImageGenerationAvailable}
                                 >
                                   <SwitchField
@@ -1433,8 +1438,8 @@ export default function AgentEditorPage({
                               <Card border="solid" rounding="lg">
                                 <InputHorizontal
                                   withLabel="web_search"
-                                  title="Web Search"
-                                  description="Search the web for real-time information and up-to-date results."
+                                  title={t("webSearch")}
+                                  description={t("webSearchDescription")}
                                   disabled={!webSearchTool}
                                 >
                                   <SwitchField
@@ -1449,8 +1454,8 @@ export default function AgentEditorPage({
                               <Card border="solid" rounding="lg">
                                 <InputHorizontal
                                   withLabel="open_url"
-                                  title="Open URL"
-                                  description="Fetch and read content from web URLs."
+                                  title={t("openUrl")}
+                                  description={t("openUrlDescription")}
                                   disabled={!openURLTool}
                                 >
                                   <SwitchField
@@ -1465,8 +1470,8 @@ export default function AgentEditorPage({
                               <Card border="solid" rounding="lg">
                                 <InputHorizontal
                                   withLabel="code_interpreter"
-                                  title="Code Interpreter"
-                                  description="Generate and run code."
+                                  title={t("codeInterpreter")}
+                                  description={t("codeInterpreterDescription")}
                                   disabled={!codeInterpreterTool}
                                 >
                                   <SwitchField
@@ -1527,16 +1532,16 @@ export default function AgentEditorPage({
 
                       <SimpleCollapsible>
                         <SimpleCollapsible.Header
-                          title="Advanced Options"
-                          description="Fine-tune agent prompts and knowledge."
+                          title={t("advancedOptions")}
+                          description={t("advancedOptionsDescription")}
                         />
                         <SimpleCollapsible.Content>
                           <GeneralLayouts.Section>
                             <Card border="solid" rounding="lg">
                               <GeneralLayouts.Section>
                                 <InputHorizontal
-                                  title="Share This Agent"
-                                  description="with other users, groups, or everyone in your organization."
+                                  title={t("shareTitle")}
+                                  description={t("shareDescription")}
                                   center
                                 >
                                   <Button
@@ -1544,20 +1549,22 @@ export default function AgentEditorPage({
                                     icon={isShared ? SvgUsers : SvgLock}
                                     onClick={() => shareAgentModal.toggle(true)}
                                   >
-                                    Share
+                                    {t("shareButton")}
                                   </Button>
                                 </InputHorizontal>
                                 {canUpdateFeaturedStatus && (
                                   <>
                                     <InputHorizontal
                                       withLabel="is_featured"
-                                      title="Feature This Agent"
-                                      description="Show this agent at the top of the explore agents list and automatically pin it to the sidebar for new users with access."
+                                      title={t("featureTitle")}
+                                      description={t("featureDescription")}
                                     >
                                       <SwitchField name="is_featured" />
                                     </InputHorizontal>
                                     {values.is_featured && !isShared && (
-                                      <MessageCard title="This agent is private to you and will only be featured for yourself." />
+                                      <MessageCard
+                                        title={t("featurePrivateNotice")}
+                                      />
                                     )}
                                   </>
                                 )}
@@ -1568,8 +1575,8 @@ export default function AgentEditorPage({
                               <GeneralLayouts.Section>
                                 <InputHorizontal
                                   withLabel="llm_model"
-                                  title="Default Model"
-                                  description="This model will be used by Onyx by default in your chats."
+                                  title={t("defaultModel")}
+                                  description={t("defaultModelDescription")}
                                 >
                                   <LLMSelector
                                     name="llm_model"
@@ -1585,9 +1592,11 @@ export default function AgentEditorPage({
                                 </InputHorizontal>
                                 <InputHorizontal
                                   withLabel="knowledge_cutoff_date"
-                                  title="Knowledge Cutoff Date"
-                                  suffix="optional"
-                                  description="Documents with a last-updated date prior to this will be ignored."
+                                  title={t("knowledgeCutoffDate")}
+                                  suffix={t("optional")}
+                                  description={t(
+                                    "knowledgeCutoffDateDescription"
+                                  )}
                                 >
                                   <InputDatePickerField
                                     name="knowledge_cutoff_date"
@@ -1596,9 +1605,11 @@ export default function AgentEditorPage({
                                 </InputHorizontal>
                                 <InputHorizontal
                                   withLabel="replace_base_system_prompt"
-                                  title="Overwrite System Prompt"
-                                  suffix="(Not Recommended)"
-                                  description='Remove the base system prompt which includes useful instructions (e.g. "You can use Markdown tables"). This may affect response quality.'
+                                  title={t("overwriteSystemPrompt")}
+                                  suffix={t("overwriteSystemPromptSuffix")}
+                                  description={t(
+                                    "overwriteSystemPromptDescription"
+                                  )}
                                 >
                                   <SwitchField name="replace_base_system_prompt" />
                                 </InputHorizontal>
@@ -1608,20 +1619,16 @@ export default function AgentEditorPage({
                             <GeneralLayouts.Section gap={0.25}>
                               <InputVertical
                                 withLabel="reminders"
-                                title="Reminders"
-                                suffix="optional"
+                                title={t("reminders")}
+                                suffix={t("optional")}
                               >
                                 <InputTextAreaField
                                   name="reminders"
-                                  placeholder="Remember, I want you to always format your response as a numbered list."
+                                  placeholder={t("remindersPlaceholder")}
                                 />
                               </InputVertical>
                               <Text text03 secondaryBody>
-                                Append a brief reminder to the prompt messages.
-                                Use this to remind the agent if you find that it
-                                tends to forget certain instructions as the chat
-                                progresses. This should be brief and not
-                                interfere with the user messages.
+                                {t("remindersHelper")}
                               </Text>
                             </GeneralLayouts.Section>
                           </GeneralLayouts.Section>
@@ -1637,8 +1644,8 @@ export default function AgentEditorPage({
 
                           <Card border="solid" rounding="lg">
                             <InputHorizontal
-                              title="Delete This Agent"
-                              description="Anyone using this agent will no longer be able to access it."
+                              title={t("deleteSectionTitle")}
+                              description={t("deleteSectionDescription")}
                               center
                             >
                               <Button
@@ -1646,7 +1653,7 @@ export default function AgentEditorPage({
                                 prominence="secondary"
                                 onClick={() => deleteAgentModal.toggle(true)}
                               >
-                                Delete Agent
+                                {t("deleteButton")}
                               </Button>
                             </InputHorizontal>
                           </Card>
