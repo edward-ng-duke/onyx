@@ -1,21 +1,23 @@
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { SvgChevronDown, SvgChevronRight } from "@opal/icons";
 import { Button } from "@opal/components";
 import CopyIconButton from "@/refresh-components/buttons/CopyIconButton";
-import { getErrorIcon, getErrorTitle } from "./errorHelpers";
+import { getErrorIcon, useErrorTitle } from "./errorHelpers";
 
 interface ResubmitProps {
   resubmit: () => void;
 }
 
 export const Resubmit: React.FC<ResubmitProps> = ({ resubmit }) => {
+  const t = useTranslations("chat.composer");
   return (
     <div className="flex flex-col items-center justify-center gap-y-2 mt-4">
       <p className="text-sm text-neutral-700 dark:text-neutral-300">
-        There was an error with the response.
+        {t("responseError")}
       </p>
-      <Button onClick={resubmit}>Regenerate</Button>
+      <Button onClick={resubmit}>{t("regenerate")}</Button>
     </div>
   );
 };
@@ -35,24 +37,26 @@ export const ErrorBanner = ({
   stackTrace?: string | null;
   resubmit?: () => void;
 }) => {
+  const t = useTranslations("chat.composer");
   const [isStackTraceExpanded, setIsStackTraceExpanded] = useState(false);
+  const errorTitle = useErrorTitle(errorCode);
 
   return (
     <div className="text-red-700 mt-4 text-sm my-auto">
       <Alert variant="broken">
         {getErrorIcon(errorCode)}
-        <AlertTitle>{getErrorTitle(errorCode)}</AlertTitle>
+        <AlertTitle>{errorTitle}</AlertTitle>
         <AlertDescription className="flex flex-col gap-y-1">
           <span>{error}</span>
           {details?.model && (
             <span className="text-xs text-muted-foreground">
-              Model: {details.model}
+              {t("modelLabel")} {details.model}
               {details.provider && ` (${details.provider})`}
             </span>
           )}
           {details?.tool_name && (
             <span className="text-xs text-muted-foreground">
-              Tool: {details.tool_name}
+              {t("toolLabel")} {details.tool_name}
             </span>
           )}
           {stackTrace && (
@@ -63,7 +67,7 @@ export const ErrorBanner = ({
                   icon={isStackTraceExpanded ? SvgChevronDown : SvgChevronRight}
                   onClick={() => setIsStackTraceExpanded(!isStackTraceExpanded)}
                 >
-                  Stack trace
+                  {t("stackTrace")}
                 </Button>
                 <CopyIconButton
                   prominence="tertiary"

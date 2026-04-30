@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { SvgFileText } from "@opal/icons";
 import {
   PacketType,
@@ -54,18 +55,11 @@ function constructFileReaderState(
   };
 }
 
-function formatCharRange(
-  startChar: number,
-  endChar: number,
-  totalChars: number
-): string {
-  return `chars ${startChar.toLocaleString()}\u2013${endChar.toLocaleString()} of ${totalChars.toLocaleString()}`;
-}
-
 export const FileReaderToolRenderer: MessageRenderer<
   FileReaderToolPacket,
   {}
 > = ({ packets, onComplete, stopPacketSeen, renderType, children }) => {
+  const t = useTranslations("chat.timeline");
   const state = constructFileReaderState(packets);
 
   useEffect(() => {
@@ -74,13 +68,27 @@ export const FileReaderToolRenderer: MessageRenderer<
     }
   }, [state.isComplete, onComplete]);
 
+  const formatCharRange = (
+    startChar: number,
+    endChar: number,
+    totalChars: number
+  ): string =>
+    t("fileReaderCharRange", {
+      start: startChar.toLocaleString(),
+      end: endChar.toLocaleString(),
+      total: totalChars.toLocaleString(),
+    });
+
   const statusText = state.fileName
-    ? `Read ${state.fileName} (${formatCharRange(
-        state.startChar,
-        state.endChar,
-        state.totalChars
-      )})`
-    : "Reading file";
+    ? t("fileReaderReadFile", {
+        fileName: state.fileName,
+        range: formatCharRange(
+          state.startChar,
+          state.endChar,
+          state.totalChars
+        ),
+      })
+    : t("fileReaderReading");
 
   const isCompact = renderType === RenderType.COMPACT;
 

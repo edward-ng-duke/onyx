@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { Button, MessageCard } from "@opal/components";
 import { ToolSnapshot } from "@/lib/tools/interfaces";
 import { initiateOAuthFlow } from "@/lib/oauth/api";
@@ -20,6 +21,7 @@ function CustomToolAuthCard({
   tools,
   agentId,
 }: CustomToolAuthCardProps) {
+  const t = useTranslations("chat.customTool");
   const { getToolAuthStatus } = useToolOAuthStatus(agentId);
   const matchedTool = useMemo(() => {
     if (toolId == null) return null;
@@ -48,15 +50,15 @@ function CustomToolAuthCard({
 
   return (
     <MessageCard
-      title={`${toolName} not connected`}
-      description={`Connect to ${toolName} to enable this tool`}
+      title={t("notConnectedTitle", { toolName })}
+      description={t("notConnectedDescription", { toolName })}
       rightChildren={
         <Button
           prominence="primary"
           icon={SvgArrowExchange}
           onClick={handleAuthenticate}
         >
-          Connect
+          {t("connect")}
         </Button>
       }
     />

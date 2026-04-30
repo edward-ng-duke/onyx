@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { SvgCircle } from "@opal/icons";
 
 import {
@@ -24,6 +25,7 @@ export const DeepResearchPlanRenderer: MessageRenderer<
   DeepResearchPlanPacket,
   FullChatState
 > = ({ packets, stopPacketSeen, children }) => {
+  const t = useTranslations("chat.timeline");
   const isComplete = packets.some((p) => p.obj.type === PacketType.SECTION_END);
 
   const fullContent = useMemo(
@@ -39,7 +41,9 @@ export const DeepResearchPlanRenderer: MessageRenderer<
     [packets]
   );
 
-  const statusText = isComplete ? "Generated plan" : "Generating plan";
+  const statusText = isComplete
+    ? t("researchPlanComplete")
+    : t("researchPlanGenerating");
 
   // Markdown renderer callback for ExpandableTextDisplay
   // Uses collapsed components (no spacing) in collapsed view, normal spacing in expanded modal
@@ -57,7 +61,7 @@ export const DeepResearchPlanRenderer: MessageRenderer<
 
   const planContent = (
     <ExpandableTextDisplay
-      title="Research Plan"
+      title={t("researchPlan")}
       content={fullContent}
       renderContent={renderMarkdown}
       isStreaming={!isComplete}

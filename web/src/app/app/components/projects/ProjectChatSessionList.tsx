@@ -2,6 +2,7 @@
 
 import React, { useMemo } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { ChatSessionMorePopup } from "@/components/sidebar/ChatSessionMorePopup";
 import { useProjectsContext } from "@/providers/ProjectsContext";
 import { ChatSession } from "@/app/app/interfaces";
@@ -15,6 +16,7 @@ import ChatSessionSkeleton from "@/refresh-components/skeletons/ChatSessionSkele
 import { SvgBubbleText } from "@opal/icons";
 
 export default function ProjectChatSessionList() {
+  const t = useTranslations("chat.project");
   const {
     currentProjectDetails,
     currentProjectId,
@@ -41,7 +43,7 @@ export default function ProjectChatSessionList() {
     <div className="flex flex-col gap-2 px-2 w-full mx-auto mt-4">
       <div className="flex items-center pl-2">
         <Text as="p" text02 secondaryBody>
-          Recent Chats
+          {t("recentChats")}
         </Text>
       </div>
 
@@ -53,7 +55,7 @@ export default function ProjectChatSessionList() {
         </div>
       ) : projectChats.length === 0 ? (
         <Text as="p" text02 secondaryBody className="p-2">
-          No chats yet.
+          {t("noChats")}
         </Text>
       ) : (
         <div className="flex flex-col gap-2">
@@ -138,7 +140,9 @@ export default function ProjectChatSessionList() {
                       nowrap
                       className="truncate"
                     >
-                      Last message {formatRelativeTime(chat.time_updated)}
+                      {t("lastMessage", {
+                        time: formatRelativeTime(chat.time_updated),
+                      })}
                     </Text>
                   </div>
                 </div>

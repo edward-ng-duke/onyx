@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { SvgImage } from "@opal/icons";
 import {
   PacketType,
@@ -45,6 +46,7 @@ export const ImageToolRenderer: MessageRenderer<
   ImageGenerationToolPacket,
   {}
 > = ({ packets, onComplete, renderType, children }) => {
+  const t = useTranslations("chat.image");
   const { prompt, images, isGenerating, isComplete, error } =
     constructCurrentImageState(packets);
 
@@ -54,15 +56,22 @@ export const ImageToolRenderer: MessageRenderer<
     }
   }, [isComplete]);
 
+  const generatedCountStatus = useMemo(() => {
+    const count = images.length;
+    return count === 1
+      ? t("generatedImagesSingular", { count })
+      : t("generatedImagesPlural", { count });
+  }, [images.length, t]);
+
   const status = useMemo(() => {
     if (isComplete) {
-      return `Generated ${images.length} image${images.length > 1 ? "s" : ""}`;
+      return generatedCountStatus;
     }
     if (isGenerating) {
-      return "Generating image...";
+      return t("generatingImage");
     }
     return null;
-  }, [isComplete, isGenerating, images.length]);
+  }, [isComplete, isGenerating, generatedCountStatus, t]);
 
   // Render based on renderType
   if (renderType === RenderType.FULL) {
@@ -72,7 +81,7 @@ export const ImageToolRenderer: MessageRenderer<
       return children([
         {
           icon: SvgImage,
-          status: "Generating images...",
+          status: t("generatingImages"),
           supportsCollapsible: false,
           content: (
             <div className="flex flex-col">
@@ -90,9 +99,7 @@ export const ImageToolRenderer: MessageRenderer<
       return children([
         {
           icon: SvgImage,
-          status: `Generated ${images.length} image${
-            images.length !== 1 ? "s" : ""
-          }`,
+          status: generatedCountStatus,
           supportsCollapsible: false,
           content: (
             <div className="flex flex-col my-1">
@@ -115,7 +122,7 @@ export const ImageToolRenderer: MessageRenderer<
               ) : (
                 <div className="py-4 text-center text-gray-500 dark:text-gray-400 ml-7">
                   <SvgImage className="w-6 h-6 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No images generated</p>
+                  <p className="text-sm">{t("noImagesGenerated")}</p>
                 </div>
               )}
             </div>
@@ -140,7 +147,7 @@ export const ImageToolRenderer: MessageRenderer<
     return children([
       {
         icon: SvgImage,
-        status: "Generating image...",
+        status: t("generatingImage"),
         supportsCollapsible: false,
         content: (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -155,7 +162,7 @@ export const ImageToolRenderer: MessageRenderer<
                 style={{ animationDelay: "0.2s" }}
               ></div>
             </div>
-            <span>Generating image...</span>
+            <span>{t("generatingImage")}</span>
           </div>
         ),
       },
@@ -166,11 +173,11 @@ export const ImageToolRenderer: MessageRenderer<
     return children([
       {
         icon: SvgImage,
-        status: "Image generation failed",
+        status: t("imageGenerationFailed"),
         supportsCollapsible: false,
         content: (
           <div className="text-sm text-red-600 dark:text-red-400">
-            Image generation failed
+            {t("imageGenerationFailed")}
           </div>
         ),
       },
@@ -181,14 +188,11 @@ export const ImageToolRenderer: MessageRenderer<
     return children([
       {
         icon: SvgImage,
-        status: `Generated ${images.length} image${
-          images.length > 1 ? "s" : ""
-        }`,
+        status: generatedCountStatus,
         supportsCollapsible: false,
         content: (
           <div className="text-sm text-muted-foreground">
-            Generated {images.length} image
-            {images.length > 1 ? "s" : ""}
+            {generatedCountStatus}
           </div>
         ),
       },
@@ -198,10 +202,12 @@ export const ImageToolRenderer: MessageRenderer<
   return children([
     {
       icon: SvgImage,
-      status: "Image generation",
+      status: t("imageGeneration"),
       supportsCollapsible: false,
       content: (
-        <div className="text-sm text-muted-foreground">Image generation</div>
+        <div className="text-sm text-muted-foreground">
+          {t("imageGeneration")}
+        </div>
       ),
     },
   ]);

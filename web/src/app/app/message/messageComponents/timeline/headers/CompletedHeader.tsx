@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { SvgFold, SvgExpand, SvgAddLines, SvgMaximize2 } from "@opal/icons";
 import { Button } from "@opal/components";
 import Tag from "@/refresh-components/buttons/Tag";
@@ -30,10 +31,11 @@ function MemoryTagWithTooltip({
   memoryId,
   memoryIndex,
 }: MemoryTagWithTooltipProps) {
+  const t = useTranslations("chat.timeline");
   const memoriesModal = useCreateModal();
 
   const operationLabel =
-    memoryOperation === "add" ? "Added to memories" : "Updated memory";
+    memoryOperation === "add" ? t("addedToMemories") : t("updatedMemory");
 
   const tag = <Tag icon={SvgAddLines} label={operationLabel} />;
 
@@ -128,6 +130,11 @@ export const CompletedHeader = React.memo(function CompletedHeader({
   memoryId = null,
   memoryIndex = null,
 }: CompletedHeaderProps) {
+  const t = useTranslations("chat.timeline");
+  const stepsLabel =
+    totalSteps === 1
+      ? t("stepSingular", { count: totalSteps })
+      : t("stepPlural", { count: totalSteps });
   if (isMemoryOnly) {
     return (
       <div className="flex w-full justify-between">
@@ -145,10 +152,10 @@ export const CompletedHeader = React.memo(function CompletedHeader({
             size="md"
             onClick={noProp(onToggle)}
             rightIcon={isExpanded ? SvgFold : SvgExpand}
-            aria-label="Expand timeline"
+            aria-label={t("expandTimeline")}
             aria-expanded={isExpanded}
           >
-            {`${totalSteps} ${totalSteps === 1 ? "step" : "steps"}`}
+            {stepsLabel}
           </Button>
         )}
       </div>
@@ -156,14 +163,16 @@ export const CompletedHeader = React.memo(function CompletedHeader({
   }
 
   const durationText = processingDurationSeconds
-    ? `Thought for ${formatDurationSeconds(processingDurationSeconds)}`
-    : "Thought for some time";
+    ? t("thoughtForDuration", {
+        duration: formatDurationSeconds(processingDurationSeconds),
+      })
+    : t("thoughtForSomeTime");
 
   const imageText =
     generatedImageCount > 0
-      ? `Generated ${generatedImageCount} ${
-          generatedImageCount === 1 ? "image" : "images"
-        }`
+      ? generatedImageCount === 1
+        ? t("generatedImagesSingular", { count: generatedImageCount })
+        : t("generatedImagesPlural", { count: generatedImageCount })
       : null;
 
   return (
@@ -192,10 +201,10 @@ export const CompletedHeader = React.memo(function CompletedHeader({
           size="md"
           onClick={noProp(onToggle)}
           rightIcon={isExpanded ? SvgFold : SvgExpand}
-          aria-label="Expand timeline"
+          aria-label={t("expandTimeline")}
           aria-expanded={isExpanded}
         >
-          {`${totalSteps} ${totalSteps === 1 ? "step" : "steps"}`}
+          {stepsLabel}
         </Button>
       )}
     </div>

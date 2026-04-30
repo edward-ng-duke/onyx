@@ -6,7 +6,7 @@ import { StopReason } from "@/app/app/services/streamingModels";
 import { FullChatState } from "../interfaces";
 import { TurnGroup } from "./transformers";
 import {
-  getToolName,
+  useToolName,
   getToolIcon,
   isToolComplete,
 } from "../toolDisplayHelpers";
@@ -45,6 +45,7 @@ export function ParallelTimelineTabs({
   isLastTurnGroup,
   isFirstTurnGroup,
 }: ParallelTimelineTabsProps) {
+  const getToolName = useToolName();
   const [activeTab, setActiveTab] = useState(turnGroup.steps[0]?.key ?? "");
   const [isExpanded, setIsExpanded] = useState(true);
   const [isHover, setIsHover] = useState(false);

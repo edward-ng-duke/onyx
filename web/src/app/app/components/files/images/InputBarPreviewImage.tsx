@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { buildImgUrl } from "./utils";
 import { FullImageModal } from "./FullImageModal";
 
 export function InputBarPreviewImage({ fileId }: { fileId: string }) {
+  const t = useTranslations("chat.message");
   const [fullImageShowing, setFullImageShowing] = useState(false);
 
   return (
@@ -29,7 +31,7 @@ export function InputBarPreviewImage({ fileId }: { fileId: string }) {
       `}
       >
         <img
-          alt="preview"
+          alt={t("imagePreviewAlt")}
           onClick={() => setFullImageShowing(true)}
           className="h-6 w-6 object-cover rounded-lg bg-background cursor-pointer"
           src={buildImgUrl(fileId)}

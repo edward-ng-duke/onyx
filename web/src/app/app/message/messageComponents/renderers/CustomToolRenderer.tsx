@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import {
   PacketType,
   CustomToolPacket,
@@ -98,6 +99,7 @@ export const CustomToolRenderer: MessageRenderer<CustomToolPacket, {}> = ({
   renderType,
   children,
 }) => {
+  const t = useTranslations("chat.customTool");
   const {
     toolName,
     toolArgs,
@@ -119,16 +121,16 @@ export const CustomToolRenderer: MessageRenderer<CustomToolPacket, {}> = ({
     if (isComplete) {
       if (error) {
         return error.is_auth_error
-          ? `${toolName} authentication failed (HTTP ${error.status_code})`
-          : `${toolName} failed (HTTP ${error.status_code})`;
+          ? t("authFailed", { toolName, statusCode: error.status_code })
+          : t("failed", { toolName, statusCode: error.status_code });
       }
-      if (responseType === "image") return `${toolName} returned images`;
-      if (responseType === "csv") return `${toolName} returned a file`;
-      return `${toolName} completed`;
+      if (responseType === "image") return t("returnedImages", { toolName });
+      if (responseType === "csv") return t("returnedFile", { toolName });
+      return t("completed", { toolName });
     }
-    if (isRunning) return `${toolName} running...`;
+    if (isRunning) return t("running", { toolName });
     return null;
-  }, [toolName, responseType, error, isComplete, isRunning]);
+  }, [toolName, responseType, error, isComplete, isRunning, t]);
 
   const icon = SvgActions;
 
@@ -165,7 +167,7 @@ export const CustomToolRenderer: MessageRenderer<CustomToolPacket, {}> = ({
                 ></div>
               </div>
               <Text text03 secondaryBody>
-                Waiting for response...
+                {t("waitingForResponse")}
               </Text>
             </div>
           )}
@@ -176,7 +178,7 @@ export const CustomToolRenderer: MessageRenderer<CustomToolPacket, {}> = ({
             <div className="flex items-center gap-1">
               <SvgArrowExchange className="w-3 h-3 text-text-02" />
               <Text text04 secondaryBody>
-                Request
+                {t("request")}
               </Text>
             </div>
             <div className="prose max-w-full">
@@ -206,7 +208,7 @@ export const CustomToolRenderer: MessageRenderer<CustomToolPacket, {}> = ({
             {fileIds.map((fid, idx) => (
               <div key={fid} className="flex items-center gap-2 flex-wrap">
                 <Text text03 secondaryBody className="whitespace-nowrap">
-                  File {idx + 1}
+                  {t("filePrefix", { index: idx + 1 })}
                 </Text>
                 <a
                   href={buildImgUrl(fid)}
@@ -214,14 +216,14 @@ export const CustomToolRenderer: MessageRenderer<CustomToolPacket, {}> = ({
                   rel="noreferrer"
                   className="inline-flex items-center gap-1 text-xs text-action-link-01 hover:underline whitespace-nowrap"
                 >
-                  <SvgExternalLink className="w-3 h-3" /> Open
+                  <SvgExternalLink className="w-3 h-3" /> {t("open")}
                 </a>
                 <a
                   href={buildImgUrl(fid)}
                   download
                   className="inline-flex items-center gap-1 text-xs text-action-link-01 hover:underline whitespace-nowrap"
                 >
-                  <SvgDownload className="w-3 h-3" /> Download
+                  <SvgDownload className="w-3 h-3" /> {t("download")}
                 </a>
               </div>
             ))}
@@ -234,7 +236,7 @@ export const CustomToolRenderer: MessageRenderer<CustomToolPacket, {}> = ({
             <div className="flex items-center gap-1">
               <SvgArrowExchange className="w-3 h-3 text-text-02" />
               <Text text04 secondaryBody>
-                Response
+                {t("response")}
               </Text>
             </div>
             <div className="prose max-w-full">
@@ -260,7 +262,7 @@ export const CustomToolRenderer: MessageRenderer<CustomToolPacket, {}> = ({
         )}
       </div>
     ),
-    [toolArgsJson, dataJson, data, fileIds, error, isRunning]
+    [toolArgsJson, dataJson, data, fileIds, error, isRunning, t]
   );
 
   // Auth error: always render FULL with error surface

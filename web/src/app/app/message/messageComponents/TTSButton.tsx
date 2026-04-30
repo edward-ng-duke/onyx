@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { SvgPlayCircle, SvgStop } from "@opal/icons";
 import { Button } from "@opal/components";
 import { useVoicePlayback } from "@/hooks/useVoicePlayback";
@@ -15,6 +16,7 @@ interface TTSButtonProps {
 }
 
 function TTSButton({ text, voice, speed }: TTSButtonProps) {
+  const t = useTranslations("chat.feedback");
   const { isPlaying, isLoading, error, play, pause, stop } = useVoicePlayback();
   const { isTTSPlaying, isTTSLoading, isAwaitingAutoPlaybackStart, stopTTS } =
     useVoiceMode();
@@ -70,10 +72,10 @@ function TTSButton({ text, voice, speed }: TTSButtonProps) {
       : SvgPlayCircle;
 
   const tooltip = isButtonPlaying
-    ? "Stop playback"
+    ? t("ttsStop")
     : isButtonLoading
-      ? "Loading..."
-      : "Read aloud";
+      ? t("ttsLoading")
+      : t("ttsRead");
 
   return (
     <Button

@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import {
   PacketType,
   PythonToolPacket,
@@ -99,6 +100,7 @@ export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
   renderType,
   children,
 }) => {
+  const t = useTranslations("chat.message.code");
   const {
     code,
     stdout,
@@ -118,19 +120,19 @@ export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
 
   const status = useMemo(() => {
     if (isStreaming) {
-      return "Writing code...";
+      return t("writingCode");
     }
     if (isExecuting) {
-      return "Executing Python code...";
+      return t("executingCode");
     }
     if (hasError) {
-      return "Python execution failed";
+      return t("executionFailed");
     }
     if (isComplete) {
-      return "Python execution completed";
+      return t("executionCompleted");
     }
-    return "Python execution";
-  }, [isStreaming, isComplete, isExecuting, hasError]);
+    return t("execution");
+  }, [isStreaming, isComplete, isExecuting, hasError, t]);
 
   // Shared content for all states - used by both FULL and compact modes
   const content = (
@@ -149,7 +151,7 @@ export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
               style={{ animationDelay: "0.2s" }}
             ></div>
           </div>
-          <span>{isStreaming ? "Writing code..." : "Running code..."}</span>
+          <span>{isStreaming ? t("writingCode") : t("runningCode")}</span>
         </div>
       )}
 
@@ -165,7 +167,9 @@ export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
       {/* Output */}
       {stdout && (
         <div className="rounded-md bg-background-neutral-02 p-3">
-          <div className="text-xs font-semibold mb-1 text-text-03">Output:</div>
+          <div className="text-xs font-semibold mb-1 text-text-03">
+            {t("outputLabel")}
+          </div>
           <pre className="text-sm whitespace-pre-wrap font-mono text-text-01 overflow-x-auto">
             {stdout}
           </pre>
@@ -176,7 +180,7 @@ export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
       {stderr && (
         <div className="rounded-md bg-status-error-01 p-3 border border-status-error-02">
           <div className="text-xs font-semibold mb-1 text-status-error-05">
-            Error:
+            {t("errorLabel")}
           </div>
           <pre className="text-sm whitespace-pre-wrap font-mono text-status-error-05 overflow-x-auto">
             {stderr}
@@ -187,7 +191,9 @@ export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
       {/* File count */}
       {fileIds.length > 0 && (
         <div className="text-sm text-text-03">
-          Generated {fileIds.length} file{fileIds.length !== 1 ? "s" : ""}
+          {fileIds.length === 1
+            ? t("generatedFilesSingular", { count: fileIds.length })
+            : t("generatedFilesPlural", { count: fileIds.length })}
         </div>
       )}
 
@@ -195,7 +201,7 @@ export const PythonToolRenderer: MessageRenderer<PythonToolPacket, {}> = ({
       {isComplete && !stdout && !stderr && (
         <div className="py-2 text-center text-text-04">
           <SvgTerminal className="w-4 h-4 mx-auto mb-1 opacity-50" />
-          <p className="text-xs">No output</p>
+          <p className="text-xs">{t("noOutput")}</p>
         </div>
       )}
     </div>

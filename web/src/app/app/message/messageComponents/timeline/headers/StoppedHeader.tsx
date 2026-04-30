@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import { SvgFold, SvgExpand } from "@opal/icons";
 import { Button } from "@opal/components";
 import Text from "@/refresh-components/texts/Text";
@@ -19,7 +20,13 @@ export const StoppedHeader = React.memo(function StoppedHeader({
   isExpanded,
   onToggle,
 }: StoppedHeaderProps) {
+  const tSession = useTranslations("chat.session");
+  const t = useTranslations("chat.timeline");
   const isInteractive = collapsible && totalSteps > 0;
+  const stepsLabel =
+    totalSteps === 1
+      ? t("stepSingular", { count: totalSteps })
+      : t("stepPlural", { count: totalSteps });
 
   return (
     <div
@@ -33,7 +40,7 @@ export const StoppedHeader = React.memo(function StoppedHeader({
     >
       <div className="px-[var(--timeline-header-text-padding-x)] py-[var(--timeline-header-text-padding-y)]">
         <Text as="p" mainUiAction text03>
-          Interrupted Thinking
+          {tSession("interruptedThinking")}
         </Text>
       </div>
 
@@ -43,10 +50,12 @@ export const StoppedHeader = React.memo(function StoppedHeader({
           size="md"
           onClick={noProp(onToggle)}
           rightIcon={isExpanded ? SvgFold : SvgExpand}
-          aria-label={isExpanded ? "Collapse timeline" : "Expand timeline"}
+          aria-label={
+            isExpanded ? t("collapseTimeline") : t("expandTimeline")
+          }
           aria-expanded={isExpanded}
         >
-          {`${totalSteps} ${totalSteps === 1 ? "step" : "steps"}`}
+          {stepsLabel}
         </Button>
       )}
     </div>

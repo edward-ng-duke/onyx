@@ -1,11 +1,12 @@
 import React, { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { SvgFold, SvgExpand } from "@opal/icons";
 import Tabs from "@/refresh-components/Tabs";
 import { Button } from "@opal/components";
 import { TurnGroup } from "../transformers";
 import {
   getToolIcon,
-  getToolName,
+  useToolName,
   isToolComplete,
 } from "../../toolDisplayHelpers";
 
@@ -28,6 +29,8 @@ export const ParallelStreamingHeader = React.memo(
     isExpanded,
     onToggle,
   }: ParallelStreamingHeaderProps) {
+    const t = useTranslations("chat.timeline");
+    const getToolName = useToolName();
     // Memoized loading states for each step
     const loadingStates = useMemo(
       () =>
@@ -53,7 +56,7 @@ export const ParallelStreamingHeader = React.memo(
                 onClick={onToggle}
                 icon={isExpanded ? SvgFold : SvgExpand}
                 aria-label={
-                  isExpanded ? "Collapse timeline" : "Expand timeline"
+                  isExpanded ? t("collapseTimeline") : t("expandTimeline")
                 }
                 aria-expanded={isExpanded}
               />

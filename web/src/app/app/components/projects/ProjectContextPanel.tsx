@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useDropzone } from "react-dropzone";
 import { useProjectsContext } from "@/providers/ProjectsContext";
 import FilePickerPopover from "@/refresh-components/popovers/FilePickerPopover";
@@ -31,6 +32,7 @@ export default function ProjectContextPanel({
   availableContextTokens = 128_000,
   setPresentingDocument,
 }: ProjectContextPanelProps) {
+  const t = useTranslations("chat.project");
   const addInstructionModal = useCreateModal();
   const projectFilesModal = useCreateModal();
   // Edit project name state
@@ -94,7 +96,7 @@ export default function ProjectContextPanel({
 
   // Handle project name editing
   const currentProject = projects.find((p) => p.id === currentProjectId);
-  const projectName = currentProject?.name || "Loading project...";
+  const projectName = currentProject?.name || t("loadingProject");
 
   const startEditing = useCallback(() => {
     setIsEditingName(true);
@@ -119,8 +121,8 @@ export default function ProjectContextPanel({
 
       <projectFilesModal.Provider>
         <UserFilesModal
-          title="Project Files"
-          description="Sessions in this project can access the files here."
+          title={t("filesTitle")}
+          description={t("filesDescription")}
           recentFiles={[...allCurrentProjectFiles]}
           onView={handleOnView}
           handleUploadChange={handleUploadChange}
@@ -157,7 +159,7 @@ export default function ProjectContextPanel({
                       icon={SvgEdit}
                       internal
                       onClick={startEditing}
-                      tooltip="Edit project name"
+                      tooltip={t("editProjectNameTooltip")}
                     />
                   </Hoverable.Item>
                 </>
@@ -170,7 +172,7 @@ export default function ProjectContextPanel({
         <div className="flex flex-row gap-2 justify-between">
           <div className="min-w-0 flex-1">
             <Text as="p" headingH3 text04>
-              Instructions
+              {t("instructionsLabel")}
             </Text>
             {isLoadingProjectDetails && !currentProjectDetails ? (
               <div className="h-5 w-3/4 rounded bg-background-tint-02 animate-pulse" />
@@ -180,7 +182,7 @@ export default function ProjectContextPanel({
               </Text>
             ) : (
               <Text as="p" text02 secondaryBody className="truncate">
-                Add instructions to tailor the response in this project.
+                {t("instructionsPlaceholder")}
               </Text>
             )}
           </div>
@@ -189,7 +191,7 @@ export default function ProjectContextPanel({
             icon={SvgAddLines}
             onClick={() => addInstructionModal.toggle(true)}
           >
-            Set Instructions
+            {t("setInstructions")}
           </Button>
         </div>
         <div
@@ -199,10 +201,10 @@ export default function ProjectContextPanel({
           <div className="flex flex-row gap-2 justify-between">
             <div>
               <Text as="p" headingH3 text04>
-                Files
+                {t("filesLabel")}
               </Text>
               <Text as="p" text02 secondaryBody>
-                Chats in this project can access these files.
+                {t("filesAccessDescription")}
               </Text>
             </div>
             <FilePickerPopover
@@ -210,7 +212,7 @@ export default function ProjectContextPanel({
                 // The `secondary={undefined}` is required here because `CreateButton` sets it to true.
                 // Therefore, we need to first remove the truthiness before passing in the other `tertiary` flag.
                 <CreateButton secondary={undefined} tertiary transient={open}>
-                  Add Files
+                  {t("addFiles")}
                 </CreateButton>
               )}
               onFileClick={handleOnView}
@@ -258,12 +260,12 @@ export default function ProjectContextPanel({
                   <div className="flex flex-col overflow-hidden">
                     <div className="flex items-center justify-between gap-2 w-full">
                       <Text as="p" text04 secondaryAction>
-                        View files
+                        {t("viewFiles")}
                       </Text>
                       <SvgFiles className="h-5 w-5 stroke-text-02" />
                     </div>
                     <Text as="p" text03 secondaryBody>
-                      {displayFileCount} files
+                      {t("fileCount", { count: displayFileCount })}
                     </Text>
                   </div>
                 </button>
@@ -294,12 +296,12 @@ export default function ProjectContextPanel({
                     <div className="flex flex-col overflow-hidden h-12 p-1">
                       <div className="flex items-center justify-between gap-2 w-full">
                         <Text as="p" text04 secondaryAction>
-                          View All
+                          {t("viewAll")}
                         </Text>
                         <SvgFiles className="h-5 w-5 stroke-text-02" />
                       </div>
                       <Text as="p" text03 secondaryBody>
-                        {displayFileCount} files
+                        {t("fileCount", { count: displayFileCount })}
                       </Text>
                     </div>
                   </button>
@@ -310,9 +312,7 @@ export default function ProjectContextPanel({
               </div>
               {projectTokenCount > availableContextTokens && (
                 <Text as="p" text02 secondaryBody>
-                  This project exceeds the model&apos;s context limits. Sessions
-                  will automatically search for relevant files first before
-                  generating response.
+                  {t("exceedsContextLimit")}
                 </Text>
               )}
             </>
@@ -329,9 +329,7 @@ export default function ProjectContextPanel({
                   isDragActive ? "text-action-link-05" : "text-text-02 "
                 }`}
               >
-                {isDragActive
-                  ? "Drop files here to add to this project"
-                  : "Add documents, texts, or images to use in the project. Drag & drop supported."}
+                {isDragActive ? t("dragDropActive") : t("dragDropHint")}
               </p>
             </div>
           )}

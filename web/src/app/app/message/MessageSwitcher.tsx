@@ -1,7 +1,7 @@
 import { Button } from "@opal/components";
+import { useTranslations } from "next-intl";
 import Text from "@/refresh-components/texts/Text";
 import { SvgChevronLeft, SvgChevronRight } from "@opal/icons";
-const DISABLED_MESSAGE = "Wait for agent message to complete";
 
 interface MessageSwitcherProps {
   currentPage: number;
@@ -18,6 +18,7 @@ export default function MessageSwitcher({
   handleNext,
   disableForStreaming,
 }: MessageSwitcherProps) {
+  const t = useTranslations("chat.message");
   const handle = (num: number, callback: () => void) =>
     disableForStreaming
       ? undefined
@@ -26,6 +27,7 @@ export default function MessageSwitcher({
         : callback;
   const previous = handle(1, handlePrevious);
   const next = handle(totalPages, handleNext);
+  const disabledMessage = t("switcherDisabledTooltip");
 
   return (
     <div
@@ -37,7 +39,7 @@ export default function MessageSwitcher({
         icon={SvgChevronLeft}
         onClick={previous}
         prominence="tertiary"
-        tooltip={disableForStreaming ? DISABLED_MESSAGE : "Previous"}
+        tooltip={disableForStreaming ? disabledMessage : t("previousTooltip")}
       />
 
       <div className="flex flex-row items-center justify-center">
@@ -57,7 +59,7 @@ export default function MessageSwitcher({
         icon={SvgChevronRight}
         onClick={next}
         prominence="tertiary"
-        tooltip={disableForStreaming ? DISABLED_MESSAGE : "Next"}
+        tooltip={disableForStreaming ? disabledMessage : t("nextTooltip")}
       />
     </div>
   );

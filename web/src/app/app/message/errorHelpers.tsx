@@ -1,4 +1,5 @@
 import { AlertCircle, Clock, Lock, Wifi, Server } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 /**
  * Get the appropriate icon for a given error code
@@ -22,39 +23,41 @@ export const getErrorIcon = (errorCode?: string) => {
 };
 
 /**
- * Get a human-readable title for a given error code
+ * Hook returning a localized human-readable title for a given error code.
+ * Must be used inside a React component (not a plain function).
  */
-export const getErrorTitle = (errorCode?: string) => {
+export const useErrorTitle = (errorCode?: string): string => {
+  const t = useTranslations("chat.errors");
   switch (errorCode) {
     case "RATE_LIMIT":
-      return "Rate Limit Exceeded";
+      return t("rateLimit");
     case "AUTH_ERROR":
-      return "Authentication Error";
+      return t("auth");
     case "PERMISSION_DENIED":
-      return "Permission Denied";
+      return t("permissionDenied");
     case "CONTEXT_TOO_LONG":
-      return "Message Too Long";
+      return t("contextTooLong");
     case "TOOL_CALL_FAILED":
-      return "Tool Error";
+      return t("toolCallFailed");
     case "CONNECTION_ERROR":
-      return "Connection Error";
+      return t("connection");
     case "SERVICE_UNAVAILABLE":
-      return "Service Unavailable";
+      return t("serviceUnavailable");
     case "INIT_FAILED":
-      return "Initialization Error";
+      return t("initFailed");
     case "VALIDATION_ERROR":
-      return "Validation Error";
+      return t("validation");
     case "BUDGET_EXCEEDED":
-      return "Budget Exceeded";
+      return t("budgetExceeded");
     case "CONTENT_POLICY":
-      return "Content Policy Violation";
+      return t("contentPolicy");
     case "BAD_REQUEST":
-      return "Invalid Request";
+      return t("badRequest");
     case "NOT_FOUND":
-      return "Resource Not Found";
+      return t("notFound");
     case "API_ERROR":
-      return "API Error";
+      return t("apiError");
     default:
-      return "Error";
+      return t("generic");
   }
 };

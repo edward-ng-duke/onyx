@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+import { useCallback } from "react";
 import { FiCircle, FiList, FiTool } from "react-icons/fi";
 import {
   Packet,
@@ -75,33 +77,83 @@ export function parseToolKey(key: string): {
   };
 }
 
-export function getToolName(packets: Packet[]): string {
+/**
+ * Hook that returns a memoized localized tool-name resolver.
+ * Use this in components to translate tool names; the returned function is stable
+ * for the lifetime of the translation locale.
+ */
+export function useToolName(): (packets: Packet[]) => string {
+  const t = useTranslations("chat.tools");
+  return useCallback(
+    (packets: Packet[]): string => {
+      const firstPacket = packets[0];
+      if (!firstPacket) return t("tool");
+
+      switch (firstPacket.obj.type) {
+        case PacketType.SEARCH_TOOL_START: {
+          const searchState = constructCurrentSearchState(
+            packets as SearchToolPacket[]
+          );
+          return searchState.isInternetSearch
+            ? t("webSearch")
+            : t("internalSearch");
+        }
+        case PacketType.PYTHON_TOOL_START:
+          return t("codeInterpreter");
+        case PacketType.FETCH_TOOL_START:
+          return t("openUrls");
+        case PacketType.CUSTOM_TOOL_START:
+          return (
+            (firstPacket.obj as { tool_name?: string }).tool_name ||
+            t("customTool")
+          );
+        case PacketType.IMAGE_GENERATION_TOOL_START:
+          return t("generateImage");
+        case PacketType.DEEP_RESEARCH_PLAN_START:
+          return t("generatePlan");
+        case PacketType.RESEARCH_AGENT_START:
+          return t("researchAgent");
+        case PacketType.REASONING_START:
+          return t("thinking");
+        case PacketType.MEMORY_TOOL_START:
+        case PacketType.MEMORY_TOOL_NO_ACCESS:
+          return t("memory");
+        default:
+          return t("tool");
+      }
+    },
+    [t]
+  );
+}
+
+/**
+ * Plain (non-localized) helper used for completion-state checks where a name
+ * is needed for log/data purposes only — not for UI rendering.
+ * Falls back to packet metadata where present.
+ */
+export function getToolNameRaw(packets: Packet[]): string {
   const firstPacket = packets[0];
   if (!firstPacket) return "Tool";
 
   switch (firstPacket.obj.type) {
-    case PacketType.SEARCH_TOOL_START: {
-      const searchState = constructCurrentSearchState(
-        packets as SearchToolPacket[]
-      );
-      return searchState.isInternetSearch ? "Web Search" : "Internal Search";
-    }
-    case PacketType.PYTHON_TOOL_START:
-      return "Code Interpreter";
-    case PacketType.FETCH_TOOL_START:
-      return "Open URLs";
     case PacketType.CUSTOM_TOOL_START:
       return (
         (firstPacket.obj as { tool_name?: string }).tool_name || "Custom Tool"
       );
+    case PacketType.SEARCH_TOOL_START:
+      return "Search";
+    case PacketType.PYTHON_TOOL_START:
+      return "Python";
+    case PacketType.FETCH_TOOL_START:
+      return "Fetch";
     case PacketType.IMAGE_GENERATION_TOOL_START:
-      return "Generate Image";
+      return "Image";
     case PacketType.DEEP_RESEARCH_PLAN_START:
-      return "Generate plan";
+      return "Plan";
     case PacketType.RESEARCH_AGENT_START:
-      return "Research agent";
+      return "Research";
     case PacketType.REASONING_START:
-      return "Thinking";
+      return "Reasoning";
     case PacketType.MEMORY_TOOL_START:
     case PacketType.MEMORY_TOOL_NO_ACCESS:
       return "Memory";
