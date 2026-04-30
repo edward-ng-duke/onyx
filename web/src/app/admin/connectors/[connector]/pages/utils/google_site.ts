@@ -4,6 +4,11 @@ import { linkCredential } from "@/lib/credential";
 import { GoogleSitesConfig } from "@/lib/connectors/connectors";
 import { ValidSources } from "@/lib/types";
 
+type Translator = (
+  key: string,
+  values?: Record<string, string | number | Date>
+) => string;
+
 export const submitGoogleSite = async (
   selectedFiles: File[],
   base_url: any,
@@ -12,7 +17,8 @@ export const submitGoogleSite = async (
   indexingStart: Date,
   access_type: string,
   groups: number[],
-  name?: string
+  name: string | undefined,
+  tT: Translator
 ) => {
   const uploadCreateAndTriggerConnector = async () => {
     const formData = new FormData();
@@ -30,23 +36,19 @@ export const submitGoogleSite = async (
     );
     const responseJson = await response.json();
     if (!response.ok) {
-      toast.error(`Unable to upload files - ${responseJson.detail}`);
+      toast.error(tT("uploadFilesFailed", { detail: responseJson.detail }));
       return false;
     }
 
     const filePaths = responseJson.file_paths as string[];
     if (!filePaths || filePaths.length === 0) {
-      toast.error(
-        "File upload was successful, but no file path was returned. Cannot create connector."
-      );
+      toast.error(tT("uploadNoFilePath"));
       return false;
     }
 
     const filePath = filePaths[0];
     if (filePath === undefined) {
-      toast.error(
-        "File upload was successful, but file path is undefined. Cannot create connector."
-      );
+      toast.error(tT("uploadFilePathUndefined"));
       return false;
     }
 
@@ -65,7 +67,9 @@ export const submitGoogleSite = async (
         indexing_start: indexingStart,
       });
     if (connectorErrorMsg || !connector) {
-      toast.error(`Unable to create connector - ${connectorErrorMsg}`);
+      toast.error(
+        tT("createConnectorFailed", { error: connectorErrorMsg ?? "" })
+      );
       return false;
     }
 
@@ -79,17 +83,17 @@ export const submitGoogleSite = async (
     if (!credentialResponse.ok) {
       const credentialResponseJson = await credentialResponse.json();
       toast.error(
-        `Unable to link connector to credential - ${credentialResponseJson.detail}`
+        tT("linkConnectorFailed", { error: credentialResponseJson.detail })
       );
       return false;
     }
 
     const runConnectorErrorMsg = await runConnector(connector.id, [0]);
     if (runConnectorErrorMsg) {
-      toast.error(`Unable to run connector - ${runConnectorErrorMsg}`);
+      toast.error(tT("runConnectorFailed", { error: runConnectorErrorMsg }));
       return false;
     }
-    toast.success("Successfully created Google Site connector!");
+    toast.success(tT("googleSiteCreatedSuccess"));
     return true;
   };
 

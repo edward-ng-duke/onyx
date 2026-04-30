@@ -162,6 +162,7 @@ const DocumentSetTable = ({
 }: DocumentFeedbackTableProps) => {
   const [page, setPage] = useState(1);
   const t = useTranslations("admin.documents.sets");
+  const tT = useTranslations("toasts.admin.documents");
 
   // sort by name for consistent ordering
   documentSets.sort((a, b) => {
@@ -317,12 +318,16 @@ const DocumentSetTable = ({
                           );
                           if (response.ok) {
                             toast.success(
-                              `Document set "${documentSet.name}" scheduled for deletion`
+                              tT("documentSetScheduledForDeletion", {
+                                name: documentSet.name,
+                              })
                             );
                           } else {
                             const errorMsg = (await response.json()).detail;
                             toast.error(
-                              `Failed to schedule document set for deletion - ${errorMsg}`
+                              tT("documentSetDeleteFailed", {
+                                error: errorMsg,
+                              })
                             );
                           }
                           refresh();

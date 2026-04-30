@@ -30,6 +30,7 @@ const DocumentDisplay = ({
   refresh: () => void;
 }) => {
   const t = useTranslations("admin.documents.explorer");
+  const tT = useTranslations("toasts.admin.documents");
   return (
     <div
       key={document.document_id}
@@ -71,7 +72,9 @@ const DocumentDisplay = ({
               refresh();
             } else {
               toast.error(
-                `Failed to update document - ${getErrorMsg(response)}`
+                tT("updateHiddenFailed", {
+                  error: (await getErrorMsg(response)) ?? "",
+                })
               );
             }
           }}

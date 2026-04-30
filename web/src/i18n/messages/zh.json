@@ -1797,5 +1797,180 @@
       "userFilesTitle": "用户文件",
       "userFilesDescription": "为此 Agent 选中的全部文件"
     }
+  },
+  "toasts": {
+    "admin": {
+      "shared": {
+        "unknownError": "发生未知错误",
+        "unexpectedError": "发生意外错误。",
+        "anErrorOccurred": "发生错误"
+      },
+      "connectors": {
+        "deleteScheduleFailed": "调度连接器删除失败 - {error}",
+        "indexingStartedComplete": "已成功启动完整重新索引",
+        "indexingStartedUpdate": "已成功启动索引更新",
+        "indexingStartFailed": "启动索引失败",
+        "indexingUnexpectedError": "尝试启动索引时发生意外错误",
+        "indexingProcessFailed": "启动索引流程失败",
+        "indexingStartingComplete": "正在启动完整重新索引...",
+        "indexingStartingUpdate": "正在启动索引更新...",
+        "nameUpdateSuccess": "连接器名称更新成功",
+        "nameUpdateFailed": "更新连接器名称失败",
+        "refreshFreqInvalid": "无效的刷新频率：必须为整数",
+        "refreshFreqUpdateSuccess": "连接器刷新频率更新成功",
+        "refreshFreqUpdateFailed": "更新连接器刷新频率失败",
+        "pruningFreqInvalid": "无效的修剪频率：必须为有效数字",
+        "pruningFreqUpdateSuccess": "连接器修剪频率更新成功",
+        "pruningFreqUpdateFailed": "更新连接器修剪频率失败",
+        "credentialDeleted": "凭据删除成功！",
+        "credentialSwapped": "凭据切换成功！",
+        "fetchOauthUrlFailed": "获取 OAuth URL 失败",
+        "errorWithMessage": "错误：{message}",
+        "uploadFilesError": "上传文件出错",
+        "operationTimedOut": "操作在 {seconds} 秒后超时。请检查您的配置是否有错误？",
+        "uploadFilesFailed": "无法上传文件 - {detail}",
+        "uploadNoFilePath": "文件上传成功，但未返回文件路径。无法创建连接器。",
+        "uploadFilePathUndefined": "文件上传成功，但文件路径未定义。无法创建连接器。",
+        "createConnectorFailed": "无法创建连接器 - {error}",
+        "createCredentialFailed": "为 CC Pair 创建凭据时出错 - {error}",
+        "linkConnectorFailed": "无法将连接器链接到凭据 - {error}",
+        "runConnectorFailed": "无法运行连接器 - {error}",
+        "filesUploadedSuccess": "文件上传成功！",
+        "googleSiteCreatedSuccess": "Google Site 连接器创建成功！",
+        "uploadAppCredentialsSuccess": "应用凭据上传成功",
+        "uploadAppCredentialsFailed": "上传应用凭据失败 - {error}",
+        "uploadServiceAccountKeySuccess": "服务账号密钥上传成功",
+        "uploadServiceAccountKeyFailed": "上传服务账号密钥失败 - {error}",
+        "invalidJsonFile": "请上传 JSON 文件",
+        "invalidFileProvided": "提供的文件无效 - {error}",
+        "deleteCredentialsServiceAccountSuccess": "服务账号密钥删除成功",
+        "deleteCredentialsAppSuccess": "应用凭据删除成功",
+        "deleteCredentialsFailed": "删除凭据失败 - {error}",
+        "revokeBlockedConnectors": "尚有连接器关联到此凭据，无法吊销。请先删除所有关联的连接器，然后再试一次。",
+        "revokeGmailSuccess": "已成功吊销 Gmail 凭据！",
+        "revokeGdriveSuccess": "已成功吊销 Google Drive 凭据！",
+        "createServiceAccountCredSuccess": "服务账号凭据创建成功",
+        "createServiceAccountCredFailed": "创建服务账号凭据失败 - {error}",
+        "authenticateGmailFailed": "通过 Gmail 认证失败 - {error}",
+        "authenticateGdriveFailed": "通过 Google Drive 认证失败 - {error}",
+        "filesRemoveAllError": "无法从连接器中删除所有文件。如有需要，请删除该连接器。",
+        "filesUpdateSuccess": "文件更新成功！文档索引正在后台更新。新文件正在被索引，已删除的文件将从搜索结果中清除。",
+        "filesUpdateFailed": "更新文件失败"
+      },
+      "embedding": {
+        "modelCannotDelete": "模型无法删除",
+        "modelDeletedSuccess": "模型删除成功",
+        "modelDeleteFailed": "删除模型失败。请确保您不是在尝试删除当前正在使用的模型。",
+        "searchSettingsUpdateFailed": "更新搜索设置失败",
+        "embeddingModelUpdateFailed": "更新嵌入模型失败",
+        "embeddingModelUpdateFailedDetail": "更新嵌入模型失败 - {error}",
+        "cancelUpdateFailed": "取消嵌入模型更新失败 - {error}"
+      },
+      "documents": {
+        "scoreNotANumber": "分数必须是数字",
+        "scoreUpdated": "分数已更新！",
+        "updateHiddenFailed": "更新文档失败 - {error}",
+        "updateHiddenStatusFailed": "更新隐藏状态时出错 - {error}",
+        "documentSetScheduledForDeletion": "文档集 \"{name}\" 已加入删除队列",
+        "documentSetDeleteFailed": "调度文档集删除失败 - {error}",
+        "documentSetUpdateSuccess": "文档集更新成功！",
+        "documentSetCreateSuccess": "文档集创建成功！",
+        "documentSetUpdateFailed": "更新文档集出错 - {error}",
+        "documentSetCreateFailed": "创建文档集出错 - {error}"
+      },
+      "bots": {
+        "slackChannelConfigCreateOrUpdateError": "{action} OnyxBot 配置出错 - {error}",
+        "slackChannelDocumentSetsRemoved": "我们已从您的选择中移除一个或多个不再有效的文档集，请检查并更新您的配置。"
+      },
+      "scim": {
+        "tokenCopied": "Token 已复制到剪贴板",
+        "tokenCopyFailed": "复制 Token 失败"
+      },
+      "standardAnswer": {
+        "deleted": "标准答案 {id} 已删除",
+        "deleteFailed": "删除标准答案失败 - {error}",
+        "updateFailed": "更新标准答案出错 - {error}",
+        "createFailed": "创建标准答案出错 - {error}"
+      },
+      "theme": {
+        "appearanceSavedSuccess": "外观设置保存成功！",
+        "updateSettingsFailed": "更新设置失败。{error}",
+        "uploadLogoFailed": "上传 Logo 失败。{error}"
+      },
+      "llm": {
+        "providerDeletedSuccess": "提供商删除成功！",
+        "providerDeleteFailed": "删除提供商失败：{error}",
+        "defaultModelUpdateSuccess": "默认模型更新成功！",
+        "defaultModelUpdateFailed": "设置默认模型失败：{error}"
+      },
+      "chatPreferences": {
+        "toolsUpdated": "工具已更新",
+        "toolsUpdateFailed": "更新工具失败",
+        "settingsUpdated": "设置已更新",
+        "settingsUpdateFailed": "更新设置失败",
+        "systemPromptUpdated": "系统提示词已更新",
+        "systemPromptUpdateFailed": "更新系统提示词失败"
+      },
+      "users": {
+        "requestApproved": "请求已通过",
+        "userUpdated": "用户已更新",
+        "roleUpdated": "角色已更新",
+        "roleUpdateFailed": "更新角色失败",
+        "passwordResetFailed": "重置密码失败",
+        "inviteCancelled": "邀请已取消",
+        "userDeactivated": "用户已停用",
+        "userActivated": "用户已激活",
+        "userDeleted": "用户已删除"
+      },
+      "codeInterpreter": {
+        "actionFailed": "{action} Code Interpreter 失败"
+      },
+      "groups": {
+        "groupNameRequired": "请输入群组名称",
+        "renameSuccess": "群组已重命名为 \"{name}\"",
+        "renameFailed": "重命名群组失败",
+        "createSuccess": "已创建群组 \"{name}\"",
+        "createFailed": "创建群组失败",
+        "updateSuccess": "群组 \"{name}\" 已更新",
+        "updateFailed": "更新群组失败",
+        "syncingTryAgain": "该群组正在同步中。请稍候后再试。",
+        "deleteSuccess": "群组 \"{name}\" 已删除",
+        "deleteFailed": "删除群组失败"
+      },
+      "voice": {
+        "providerDisconnected": "{name} 已断开连接",
+        "providerDisconnectFailed": "断开提供商连接失败。",
+        "connectionTestFailed": "连接测试失败",
+        "providerSaveFailed": "保存提供商失败"
+      },
+      "webSearch": {
+        "providerDisconnected": "{name} 已断开连接"
+      },
+      "imageGeneration": {
+        "providerSetAsDefault": "已将 {name} 设为默认",
+        "setDefaultFailed": "设为默认失败",
+        "providerDeselected": "已取消选择 {name}",
+        "deselectFailed": "取消选择失败",
+        "providerDisconnected": "{name} 已断开连接",
+        "disconnectFailed": "断开连接失败",
+        "providerConfiguredSuccess": "提供商配置成功",
+        "unknownErrorOccurred": "发生未知错误"
+      },
+      "serviceAccounts": {
+        "roleUpdateFailedWith": "更新角色失败：{error}",
+        "roleUpdated": "角色已更新。",
+        "roleUpdateFailed": "更新角色失败。",
+        "regenerateApiKeyFailed": "重新生成 API Key 失败：{error}",
+        "regenerateApiKeyFailedFallback": "重新生成 API Key 失败。",
+        "deleteApiKeyFailed": "删除 API Key 失败：{error}",
+        "deleteApiKeyFailedFallback": "删除 API Key 失败。",
+        "apiKeyCopied": "API Key 已复制到剪贴板。",
+        "createSuccess": "服务账号创建成功！",
+        "updateSuccess": "服务账号更新成功！",
+        "createFailed": "创建服务账号出错 - {error}",
+        "updateFailed": "更新服务账号出错 - {error}",
+        "unexpectedError": "发生意外错误。"
+      }
+    }
   }
 }

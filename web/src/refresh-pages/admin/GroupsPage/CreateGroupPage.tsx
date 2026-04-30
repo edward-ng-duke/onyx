@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Table, Button, Divider } from "@opal/components";
 import { IllustrationContent } from "@opal/layouts";
 import { SvgUsers } from "@opal/icons";
@@ -26,6 +27,7 @@ import type { TokenLimit } from "./TokenLimitSection";
 
 function CreateGroupPage() {
   const router = useRouter();
+  const tT = useTranslations("toasts.admin.groups");
   const [groupName, setGroupName] = useState("");
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -42,7 +44,7 @@ function CreateGroupPage() {
   async function handleCreate() {
     const trimmed = groupName.trim();
     if (!trimmed) {
-      toast.error("Group name is required");
+      toast.error(tT("groupNameRequired"));
       return;
     }
 
@@ -56,10 +58,10 @@ function CreateGroupPage() {
       await updateAgentGroupSharing(groupId, [], selectedAgentIds);
       await updateDocSetGroupSharing(groupId, [], selectedDocSetIds);
       await saveTokenLimits(groupId, tokenLimits, []);
-      toast.success(`Group "${trimmed}" created`);
+      toast.success(tT("createSuccess", { name: trimmed }));
       router.push("/admin/groups");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to create group");
+      toast.error(e instanceof Error ? e.message : tT("createFailed"));
     } finally {
       setIsSubmitting(false);
     }

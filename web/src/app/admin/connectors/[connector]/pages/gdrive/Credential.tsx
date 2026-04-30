@@ -1,5 +1,6 @@
 import { toast } from "@/hooks/useToast";
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { useSWRConfig } from "swr";
 import * as Yup from "yup";
 import { useRouter } from "next/navigation";
@@ -28,6 +29,7 @@ type GoogleDriveCredentialJsonTypes = "authorized_user" | "service_account";
 
 export const DriveJsonUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
   const { mutate } = useSWRConfig();
+  const tT = useTranslations("toasts.admin.connectors");
   const [isUploading, setIsUploading] = useState(false);
   const [fileName, setFileName] = useState<string | undefined>();
   const [isDragging, setIsDragging] = useState(false);
@@ -59,7 +61,7 @@ export const DriveJsonUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
           );
         }
       } catch (e) {
-        toast.error(`Invalid file provided - ${e}`);
+        toast.error(tT("invalidFileProvided", { error: String(e) }));
         setIsUploading(false);
         return;
       }
@@ -76,14 +78,14 @@ export const DriveJsonUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
           }
         );
         if (response.ok) {
-          toast.success("Successfully uploaded app credentials");
+          toast.success(tT("uploadAppCredentialsSuccess"));
           mutate(SWR_KEYS.googleConnectorAppCredential("google-drive"));
           if (onSuccess) {
             onSuccess();
           }
         } else {
           const errorMsg = await response.text();
-          toast.error(`Failed to upload app credentials - ${errorMsg}`);
+          toast.error(tT("uploadAppCredentialsFailed", { error: errorMsg }));
         }
       }
 
@@ -99,14 +101,16 @@ export const DriveJsonUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
           }
         );
         if (response.ok) {
-          toast.success("Successfully uploaded service account key");
+          toast.success(tT("uploadServiceAccountKeySuccess"));
           mutate(SWR_KEYS.googleConnectorServiceAccountKey("google-drive"));
           if (onSuccess) {
             onSuccess();
           }
         } else {
           const errorMsg = await response.text();
-          toast.error(`Failed to upload service account key - ${errorMsg}`);
+          toast.error(
+            tT("uploadServiceAccountKeyFailed", { error: errorMsg })
+          );
         }
       }
       setIsUploading(false);
@@ -150,7 +154,7 @@ export const DriveJsonUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
       ) {
         handleFileUpload(file);
       } else {
-        toast.error("Please upload a JSON file");
+        toast.error(tT("invalidJsonFile"));
       }
     }
   };
@@ -230,6 +234,7 @@ export const DriveJsonUploadSection = ({
 }: DriveJsonUploadSectionProps) => {
   const { mutate } = useSWRConfig();
   const router = useRouter();
+  const tT = useTranslations("toasts.admin.connectors");
   const [localServiceAccountData, setLocalServiceAccountData] = useState(
     serviceAccountCredentialData
   );
@@ -346,11 +351,9 @@ export const DriveJsonUploadSection = ({
                     );
 
                     toast.success(
-                      `Successfully deleted ${
-                        localServiceAccountData
-                          ? "service account key"
-                          : "app credentials"
-                      }`
+                      localServiceAccountData
+                        ? tT("deleteCredentialsServiceAccountSuccess")
+                        : tT("deleteCredentialsAppSuccess")
                     );
                     // Immediately update local state
                     if (localServiceAccountData) {
@@ -361,7 +364,9 @@ export const DriveJsonUploadSection = ({
                     handleSuccess();
                   } else {
                     const errorMsg = await response.text();
-                    toast.error(`Failed to delete credentials - ${errorMsg}`);
+                    toast.error(
+                      tT("deleteCredentialsFailed", { error: errorMsg })
+                    );
                   }
                 }}
               >
@@ -390,23 +395,26 @@ interface DriveCredentialSectionProps {
   user: User | null;
 }
 
+type Translator = (
+  key: string,
+  values?: Record<string, string | number | Date>
+) => string;
+
 async function handleRevokeAccess(
   connectorAssociated: boolean,
   existingCredential:
     | Credential<GoogleDriveCredentialJson>
     | Credential<GoogleDriveServiceAccountCredentialJson>,
-  refreshCredentials: () => void
+  refreshCredentials: () => void,
+  tT: Translator
 ) {
   if (connectorAssociated) {
-    const message =
-      "Cannot revoke the Google Drive credential while any connector is still associated with the credential. " +
-      "Please delete all associated connectors, then try again.";
-    toast.error(message);
+    toast.error(tT("revokeBlockedConnectors"));
     return;
   }
 
   await adminDeleteCredential(existingCredential.id);
-  toast.success("Successfully revoked the Google Drive credential!");
+  toast.success(tT("revokeGdriveSuccess"));
 
   refreshCredentials();
 }
@@ -421,6 +429,7 @@ export const DriveAuthSection = ({
   user,
 }: DriveCredentialSectionProps) => {
   const router = useRouter();
+  const tT = useTranslations("toasts.admin.connectors");
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [localServiceAccountData, setLocalServiceAccountData] = useState(
     serviceAccountKeyData
@@ -474,7 +483,8 @@ export const DriveAuthSection = ({
               handleRevokeAccess(
                 connectorAssociated,
                 existingCredential,
-                refreshCredentials
+                refreshCredentials,
+                tT
               );
             }}
           >
@@ -536,19 +546,19 @@ export const DriveAuthSection = ({
                 );
 
                 if (response.ok) {
-                  toast.success(
-                    "Successfully created service account credential"
-                  );
+                  toast.success(tT("createServiceAccountCredSuccess"));
                   refreshCredentials();
                 } else {
                   const errorMsg = await response.text();
                   toast.error(
-                    `Failed to create service account credential - ${errorMsg}`
+                    tT("createServiceAccountCredFailed", { error: errorMsg })
                   );
                 }
               } catch (error) {
                 toast.error(
-                  `Failed to create service account credential - ${error}`
+                  tT("createServiceAccountCredFailed", {
+                    error: String(error),
+                  })
                 );
               } finally {
                 formikHelpers.setSubmitting(false);
@@ -603,7 +613,7 @@ export const DriveAuthSection = ({
               }
             } catch (error) {
               toast.error(
-                `Failed to authenticate with Google Drive - ${error}`
+                tT("authenticateGdriveFailed", { error: String(error) })
               );
               setIsAuthenticating(false);
             }

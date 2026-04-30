@@ -131,6 +131,8 @@ function ModelCard({
   onDeselect,
   onMutate,
 }: ModelCardProps) {
+  const tT = useTranslations("toasts.admin.voice");
+  const tShared = useTranslations("toasts.admin.shared");
   const setupModal = useCreateModal();
   const disconnectModal = useCreateModal();
 
@@ -143,20 +145,23 @@ function ModelCard({
         throw new Error(
           typeof errorBody?.detail === "string"
             ? errorBody.detail
-            : "Failed to disconnect provider."
+            : tT("providerDisconnectFailed")
         );
       }
-      toast.success(`${getProviderLabel(model.providerType)} disconnected`);
+      toast.success(
+        tT("providerDisconnected", {
+          name: getProviderLabel(model.providerType),
+        })
+      );
       onMutate();
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "Unexpected error occurred."
+        err instanceof Error ? err.message : tShared("unexpectedError")
       );
     } finally {
       disconnectModal.toggle(false);
     }
   };
-  // Note: toast strings above are intentionally left for T19.
 
   const handleSetupSuccess = () => {
     onMutate();

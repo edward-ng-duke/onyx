@@ -1797,5 +1797,180 @@
       "userFilesTitle": "User Files",
       "userFilesDescription": "All files selected for this agent"
     }
+  },
+  "toasts": {
+    "admin": {
+      "shared": {
+        "unknownError": "An unknown error occurred",
+        "unexpectedError": "Unexpected error occurred.",
+        "anErrorOccurred": "An error occurred"
+      },
+      "connectors": {
+        "deleteScheduleFailed": "Failed to schedule deletion of connector - {error}",
+        "indexingStartedComplete": "Complete re-indexing started successfully",
+        "indexingStartedUpdate": "Indexing update started successfully",
+        "indexingStartFailed": "Failed to start indexing",
+        "indexingUnexpectedError": "An unexpected error occurred while trying to start indexing",
+        "indexingProcessFailed": "Failed to start indexing process",
+        "indexingStartingComplete": "Starting complete re-indexing...",
+        "indexingStartingUpdate": "Starting indexing update...",
+        "nameUpdateSuccess": "Connector name updated successfully",
+        "nameUpdateFailed": "Failed to update connector name",
+        "refreshFreqInvalid": "Invalid refresh frequency: must be an integer",
+        "refreshFreqUpdateSuccess": "Connector refresh frequency updated successfully",
+        "refreshFreqUpdateFailed": "Failed to update connector refresh frequency",
+        "pruningFreqInvalid": "Invalid pruning frequency: must be a valid number",
+        "pruningFreqUpdateSuccess": "Connector pruning frequency updated successfully",
+        "pruningFreqUpdateFailed": "Failed to update connector pruning frequency",
+        "credentialDeleted": "Credential deleted successfully!",
+        "credentialSwapped": "Swapped credential successfully!",
+        "fetchOauthUrlFailed": "Failed to fetch OAuth URL",
+        "errorWithMessage": "Error: {message}",
+        "uploadFilesError": "Error uploading files",
+        "operationTimedOut": "Operation timed out after {seconds} seconds. Check your configuration for errors?",
+        "uploadFilesFailed": "Unable to upload files - {detail}",
+        "uploadNoFilePath": "File upload was successful, but no file path was returned. Cannot create connector.",
+        "uploadFilePathUndefined": "File upload was successful, but file path is undefined. Cannot create connector.",
+        "createConnectorFailed": "Unable to create connector - {error}",
+        "createCredentialFailed": "Error creating credential for CC Pair - {error}",
+        "linkConnectorFailed": "Unable to link connector to credential - {error}",
+        "runConnectorFailed": "Unable to run connector - {error}",
+        "filesUploadedSuccess": "Successfully uploaded files!",
+        "googleSiteCreatedSuccess": "Successfully created Google Site connector!",
+        "uploadAppCredentialsSuccess": "Successfully uploaded app credentials",
+        "uploadAppCredentialsFailed": "Failed to upload app credentials - {error}",
+        "uploadServiceAccountKeySuccess": "Successfully uploaded service account key",
+        "uploadServiceAccountKeyFailed": "Failed to upload service account key - {error}",
+        "invalidJsonFile": "Please upload a JSON file",
+        "invalidFileProvided": "Invalid file provided - {error}",
+        "deleteCredentialsServiceAccountSuccess": "Successfully deleted service account key",
+        "deleteCredentialsAppSuccess": "Successfully deleted app credentials",
+        "deleteCredentialsFailed": "Failed to delete credentials - {error}",
+        "revokeBlockedConnectors": "Cannot revoke the credential while any connector is still associated with the credential. Please delete all associated connectors, then try again.",
+        "revokeGmailSuccess": "Successfully revoked the Gmail credential!",
+        "revokeGdriveSuccess": "Successfully revoked the Google Drive credential!",
+        "createServiceAccountCredSuccess": "Successfully created service account credential",
+        "createServiceAccountCredFailed": "Failed to create service account credential - {error}",
+        "authenticateGmailFailed": "Failed to authenticate with Gmail - {error}",
+        "authenticateGdriveFailed": "Failed to authenticate with Google Drive - {error}",
+        "filesRemoveAllError": "Cannot remove all files from a connector. Delete the connector if this is desired.",
+        "filesUpdateSuccess": "Files updated successfully! Document index is being updated in the background. New files are being indexed and removed files will be pruned from the search results.",
+        "filesUpdateFailed": "Failed to update files"
+      },
+      "embedding": {
+        "modelCannotDelete": "Model cannot be deleted",
+        "modelDeletedSuccess": "Model deleted successfully",
+        "modelDeleteFailed": "Failed to delete model. Ensure you are not attempting to delete a curently active model.",
+        "searchSettingsUpdateFailed": "Failed to update search settings",
+        "embeddingModelUpdateFailed": "Failed to update embedding model",
+        "embeddingModelUpdateFailedDetail": "Failed to update embedding model - {error}",
+        "cancelUpdateFailed": "Failed to cancel embedding model update - {error}"
+      },
+      "documents": {
+        "scoreNotANumber": "Score must be a number",
+        "scoreUpdated": "Updated score!",
+        "updateHiddenFailed": "Failed to update document - {error}",
+        "updateHiddenStatusFailed": "Error updating hidden status - {error}",
+        "documentSetScheduledForDeletion": "Document set \"{name}\" scheduled for deletion",
+        "documentSetDeleteFailed": "Failed to schedule document set for deletion - {error}",
+        "documentSetUpdateSuccess": "Successfully updated document set!",
+        "documentSetCreateSuccess": "Successfully created document set!",
+        "documentSetUpdateFailed": "Error updating document set - {error}",
+        "documentSetCreateFailed": "Error creating document set - {error}"
+      },
+      "bots": {
+        "slackChannelConfigCreateOrUpdateError": "Error {action} OnyxBot config - {error}",
+        "slackChannelDocumentSetsRemoved": "We removed one or more document sets from your selection because they are no longer valid. Please review and update your configuration."
+      },
+      "scim": {
+        "tokenCopied": "Token copied to clipboard",
+        "tokenCopyFailed": "Failed to copy token"
+      },
+      "standardAnswer": {
+        "deleted": "Standard answer {id} deleted",
+        "deleteFailed": "Failed to delete standard answer - {error}",
+        "updateFailed": "Error updating Standard Answer - {error}",
+        "createFailed": "Error creating Standard Answer - {error}"
+      },
+      "theme": {
+        "appearanceSavedSuccess": "Appearance settings saved successfully!",
+        "updateSettingsFailed": "Failed to update settings. {error}",
+        "uploadLogoFailed": "Failed to upload logo. {error}"
+      },
+      "llm": {
+        "providerDeletedSuccess": "Provider deleted successfully!",
+        "providerDeleteFailed": "Failed to delete provider: {error}",
+        "defaultModelUpdateSuccess": "Default model updated successfully!",
+        "defaultModelUpdateFailed": "Failed to set default model: {error}"
+      },
+      "chatPreferences": {
+        "toolsUpdated": "Tools updated",
+        "toolsUpdateFailed": "Failed to update tools",
+        "settingsUpdated": "Settings updated",
+        "settingsUpdateFailed": "Failed to update settings",
+        "systemPromptUpdated": "System prompt updated",
+        "systemPromptUpdateFailed": "Failed to update system prompt"
+      },
+      "users": {
+        "requestApproved": "Request approved",
+        "userUpdated": "User updated",
+        "roleUpdated": "Role updated",
+        "roleUpdateFailed": "Failed to update role",
+        "passwordResetFailed": "Failed to reset password",
+        "inviteCancelled": "Invite cancelled",
+        "userDeactivated": "User deactivated",
+        "userActivated": "User activated",
+        "userDeleted": "User deleted"
+      },
+      "codeInterpreter": {
+        "actionFailed": "Failed to {action} Code Interpreter"
+      },
+      "groups": {
+        "groupNameRequired": "Group name is required",
+        "renameSuccess": "Group renamed to \"{name}\"",
+        "renameFailed": "Failed to rename group",
+        "createSuccess": "Group \"{name}\" created",
+        "createFailed": "Failed to create group",
+        "updateSuccess": "Group \"{name}\" updated",
+        "updateFailed": "Failed to update group",
+        "syncingTryAgain": "This group is currently syncing. Please wait a moment and try again.",
+        "deleteSuccess": "Group \"{name}\" deleted",
+        "deleteFailed": "Failed to delete group"
+      },
+      "voice": {
+        "providerDisconnected": "{name} disconnected",
+        "providerDisconnectFailed": "Failed to disconnect provider.",
+        "connectionTestFailed": "Connection test failed",
+        "providerSaveFailed": "Failed to save provider"
+      },
+      "webSearch": {
+        "providerDisconnected": "{name} disconnected"
+      },
+      "imageGeneration": {
+        "providerSetAsDefault": "{name} set as default",
+        "setDefaultFailed": "Failed to set default",
+        "providerDeselected": "{name} deselected",
+        "deselectFailed": "Failed to deselect",
+        "providerDisconnected": "{name} disconnected",
+        "disconnectFailed": "Failed to disconnect",
+        "providerConfiguredSuccess": "Provider configured successfully",
+        "unknownErrorOccurred": "Unknown error occurred"
+      },
+      "serviceAccounts": {
+        "roleUpdateFailedWith": "Failed to update role: {error}",
+        "roleUpdated": "Role updated.",
+        "roleUpdateFailed": "Failed to update role.",
+        "regenerateApiKeyFailed": "Failed to regenerate API Key: {error}",
+        "regenerateApiKeyFailedFallback": "Failed to regenerate API Key.",
+        "deleteApiKeyFailed": "Failed to delete API Key: {error}",
+        "deleteApiKeyFailedFallback": "Failed to delete API Key.",
+        "apiKeyCopied": "API key copied to clipboard.",
+        "createSuccess": "Successfully created service account!",
+        "updateSuccess": "Successfully updated service account!",
+        "createFailed": "Error creating service account - {error}",
+        "updateFailed": "Error updating service account - {error}",
+        "unexpectedError": "An unexpected error occurred."
+      }
+    }
   }
 }

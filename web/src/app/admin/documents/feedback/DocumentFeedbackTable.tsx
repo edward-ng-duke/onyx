@@ -93,6 +93,7 @@ export const DocumentFeedbackTable = ({
 }) => {
   const [page, setPage] = useState(1);
   const t = useTranslations("admin.documents.feedback");
+  const tT = useTranslations("toasts.admin.documents");
 
   return (
     <div>
@@ -128,9 +129,9 @@ export const DocumentFeedbackTable = ({
                           refresh();
                         } else {
                           toast.error(
-                            `Error updating hidden status - ${getErrorMsg(
-                              response
-                            )}`
+                            tT("updateHiddenStatusFailed", {
+                              error: (await getErrorMsg(response)) ?? "",
+                            })
                           );
                         }
                       }}

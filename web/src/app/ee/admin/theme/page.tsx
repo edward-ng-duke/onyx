@@ -10,6 +10,7 @@ import {
 import { useContext, useRef, useState } from "react";
 import { SettingsContext } from "@/providers/SettingsProvider";
 import { toast } from "@/hooks/useToast";
+import { useTranslations } from "next-intl";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { EnterpriseSettings } from "@/interfaces/settings";
@@ -30,6 +31,7 @@ const CHAR_LIMITS = {
 
 export default function ThemePage() {
   const settings = useContext(SettingsContext);
+  const tT = useTranslations("toasts.admin.theme");
   const [selectedLogo, setSelectedLogo] = useState<File | null>(null);
   const [logoVersion, setLogoVersion] = useState(0);
   const appearanceSettingsRef = useRef<AppearanceThemeSettingsRef>(null);
@@ -58,7 +60,7 @@ export default function ThemePage() {
       return true;
     } else {
       const errorMsg = (await response.json()).detail;
-      alert(`Failed to update settings. ${errorMsg}`);
+      toast.error(tT("updateSettingsFailed", { error: errorMsg }));
       return false;
     }
   }
@@ -162,7 +164,7 @@ export default function ThemePage() {
           });
           if (!response.ok) {
             const errorMsg = (await response.json()).detail;
-            alert(`Failed to upload logo. ${errorMsg}`);
+            toast.error(tT("uploadLogoFailed", { error: errorMsg }));
             formikHelpers.setSubmitting(false);
             return;
           }
@@ -199,7 +201,7 @@ export default function ThemePage() {
           if (logoUploaded) {
             setLogoVersion((v) => v + 1);
           }
-          toast.success("Appearance settings saved successfully!");
+          toast.success(tT("appearanceSavedSuccess"));
         }
 
         formikHelpers.setSubmitting(false);

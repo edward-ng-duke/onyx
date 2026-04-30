@@ -22,6 +22,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { CustomEmbeddingModelForm } from "@/components/embedding/CustomEmbeddingModelForm";
 import { deleteSearchSettings } from "./utils";
 import { toast } from "@/hooks/useToast";
+import { useTranslations } from "next-intl";
 import { ConfirmEntityModal } from "@/components/modals/ConfirmEntityModal";
 import { AdvancedSearchConfiguration } from "../interfaces";
 import CardSection from "@/components/admin/CardSection";
@@ -433,6 +434,7 @@ export function CloudModelCard({
     React.SetStateAction<CloudEmbeddingProvider | null>
   >;
 }) {
+  const tT = useTranslations("toasts.admin.embedding");
   const [showDeleteModel, setShowDeleteModel] = useState(false);
   const modelId = typeof model.id === "number" ? model.id : null;
   const currentModelId =
@@ -453,19 +455,17 @@ export function CloudModelCard({
 
   const deleteModel = async () => {
     if (!model.id) {
-      toast.error("Model cannot be deleted");
+      toast.error(tT("modelCannotDelete"));
       return;
     }
 
     const response = await deleteSearchSettings(model.id);
 
     if (response.ok) {
-      toast.success("Model deleted successfully");
+      toast.success(tT("modelDeletedSuccess"));
       setShowDeleteModel(false);
     } else {
-      toast.error(
-        "Failed to delete model. Ensure you are not attempting to delete a curently active model."
-      );
+      toast.error(tT("modelDeleteFailed"));
     }
   };
 

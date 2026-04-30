@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@opal/components";
 import { SvgUserPlus, SvgUserX, SvgXCircle, SvgKey } from "@opal/icons";
 import ConfirmationModalLayout from "@/refresh-components/layouts/ConfirmationModalLayout";
@@ -22,7 +23,8 @@ async function runAction(
   action: () => Promise<void>,
   successMessage: string,
   onDone: () => void,
-  setIsSubmitting: (v: boolean) => void
+  setIsSubmitting: (v: boolean) => void,
+  errorFallback: string
 ) {
   setIsSubmitting(true);
   try {
@@ -30,7 +32,7 @@ async function runAction(
     onDone();
     toast.success(successMessage);
   } catch (err) {
-    toast.error(err instanceof Error ? err.message : "An error occurred");
+    toast.error(err instanceof Error ? err.message : errorFallback);
   } finally {
     setIsSubmitting(false);
   }
@@ -51,6 +53,8 @@ export function CancelInviteModal({
   onClose,
   onMutate,
 }: CancelInviteModalProps) {
+  const tT = useTranslations("toasts.admin.users");
+  const tShared = useTranslations("toasts.admin.shared");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
@@ -67,12 +71,13 @@ export function CancelInviteModal({
           onClick={() =>
             runAction(
               () => cancelInvite(email),
-              "Invite cancelled",
+              tT("inviteCancelled"),
               () => {
                 onMutate();
                 onClose();
               },
-              setIsSubmitting
+              setIsSubmitting,
+              tShared("anErrorOccurred")
             )
           }
         >
@@ -105,6 +110,8 @@ export function DeactivateUserModal({
   onClose,
   onMutate,
 }: DeactivateUserModalProps) {
+  const tT = useTranslations("toasts.admin.users");
+  const tShared = useTranslations("toasts.admin.shared");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
@@ -121,12 +128,13 @@ export function DeactivateUserModal({
           onClick={() =>
             runAction(
               () => deactivateUser(email),
-              "User deactivated",
+              tT("userDeactivated"),
               () => {
                 onMutate();
                 onClose();
               },
-              setIsSubmitting
+              setIsSubmitting,
+              tShared("anErrorOccurred")
             )
           }
         >
@@ -161,6 +169,8 @@ export function ActivateUserModal({
   onClose,
   onMutate,
 }: ActivateUserModalProps) {
+  const tT = useTranslations("toasts.admin.users");
+  const tShared = useTranslations("toasts.admin.shared");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
@@ -174,12 +184,13 @@ export function ActivateUserModal({
           onClick={() =>
             runAction(
               () => activateUser(email),
-              "User activated",
+              tT("userActivated"),
               () => {
                 onMutate();
                 onClose();
               },
-              setIsSubmitting
+              setIsSubmitting,
+              tShared("anErrorOccurred")
             )
           }
         >
@@ -212,6 +223,8 @@ export function DeleteUserModal({
   onClose,
   onMutate,
 }: DeleteUserModalProps) {
+  const tT = useTranslations("toasts.admin.users");
+  const tShared = useTranslations("toasts.admin.shared");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
@@ -228,12 +241,13 @@ export function DeleteUserModal({
           onClick={() =>
             runAction(
               () => deleteUser(email),
-              "User deleted",
+              tT("userDeleted"),
               () => {
                 onMutate();
                 onClose();
               },
-              setIsSubmitting
+              setIsSubmitting,
+              tShared("anErrorOccurred")
             )
           }
         >
@@ -265,6 +279,7 @@ export function ResetPasswordModal({
   email,
   onClose,
 }: ResetPasswordModalProps) {
+  const tT = useTranslations("toasts.admin.users");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newPassword, setNewPassword] = useState<string | null>(null);
 
@@ -294,7 +309,7 @@ export function ResetPasswordModal({
                 toast.error(
                   err instanceof Error
                     ? err.message
-                    : "Failed to reset password"
+                    : tT("passwordResetFailed")
                 );
               } finally {
                 setIsSubmitting(false);

@@ -68,6 +68,7 @@ export function VoiceProviderSetupModal({
 }: VoiceProviderSetupModalProps) {
   const t = useTranslations("admin.voice");
   const tCommon = useTranslations("common.actions");
+  const tT = useTranslations("toasts.admin.voice");
   const onClose = useModalClose();
   const initialTtsModel = defaultModelId
     ? resolveModelId(defaultModelId)
@@ -148,7 +149,7 @@ export function VoiceProviderSetupModal({
           toast.error(
             typeof data?.detail === "string"
               ? data.detail
-              : "Connection test failed"
+              : tT("connectionTestFailed")
           );
           setSubmitting(false);
           return;
@@ -181,11 +182,11 @@ export function VoiceProviderSetupModal({
         toast.error(
           typeof data?.detail === "string"
             ? data.detail
-            : "Failed to save provider"
+            : tT("providerSaveFailed")
         );
       }
     } catch {
-      toast.error("Failed to save provider");
+      toast.error(tT("providerSaveFailed"));
     } finally {
       setSubmitting(false);
     }

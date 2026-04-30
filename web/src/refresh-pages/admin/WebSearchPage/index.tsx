@@ -242,6 +242,7 @@ function WebSearchDisconnectModal({
 
 export default function WebSearchPage() {
   const t = useTranslations("admin.webSearch");
+  const tT = useTranslations("toasts.admin.webSearch");
   const { title: pageTitle } = useAdminRouteI18n(route);
   const [searchModal, dispatchSearchModal] = useReducer(
     WebProviderModalReducer,
@@ -828,7 +829,9 @@ export default function WebSearchPage() {
 
     try {
       await disconnectProvider(id, category, replacementProviderId);
-      toast.success(`${disconnectTarget.label} disconnected`);
+      toast.success(
+        tT("providerDisconnected", { name: disconnectTarget.label })
+      );
       await mutateSearchProviders();
       await mutateContentProviders();
     } catch (error) {

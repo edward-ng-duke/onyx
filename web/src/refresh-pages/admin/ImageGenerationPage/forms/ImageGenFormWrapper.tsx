@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Form, Formik, FormikProps } from "formik";
 import ProviderModal from "@/components/modals/ProviderModal";
 import ModelIcon from "@/app/admin/configuration/language-models/ModelIcon";
@@ -34,6 +35,7 @@ export function ImageGenFormWrapper<T extends FormValues>({
   transformValues,
   getInitialValuesFromCredentials,
 }: ImageGenFormWrapperProps<T>) {
+  const tT = useTranslations("toasts.admin.imageGeneration");
   // State management
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiStatus, setApiStatus] = useState<APIFormFieldState>("idle");
@@ -236,7 +238,7 @@ export function ImageGenFormWrapper<T extends FormValues>({
       setIsSubmitting(false);
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Unknown error occurred";
+        error instanceof Error ? error.message : tT("unknownErrorOccurred");
       setApiStatus("error");
       setErrorMessage(message);
       toast.error(message);

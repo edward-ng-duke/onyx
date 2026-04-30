@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@opal/components";
 import {
   Table,
@@ -40,6 +41,7 @@ export default function InlineFileManagement({
   connectorId,
   onRefresh,
 }: InlineFileManagementProps) {
+  const tT = useTranslations("toasts.admin.connectors");
   const [isEditing, setIsEditing] = useState(false);
   const [selectedFilesToRemove, setSelectedFilesToRemove] = useState<
     Set<string>
@@ -96,9 +98,7 @@ export default function InlineFileManagement({
     ).length;
 
     if (remainingFiles === 0 && filesToAdd.length === 0) {
-      toast.error(
-        "Cannot remove all files from a connector. Delete the connector if this is desired."
-      );
+      toast.error(tT("filesRemoveAllError"));
       return;
     }
 
@@ -116,10 +116,7 @@ export default function InlineFileManagement({
         filesToAdd
       );
 
-      toast.success(
-        "Files updated successfully! Document index is being updated in the background. " +
-          "New files are being indexed and removed files will be pruned from the search results."
-      );
+      toast.success(tT("filesUpdateSuccess"));
 
       // Reset editing state
       setIsEditing(false);
@@ -131,7 +128,7 @@ export default function InlineFileManagement({
       onRefresh();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to update files"
+        error instanceof Error ? error.message : tT("filesUpdateFailed")
       );
     } finally {
       setIsSaving(false);

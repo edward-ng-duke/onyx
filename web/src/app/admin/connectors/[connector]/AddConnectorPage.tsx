@@ -133,6 +133,8 @@ export default function AddConnector({
   connector: ConfigurableSources;
 }) {
   const t = useTranslations("admin.connectors.add");
+  const tT = useTranslations("toasts.admin.connectors");
+  const tShared = useTranslations("toasts.admin.shared");
   const [currentPageUrl, setCurrentPageUrl] = useState<string | null>(null);
   const [oauthUrl, setOauthUrl] = useState<string | null>(null);
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -242,7 +244,7 @@ export default function AddConnector({
   const onDeleteCredential = async (credential: Credential<any | null>) => {
     const response = await deleteCredential(credential.id, true);
     if (response.ok) {
-      toast.success("Credential deleted successfully!");
+      toast.success(tT("credentialDeleted"));
     } else {
       const errorData = await response.json();
       toast.error(errorData.detail || errorData.message);
@@ -252,7 +254,7 @@ export default function AddConnector({
   const onSwap = async (selectedCredential: Credential<any>) => {
     setCurrentCredential(selectedCredential);
     setAllowCreate(true);
-    toast.success("Swapped credential successfully!");
+    toast.success(tT("credentialSwapped"));
     refresh();
   };
 
@@ -276,15 +278,15 @@ export default function AddConnector({
         setOauthUrl(response.url);
         window.open(response.url, "_blank", "noopener,noreferrer");
       } else {
-        toast.error("Failed to fetch OAuth URL");
+        toast.error(tT("fetchOauthUrlFailed"));
       }
     } catch (error: unknown) {
       // Narrow the type of error
       if (error instanceof Error) {
-        toast.error(`Error: ${error.message}`);
+        toast.error(tT("errorWithMessage", { message: error.message }));
       } else {
         // Handle non-standard errors
-        toast.error("An unknown error occurred");
+        toast.error(tShared("unknownError"));
       }
     } finally {
       setIsAuthorizing(false);
@@ -359,7 +361,8 @@ export default function AddConnector({
             advancedConfiguration.indexingStart,
             values.access_type,
             groups,
-            name
+            name,
+            tT
           );
           if (response) {
             onSuccess();
@@ -374,13 +377,14 @@ export default function AddConnector({
               selectedFiles,
               name,
               access_type,
-              groups
+              groups,
+              tT
             );
             if (response) {
               onSuccess();
             }
           } catch (error) {
-            toast.error("Error uploading files");
+            toast.error(tT("uploadFilesError"));
           } finally {
             setUploading(false);
           }
@@ -472,9 +476,9 @@ export default function AddConnector({
           if (result.isTimeout) {
             timeoutErrorHappenedRef.current = true;
             toast.error(
-              `Operation timed out after ${
-                CONNECTOR_CREATION_TIMEOUT_MS / 1000
-              } seconds. Check your configuration for errors?`
+              tT("operationTimedOut", {
+                seconds: CONNECTOR_CREATION_TIMEOUT_MS / 1000,
+              })
             );
 
             if (connectorIdRef.current) {

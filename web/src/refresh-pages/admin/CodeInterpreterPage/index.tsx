@@ -89,6 +89,7 @@ function ConnectionStatus({ healthy, isLoading }: ConnectionStatusProps) {
 export default function CodeInterpreterPage() {
   const t = useTranslations("admin.codeInterpreter");
   const tCommon = useTranslations("common.actions");
+  const tT = useTranslations("toasts.admin.codeInterpreter");
   const { title: pageTitle } = useAdminRouteI18n(route);
   const { isHealthy, isEnabled, isLoading, refetch } = useCodeInterpreter();
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
@@ -100,7 +101,7 @@ export default function CodeInterpreterPage() {
     try {
       const response = await updateCodeInterpreter({ enabled });
       if (!response.ok) {
-        toast.error(`Failed to ${action} Code Interpreter`);
+        toast.error(tT("actionFailed", { action }));
         return;
       }
       setShowDisconnectModal(false);

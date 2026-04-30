@@ -33,6 +33,7 @@ const NO_DEFAULT_VALUE = "__none__";
 
 export default function ImageGenerationContent() {
   const t = useTranslations("admin.imageGeneration");
+  const tT = useTranslations("toasts.admin.imageGeneration");
   const {
     data: llmProviderResponse,
     error: llmError,
@@ -95,11 +96,11 @@ export default function ImageGenerationContent() {
     if (config) {
       try {
         await setDefaultImageGenerationConfig(config.image_provider_id);
-        toast.success(`${provider.title} set as default`);
+        toast.success(tT("providerSetAsDefault", { name: provider.title }));
         refetchConfigs();
       } catch (error) {
         toast.error(
-          error instanceof Error ? error.message : "Failed to set default"
+          error instanceof Error ? error.message : tT("setDefaultFailed")
         );
       }
     }
@@ -112,11 +113,11 @@ export default function ImageGenerationContent() {
     if (config) {
       try {
         await unsetDefaultImageGenerationConfig(config.image_provider_id);
-        toast.success(`${provider.title} deselected`);
+        toast.success(tT("providerDeselected", { name: provider.title }));
         refetchConfigs();
       } catch (error) {
         toast.error(
-          error instanceof Error ? error.message : "Failed to deselect"
+          error instanceof Error ? error.message : tT("deselectFailed")
         );
       }
     }
@@ -140,13 +141,15 @@ export default function ImageGenerationContent() {
       }
 
       await deleteImageGenerationConfig(disconnectProvider.image_provider_id);
-      toast.success(`${disconnectProvider.title} disconnected`);
+      toast.success(
+        tT("providerDisconnected", { name: disconnectProvider.title })
+      );
       refetchConfigs();
       refetchProviders();
     } catch (error) {
       console.error("Failed to disconnect image generation provider:", error);
       toast.error(
-        error instanceof Error ? error.message : "Failed to disconnect"
+        error instanceof Error ? error.message : tT("disconnectFailed")
       );
     } finally {
       setDisconnectProvider(null);
@@ -155,7 +158,7 @@ export default function ImageGenerationContent() {
   };
 
   const handleModalSuccess = () => {
-    toast.success("Provider configured successfully");
+    toast.success(tT("providerConfiguredSuccess"));
     setEditConfig(null);
     refetchConfigs();
     refetchProviders();

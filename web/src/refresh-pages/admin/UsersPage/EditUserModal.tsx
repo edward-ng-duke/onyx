@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { Button, Divider } from "@opal/components";
 import { SvgUsers, SvgUser, SvgLogOut, SvgCheck } from "@opal/icons";
 import { ContentAction } from "@opal/layouts";
@@ -49,6 +50,8 @@ export default function EditUserModal({
   onClose,
   onMutate,
 }: EditUserModalProps) {
+  const tT = useTranslations("toasts.admin.users");
+  const tShared = useTranslations("toasts.admin.shared");
   const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
   const { data: allGroups, isLoading: groupsLoading } = useGroups();
   const [searchTerm, setSearchTerm] = useState("");
@@ -145,11 +148,13 @@ export default function EditUserModal({
       }
 
       onMutate();
-      toast.success("User updated");
+      toast.success(tT("userUpdated"));
       onClose();
     } catch (err) {
       onMutate(); // refresh to show partially-applied state
-      toast.error(err instanceof Error ? err.message : "An error occurred");
+      toast.error(
+        err instanceof Error ? err.message : tShared("anErrorOccurred")
+      );
     } finally {
       setIsSubmitting(false);
     }

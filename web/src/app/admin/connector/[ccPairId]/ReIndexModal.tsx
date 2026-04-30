@@ -2,6 +2,7 @@
 
 import { Button, Divider } from "@opal/components";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "@/hooks/useToast";
 import { triggerIndexing } from "@/app/admin/connector/[ccPairId]/lib";
 import Modal from "@/refresh-components/Modal";
@@ -13,6 +14,7 @@ export function useReIndexModal(
   credentialId: number | null,
   ccPairId: number | null
 ) {
+  const tT = useTranslations("toasts.admin.connectors");
   const [reIndexPopupVisible, setReIndexPopupVisible] = useState(false);
 
   const showReIndexModal = () => {
@@ -42,18 +44,16 @@ export function useReIndexModal(
       // Show appropriate notification based on result
       if (result.success) {
         toast.success(
-          `${
-            fromBeginning ? "Complete re-indexing" : "Indexing update"
-          } started successfully`
+          fromBeginning
+            ? tT("indexingStartedComplete")
+            : tT("indexingStartedUpdate")
         );
       } else {
-        toast.error(result.message || "Failed to start indexing");
+        toast.error(result.message || tT("indexingStartFailed"));
       }
     } catch (error) {
       console.error("Failed to trigger indexing:", error);
-      toast.error(
-        "An unexpected error occurred while trying to start indexing"
-      );
+      toast.error(tT("indexingUnexpectedError"));
     }
   };
 
@@ -77,6 +77,7 @@ export interface ReIndexModalProps {
 }
 
 export default function ReIndexModal({ hide, onRunIndex }: ReIndexModalProps) {
+  const tT = useTranslations("toasts.admin.connectors");
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleRunIndex = async (fromBeginning: boolean) => {
@@ -86,9 +87,9 @@ export default function ReIndexModal({ hide, onRunIndex }: ReIndexModalProps) {
     try {
       // First show immediate feedback with a toast
       toast.info(
-        `Starting ${
-          fromBeginning ? "complete re-indexing" : "indexing update"
-        }...`
+        fromBeginning
+          ? tT("indexingStartingComplete")
+          : tT("indexingStartingUpdate")
       );
 
       // Then close the modal
@@ -99,7 +100,7 @@ export default function ReIndexModal({ hide, onRunIndex }: ReIndexModalProps) {
     } catch (error) {
       console.error("Error starting indexing:", error);
       // Show error in toast if needed
-      toast.error("Failed to start indexing process");
+      toast.error(tT("indexingProcessFailed"));
     } finally {
       setIsProcessing(false);
     }

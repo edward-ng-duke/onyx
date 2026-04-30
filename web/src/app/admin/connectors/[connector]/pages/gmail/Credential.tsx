@@ -1,6 +1,7 @@
 import { Button } from "@opal/components";
 import { toast } from "@/hooks/useToast";
 import React, { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { useSWRConfig } from "swr";
 import * as Yup from "yup";
 import { useRouter } from "next/navigation";
@@ -31,6 +32,7 @@ type GmailCredentialJsonTypes = "authorized_user" | "service_account";
 
 const GmailCredentialUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
   const { mutate } = useSWRConfig();
+  const tT = useTranslations("toasts.admin.connectors");
   const [isUploading, setIsUploading] = useState(false);
   const [fileName, setFileName] = useState<string | undefined>();
   const [isDragging, setIsDragging] = useState(false);
@@ -62,7 +64,7 @@ const GmailCredentialUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
           );
         }
       } catch (e) {
-        toast.error(`Invalid file provided - ${e}`);
+        toast.error(tT("invalidFileProvided", { error: String(e) }));
         setIsUploading(false);
         return;
       }
@@ -79,14 +81,14 @@ const GmailCredentialUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
           }
         );
         if (response.ok) {
-          toast.success("Successfully uploaded app credentials");
+          toast.success(tT("uploadAppCredentialsSuccess"));
           mutate(SWR_KEYS.googleConnectorAppCredential("gmail"));
           if (onSuccess) {
             onSuccess();
           }
         } else {
           const errorMsg = await response.text();
-          toast.error(`Failed to upload app credentials - ${errorMsg}`);
+          toast.error(tT("uploadAppCredentialsFailed", { error: errorMsg }));
         }
       }
 
@@ -102,14 +104,16 @@ const GmailCredentialUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
           }
         );
         if (response.ok) {
-          toast.success("Successfully uploaded service account key");
+          toast.success(tT("uploadServiceAccountKeySuccess"));
           mutate(SWR_KEYS.googleConnectorServiceAccountKey("gmail"));
           if (onSuccess) {
             onSuccess();
           }
         } else {
           const errorMsg = await response.text();
-          toast.error(`Failed to upload service account key - ${errorMsg}`);
+          toast.error(
+            tT("uploadServiceAccountKeyFailed", { error: errorMsg })
+          );
         }
       }
       setIsUploading(false);
@@ -153,7 +157,7 @@ const GmailCredentialUpload = ({ onSuccess }: { onSuccess?: () => void }) => {
       ) {
         handleFileUpload(file);
       } else {
-        toast.error("Please upload a JSON file");
+        toast.error(tT("invalidJsonFile"));
       }
     }
   };
@@ -232,6 +236,7 @@ export const GmailJsonUploadSection = ({
   existingAuthCredential,
 }: GmailJsonUploadSectionProps) => {
   const { mutate } = useSWRConfig();
+  const tT = useTranslations("toasts.admin.connectors");
   const [localServiceAccountData, setLocalServiceAccountData] = useState(
     serviceAccountCredentialData
   );
@@ -340,11 +345,9 @@ export const GmailJsonUploadSection = ({
                     );
 
                     toast.success(
-                      `Successfully deleted ${
-                        localServiceAccountData
-                          ? "service account key"
-                          : "app credentials"
-                      }`
+                      localServiceAccountData
+                        ? tT("deleteCredentialsServiceAccountSuccess")
+                        : tT("deleteCredentialsAppSuccess")
                     );
                     // Immediately update local state
                     if (localServiceAccountData) {
@@ -355,7 +358,9 @@ export const GmailJsonUploadSection = ({
                     handleSuccess();
                   } else {
                     const errorMsg = await response.text();
-                    toast.error(`Failed to delete credentials - ${errorMsg}`);
+                    toast.error(
+                      tT("deleteCredentialsFailed", { error: errorMsg })
+                    );
                   }
                 }}
               >
@@ -391,23 +396,26 @@ interface GmailCredentialSectionProps {
   ) => void;
 }
 
+type Translator = (
+  key: string,
+  values?: Record<string, string | number | Date>
+) => string;
+
 async function handleRevokeAccess(
   connectorExists: boolean,
   existingCredential:
     | Credential<GmailCredentialJson>
     | Credential<GmailServiceAccountCredentialJson>,
-  refreshCredentials: () => void
+  refreshCredentials: () => void,
+  tT: Translator
 ) {
   if (connectorExists) {
-    const message =
-      "Cannot revoke the Gmail credential while any connector is still associated with the credential. " +
-      "Please delete all associated connectors, then try again.";
-    toast.error(message);
+    toast.error(tT("revokeBlockedConnectors"));
     return;
   }
 
   await adminDeleteCredential(existingCredential.id);
-  toast.success("Successfully revoked the Gmail credential!");
+  toast.success(tT("revokeGmailSuccess"));
 
   refreshCredentials();
 }
@@ -425,6 +433,7 @@ export const GmailAuthSection = ({
   onCredentialCreated,
 }: GmailCredentialSectionProps) => {
   const router = useRouter();
+  const tT = useTranslations("toasts.admin.connectors");
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [localServiceAccountData, setLocalServiceAccountData] = useState(
     serviceAccountKeyData
@@ -475,7 +484,8 @@ export const GmailAuthSection = ({
                 handleRevokeAccess(
                   connectorExists,
                   existingCredential,
-                  refreshCredentials
+                  refreshCredentials,
+                  tT
                 );
               }}
             >
@@ -543,19 +553,19 @@ export const GmailAuthSection = ({
                 );
 
                 if (response.ok) {
-                  toast.success(
-                    "Successfully created service account credential"
-                  );
+                  toast.success(tT("createServiceAccountCredSuccess"));
                   refreshCredentials();
                 } else {
                   const errorMsg = await response.text();
                   toast.error(
-                    `Failed to create service account credential - ${errorMsg}`
+                    tT("createServiceAccountCredFailed", { error: errorMsg })
                   );
                 }
               } catch (error) {
                 toast.error(
-                  `Failed to create service account credential - ${error}`
+                  tT("createServiceAccountCredFailed", {
+                    error: String(error),
+                  })
                 );
               } finally {
                 formikHelpers.setSubmitting(false);
@@ -613,7 +623,9 @@ export const GmailAuthSection = ({
                 setIsAuthenticating(false);
               }
             } catch (error) {
-              toast.error(`Failed to authenticate with Gmail - ${error}`);
+              toast.error(
+                tT("authenticateGmailFailed", { error: String(error) })
+              );
               setIsAuthenticating(false);
             }
           }}

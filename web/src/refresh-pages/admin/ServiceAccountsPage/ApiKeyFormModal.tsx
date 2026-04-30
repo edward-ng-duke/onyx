@@ -1,6 +1,7 @@
 "use client";
 
 import { Form, Formik } from "formik";
+import { useTranslations } from "next-intl";
 import { toast } from "@/hooks/useToast";
 import {
   createApiKey,
@@ -27,6 +28,7 @@ export default function ApiKeyFormModal({
   onCreateApiKey,
   apiKey,
 }: ApiKeyFormModalProps) {
+  const tT = useTranslations("toasts.admin.serviceAccounts");
   const isUpdate = apiKey !== undefined;
 
   return (
@@ -64,9 +66,7 @@ export default function ApiKeyFormModal({
               }
               if (response.ok) {
                 toast.success(
-                  isUpdate
-                    ? "Successfully updated service account!"
-                    : "Successfully created service account!"
+                  isUpdate ? tT("updateSuccess") : tT("createSuccess")
                 );
                 if (!isUpdate) {
                   onCreateApiKey(await response.json());
@@ -77,13 +77,13 @@ export default function ApiKeyFormModal({
                 const errorMsg = responseJson.detail || responseJson.message;
                 toast.error(
                   isUpdate
-                    ? `Error updating service account - ${errorMsg}`
-                    : `Error creating service account - ${errorMsg}`
+                    ? tT("updateFailed", { error: errorMsg })
+                    : tT("createFailed", { error: errorMsg })
                 );
               }
             } catch (e) {
               toast.error(
-                e instanceof Error ? e.message : "An unexpected error occurred."
+                e instanceof Error ? e.message : tT("unexpectedError")
               );
             } finally {
               formikHelpers.setSubmitting(false);

@@ -177,6 +177,7 @@ const StandardAnswersTable = ({
     StandardAnswerCategory[]
   >([]);
   const t = useTranslations("admin.standardAnswer");
+  const tT = useTranslations("toasts.admin.standardAnswer");
   const columns = [
     { name: "", key: "edit" },
     { name: t("columnCategories"), key: "category" },
@@ -224,10 +225,10 @@ const StandardAnswersTable = ({
   const handleDelete = async (id: number) => {
     const response = await deleteStandardAnswer(id);
     if (response.ok) {
-      toast.success(`Standard answer ${id} deleted`);
+      toast.success(tT("deleted", { id }));
     } else {
       const errorMsg = await response.text();
-      toast.error(`Failed to delete standard answer - ${errorMsg}`);
+      toast.error(tT("deleteFailed", { error: errorMsg }));
     }
     refresh();
   };

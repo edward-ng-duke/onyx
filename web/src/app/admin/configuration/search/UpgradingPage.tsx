@@ -29,6 +29,7 @@ import { useConnectorIndexingStatusWithPagination } from "@/lib/hooks";
 import { SvgX } from "@opal/icons";
 import { ConnectorCredentialPairStatus } from "@/app/admin/connector/[ccPairId]/types";
 import { useVectorDbEnabled } from "@/providers/SettingsProvider";
+import { toast } from "@/hooks/useToast";
 
 export default function UpgradingPage({
   futureEmbeddingModel,
@@ -37,6 +38,7 @@ export default function UpgradingPage({
 }) {
   const t = useTranslations("admin.searchSettings.upgrading");
   const tCommon = useTranslations("common.actions");
+  const tT = useTranslations("toasts.admin.embedding");
   const [isCancelling, setIsCancelling] = useState<boolean>(false);
   const vectorDbEnabled = useVectorDbEnabled();
 
@@ -75,9 +77,8 @@ export default function UpgradingPage({
     if (response.ok) {
       mutate(SWR_KEYS.secondarySearchSettings);
     } else {
-      alert(
-        `Failed to cancel embedding model update - ${await response.text()}`
-      );
+      const errorText = await response.text();
+      toast.error(tT("cancelUpdateFailed", { error: errorText }));
     }
     setIsCancelling(false);
   };

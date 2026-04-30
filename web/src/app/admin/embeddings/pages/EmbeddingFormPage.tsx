@@ -1,6 +1,7 @@
 "use client";
 
 import { toast } from "@/hooks/useToast";
+import { useTranslations } from "next-intl";
 import { markdown } from "@opal/utils";
 
 import EmbeddingModelSelection from "../EmbeddingModelSelectionForm";
@@ -45,6 +46,7 @@ import { SvgAlertTriangle, SvgArrowLeft, SvgArrowRight } from "@opal/icons";
 export default function EmbeddingForm() {
   const { formStep, nextFormStep, prevFormStep } = useEmbeddingFormContext();
   const router = useRouter();
+  const tT = useTranslations("toasts.admin.embedding");
 
   const [advancedEmbeddingDetails, setAdvancedEmbeddingDetails] =
     useState<AdvancedSearchConfiguration>({
@@ -207,7 +209,7 @@ export default function EmbeddingForm() {
     if (response.ok) {
       return true;
     } else {
-      toast.error("Failed to update search settings");
+      toast.error(tT("searchSettingsUpdateFailed"));
       return false;
     }
   }, [
@@ -476,9 +478,11 @@ export default function EmbeddingForm() {
     if (response.ok) {
       navigateToEmbeddingPage("embedding model");
     } else {
-      toast.error("Failed to update embedding model");
-
-      alert(`Failed to update embedding model - ${await response.text()}`);
+      toast.error(tT("embeddingModelUpdateFailed"));
+      const errorText = await response.text();
+      toast.error(
+        tT("embeddingModelUpdateFailedDetail", { error: errorText })
+      );
     }
   };
 

@@ -7,6 +7,7 @@ import { SWR_KEYS } from "@/lib/swr-keys";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
 import { toast } from "@/hooks/useToast";
+import { useTranslations } from "next-intl";
 import { Button, MessageCard, Text } from "@opal/components";
 import { Content, IllustrationContent } from "@opal/layouts";
 import SvgNoResult from "@opal/illustrations/no-result";
@@ -57,6 +58,7 @@ const tc = createTableColumns<APIKey>();
 // ---------------------------------------------------------------------------
 
 export default function ServiceAccountsPage() {
+  const tT = useTranslations("toasts.admin.serviceAccounts");
   const {
     data: apiKeys,
     isLoading,
@@ -95,13 +97,13 @@ export default function ServiceAccountsPage() {
       });
       if (!response.ok) {
         const errorMsg = await response.text();
-        toast.error(`Failed to update role: ${errorMsg}`);
+        toast.error(tT("roleUpdateFailedWith", { error: errorMsg }));
         return;
       }
       mutate(API_KEY_SWR_KEY);
-      toast.success("Role updated.");
+      toast.success(tT("roleUpdated"));
     } catch {
-      toast.error("Failed to update role.");
+      toast.error(tT("roleUpdateFailed"));
     }
   };
 
@@ -110,7 +112,7 @@ export default function ServiceAccountsPage() {
       const response = await regenerateApiKey(apiKey);
       if (!response.ok) {
         const errorMsg = await response.text();
-        toast.error(`Failed to regenerate API Key: ${errorMsg}`);
+        toast.error(tT("regenerateApiKeyFailed", { error: errorMsg }));
         return;
       }
       const newKey = (await response.json()) as APIKey;
@@ -118,7 +120,7 @@ export default function ServiceAccountsPage() {
       mutate(API_KEY_SWR_KEY);
     } catch (e) {
       toast.error(
-        e instanceof Error ? e.message : "Failed to regenerate API Key."
+        e instanceof Error ? e.message : tT("regenerateApiKeyFailedFallback")
       );
     }
   };
@@ -128,12 +130,14 @@ export default function ServiceAccountsPage() {
       const response = await deleteApiKey(apiKey.api_key_id);
       if (!response.ok) {
         const errorMsg = await response.text();
-        toast.error(`Failed to delete API Key: ${errorMsg}`);
+        toast.error(tT("deleteApiKeyFailed", { error: errorMsg }));
         return;
       }
       mutate(API_KEY_SWR_KEY);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to delete API Key.");
+      toast.error(
+        e instanceof Error ? e.message : tT("deleteApiKeyFailedFallback")
+      );
     }
   };
 
@@ -364,7 +368,7 @@ export default function ServiceAccountsPage() {
                   onClick={() => {
                     if (fullApiKey) {
                       navigator.clipboard.writeText(fullApiKey);
-                      toast.success("API key copied to clipboard.");
+                      toast.success(tT("apiKeyCopied"));
                     }
                   }}
                 >

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import useSWR, { useSWRConfig } from "swr";
 import useGroupMemberCandidates from "./useGroupMemberCandidates";
 import { Table, Button, Divider } from "@opal/components";
@@ -46,6 +47,7 @@ interface EditGroupPageProps {
 
 function EditGroupPage({ groupId }: EditGroupPageProps) {
   const router = useRouter();
+  const tT = useTranslations("toasts.admin.groups");
   const { mutate } = useSWRConfig();
 
   // Fetch the group data — poll every 5s while syncing so the UI updates
@@ -190,7 +192,7 @@ function EditGroupPage({ groupId }: EditGroupPageProps) {
 
     const trimmed = groupName.trim();
     if (!trimmed) {
-      toast.error("Group name is required");
+      toast.error(tT("groupNameRequired"));
       return;
     }
 
@@ -200,9 +202,7 @@ function EditGroupPage({ groupId }: EditGroupPageProps) {
     );
     const freshGroup = freshGroups.find((g: UserGroup) => g.id === groupId);
     if (freshGroup && !freshGroup.is_up_to_date) {
-      toast.error(
-        "This group is currently syncing. Please wait a moment and try again."
-      );
+      toast.error(tT("syncingTryAgain"));
       return;
     }
 
@@ -240,10 +240,10 @@ function EditGroupPage({ groupId }: EditGroupPageProps) {
 
       mutate(SWR_KEYS.adminUserGroups);
       mutate(SWR_KEYS.userGroupTokenRateLimit(groupId));
-      toast.success(`Group "${trimmed}" updated`);
+      toast.success(tT("updateSuccess", { name: trimmed }));
       router.push("/admin/groups");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to update group");
+      toast.error(e instanceof Error ? e.message : tT("updateFailed"));
     } finally {
       isSubmittingRef.current = false;
       setIsSubmitting(false);
@@ -255,10 +255,10 @@ function EditGroupPage({ groupId }: EditGroupPageProps) {
     try {
       await deleteGroup(groupId);
       mutate(SWR_KEYS.adminUserGroups);
-      toast.success(`Group "${group?.name}" deleted`);
+      toast.success(tT("deleteSuccess", { name: group?.name ?? "" }));
       router.push("/admin/groups");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to delete group");
+      toast.error(e instanceof Error ? e.message : tT("deleteFailed"));
     } finally {
       setIsDeleting(false);
       setShowDeleteModal(false);

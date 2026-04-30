@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { FieldArray, useFormikContext, ErrorMessage } from "formik";
 import { DocumentSetSummary } from "@/lib/types";
 import { toast } from "@/hooks/useToast";
@@ -58,6 +59,7 @@ export function SlackChannelConfigFormFields({
   formikProps,
 }: SlackChannelConfigFormFieldsProps) {
   const router = useRouter();
+  const tT = useTranslations("toasts.admin.bots");
   const { values, setFieldValue } = useFormikContext<any>();
   const [viewUnselectableSets, setViewUnselectableSets] = useState(false);
   const [viewSyncEnabledAgents, setViewSyncEnabledAgents] = useState(false);
@@ -150,9 +152,7 @@ export function SlackChannelConfigFormFields({
           (dsId: number) => !invalidSelected.includes(dsId)
         )
       );
-      toast.warning(
-        "We removed one or more document sets from your selection because they are no longer valid. Please review and update your configuration."
-      );
+      toast.warning(tT("slackChannelDocumentSetsRemoved"));
     }
   }, [unselectableSets, values.document_sets, setFieldValue]);
 

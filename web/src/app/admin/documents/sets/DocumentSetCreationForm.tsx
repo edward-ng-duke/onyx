@@ -49,6 +49,7 @@ export const DocumentSetCreationForm = ({
   const { data: federatedConnectors } = useFederatedConnectors();
   const t = useTranslations("admin.documents.sets");
   const tForm = useTranslations("admin.documents.sets.form");
+  const tT = useTranslations("toasts.admin.documents");
 
   useEffect(() => {
     if (existingDocumentSet?.is_public) {
@@ -121,8 +122,8 @@ export const DocumentSetCreationForm = ({
           if (response.ok) {
             toast.success(
               isUpdate
-                ? "Successfully updated document set!"
-                : "Successfully created document set!"
+                ? tT("documentSetUpdateSuccess")
+                : tT("documentSetCreateSuccess")
             );
             await Promise.all([
               mutate(SWR_KEYS.documentSets),
@@ -133,8 +134,8 @@ export const DocumentSetCreationForm = ({
             const errorMsg = await response.text();
             toast.error(
               isUpdate
-                ? `Error updating document set - ${errorMsg}`
-                : `Error creating document set - ${errorMsg}`
+                ? tT("documentSetUpdateFailed", { error: errorMsg })
+                : tT("documentSetCreateFailed", { error: errorMsg })
             );
           }
         }}

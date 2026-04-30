@@ -41,6 +41,7 @@ export const StandardAnswerCreationForm = ({
   const isUpdate = existingStandardAnswer !== undefined;
   const router = useRouter();
   const t = useTranslations("admin.standardAnswer.form");
+  const tT = useTranslations("toasts.admin.standardAnswer");
 
   return (
     <div>
@@ -101,8 +102,8 @@ export const StandardAnswerCreationForm = ({
               const errorMsg = responseJson.detail || responseJson.message;
               toast.error(
                 isUpdate
-                  ? `Error updating Standard Answer - ${errorMsg}`
-                  : `Error creating Standard Answer - ${errorMsg}`
+                  ? tT("updateFailed", { error: errorMsg })
+                  : tT("createFailed", { error: errorMsg })
               );
             }
           }}

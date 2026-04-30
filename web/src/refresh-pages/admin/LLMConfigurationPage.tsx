@@ -71,6 +71,7 @@ function ExistingProviderCard({
 }: ExistingProviderCardProps) {
   const t = useTranslations("admin.configurationLlm");
   const tCommon = useTranslations("common.actions");
+  const tT = useTranslations("toasts.admin.llm");
   const { mutate } = useSWRConfig();
   const [isOpen, setIsOpen] = useState(false);
   const deleteModal = useCreateModal();
@@ -80,10 +81,10 @@ function ExistingProviderCard({
       await deleteLlmProvider(provider.id, isLastProvider);
       await refreshLlmProviderCaches(mutate);
       deleteModal.toggle(false);
-      toast.success("Provider deleted successfully!");
+      toast.success(tT("providerDeletedSuccess"));
     } catch (e) {
       const message = e instanceof Error ? e.message : "Unknown error";
-      toast.error(`Failed to delete provider: ${message}`);
+      toast.error(tT("providerDeleteFailed", { error: message }));
     }
   };
 
@@ -293,6 +294,7 @@ function NewCustomProviderCard({
 
 export default function LLMConfigurationPage() {
   const t = useTranslations("admin.configurationLlm");
+  const tT = useTranslations("toasts.admin.llm");
   const { title } = useAdminRouteI18n(route);
   const { mutate } = useSWRConfig();
   const { llmProviders: existingLlmProviders, defaultText } =
@@ -335,10 +337,10 @@ export default function LLMConfigurationPage() {
     try {
       await setDefaultLlmModel(providerId, modelName);
       await refreshLlmProviderCaches(mutate);
-      toast.success("Default model updated successfully!");
+      toast.success(tT("defaultModelUpdateSuccess"));
     } catch (e) {
       const message = e instanceof Error ? e.message : "Unknown error";
-      toast.error(`Failed to set default model: ${message}`);
+      toast.error(tT("defaultModelUpdateFailed", { error: message }));
     }
   }
 

@@ -382,6 +382,7 @@ function FileSizeLimitFields({
 
 export default function ChatPreferencesPage() {
   const t = useTranslations("admin.chatPreferences");
+  const tT = useTranslations("toasts.admin.chatPreferences");
   const { title } = useAdminRouteI18n(route);
   const router = useRouter();
   const settings = useSettingsContext();
@@ -495,9 +496,9 @@ export default function ChatPreferencesPage() {
           },
           { optimisticData, revalidate: true }
         );
-        toast.success("Tools updated");
+        toast.success(tT("toolsUpdated"));
       } catch {
-        toast.error("Failed to update tools");
+        toast.error(tT("toolsUpdateFailed"));
       }
     },
     [defaultAgentConfig, mutateDefaultAgent]
@@ -547,9 +548,9 @@ export default function ChatPreferencesPage() {
 
         router.refresh();
         await mutate(SWR_KEYS.settings);
-        toast.success("Settings updated");
+        toast.success(tT("settingsUpdated"));
       } catch (error) {
-        toast.error("Failed to update settings");
+        toast.error(tT("settingsUpdateFailed"));
       }
     },
     [settings, router]
@@ -1158,9 +1159,9 @@ export default function ChatPreferencesPage() {
                 }
                 await mutateDefaultAgent();
                 setSystemPromptModalOpen(false);
-                toast.success("System prompt updated");
+                toast.success(tT("systemPromptUpdated"));
               } catch {
-                toast.error("Failed to update system prompt");
+                toast.error(tT("systemPromptUpdateFailed"));
               }
             }}
           >

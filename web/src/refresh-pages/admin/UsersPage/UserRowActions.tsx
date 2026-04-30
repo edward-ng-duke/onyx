@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button, Divider } from "@opal/components";
 import {
   SvgMoreHorizontal,
@@ -55,6 +56,8 @@ export default function UserRowActions({
   user,
   onMutate,
 }: UserRowActionsProps) {
+  const tT = useTranslations("toasts.admin.users");
+  const tShared = useTranslations("toasts.admin.shared");
   const [modal, setModal] = useState<Modal | null>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
 
@@ -120,10 +123,12 @@ export default function UserRowActions({
                 try {
                   await approveRequest(user.email);
                   onMutate();
-                  toast.success("Request approved");
+                  toast.success(tT("requestApproved"));
                 } catch (err) {
                   toast.error(
-                    err instanceof Error ? err.message : "An error occurred"
+                    err instanceof Error
+                      ? err.message
+                      : tShared("anErrorOccurred")
                   );
                 }
               })();

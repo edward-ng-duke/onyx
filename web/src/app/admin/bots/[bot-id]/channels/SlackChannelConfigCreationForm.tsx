@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { toast } from "@/hooks/useToast";
@@ -35,6 +36,7 @@ export const SlackChannelConfigCreationForm = ({
   existingSlackChannelConfig?: SlackChannelConfig;
 }) => {
   const router = useRouter();
+  const tT = useTranslations("toasts.admin.bots");
   const isUpdate = Boolean(existingSlackChannelConfig);
   const isDefault = existingSlackChannelConfig?.is_default || false;
   const existingSlackBotUsesPersona = existingSlackChannelConfig?.persona
@@ -219,9 +221,10 @@ export const SlackChannelConfigCreationForm = ({
             const responseJson = await response.json();
             const errorMsg = responseJson.detail || responseJson.message;
             toast.error(
-              `Error ${
-                isUpdate ? "updating" : "creating"
-              } OnyxBot config - ${errorMsg}`
+              tT("slackChannelConfigCreateOrUpdateError", {
+                action: isUpdate ? "updating" : "creating",
+                error: errorMsg,
+              })
             );
           }
         }}

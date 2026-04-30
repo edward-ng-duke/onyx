@@ -66,6 +66,7 @@ import { Button } from "@opal/components";
 import { SvgSettings } from "@opal/icons";
 import { UserRole } from "@/lib/types";
 import { useUser } from "@/providers/UserProvider";
+import { useTranslations } from "next-intl";
 // synchronize these validations with the SQLAlchemy connector class until we have a
 // centralized schema for both frontend and backend
 const RefreshFrequencySchema = Yup.object().shape({
@@ -92,6 +93,7 @@ const PAGES_PER_BATCH = 8;
 function Main({ ccPairId }: { ccPairId: number }) {
   const router = useRouter();
   const { user } = useUser();
+  const tT = useTranslations("toasts.admin.connectors");
 
   const {
     data: ccPair,
@@ -168,9 +170,7 @@ function Main({ ccPairId }: { ccPairId: number }) {
     isSchedulingConnectorDeletionRef.current = true;
 
     deleteCCPair(ccPair.connector.id, ccPair.credential.id).catch((error) => {
-      toast.error(
-        "Failed to schedule deletion of connector - " + error.message
-      );
+      toast.error(tT("deleteScheduleFailed", { error: error.message }));
     });
     finishConnectorDeletion();
   }, [ccPair, finishConnectorDeletion]);
@@ -214,18 +214,16 @@ function Main({ ccPairId }: { ccPairId: number }) {
 
       if (result.success) {
         toast.success(
-          `${
-            fromBeginning ? "Complete re-indexing" : "Indexing update"
-          } started successfully`
+          fromBeginning
+            ? tT("indexingStartedComplete")
+            : tT("indexingStartedUpdate")
         );
       } else {
-        toast.error(result.message || "Failed to start indexing");
+        toast.error(result.message || tT("indexingStartFailed"));
       }
     } catch (error) {
       console.error("Failed to trigger indexing:", error);
-      toast.error(
-        "An unexpected error occurred while trying to start indexing"
-      );
+      toast.error(tT("indexingUnexpectedError"));
     } finally {
       setShowIsResolvingKickoffLoader(false);
     }
@@ -264,9 +262,9 @@ function Main({ ccPairId }: { ccPairId: number }) {
         throw new Error(await response.text());
       }
       mutate(buildCCPairInfoUrl(ccPairId));
-      toast.success("Connector name updated successfully");
+      toast.success(tT("nameUpdateSuccess"));
     } catch (error) {
-      toast.error("Failed to update connector name");
+      toast.error(tT("nameUpdateFailed"));
     }
   };
 
@@ -285,7 +283,7 @@ function Main({ ccPairId }: { ccPairId: number }) {
     const parsedRefreshFreqMinutes = parseInt(propertyValue, 10);
 
     if (isNaN(parsedRefreshFreqMinutes)) {
-      toast.error("Invalid refresh frequency: must be an integer");
+      toast.error(tT("refreshFreqInvalid"));
       return;
     }
 
@@ -302,9 +300,9 @@ function Main({ ccPairId }: { ccPairId: number }) {
         throw new Error(await response.text());
       }
       mutate(buildCCPairInfoUrl(ccPairId));
-      toast.success("Connector refresh frequency updated successfully");
+      toast.success(tT("refreshFreqUpdateSuccess"));
     } catch (error) {
-      toast.error("Failed to update connector refresh frequency");
+      toast.error(tT("refreshFreqUpdateFailed"));
     }
   };
 
@@ -315,7 +313,7 @@ function Main({ ccPairId }: { ccPairId: number }) {
     const parsedFreqHours = parseFloat(propertyValue);
 
     if (isNaN(parsedFreqHours)) {
-      toast.error("Invalid pruning frequency: must be a valid number");
+      toast.error(tT("pruningFreqInvalid"));
       return;
     }
 
@@ -332,9 +330,9 @@ function Main({ ccPairId }: { ccPairId: number }) {
         throw new Error(await response.text());
       }
       mutate(buildCCPairInfoUrl(ccPairId));
-      toast.success("Connector pruning frequency updated successfully");
+      toast.success(tT("pruningFreqUpdateSuccess"));
     } catch (error) {
-      toast.error("Failed to update connector pruning frequency");
+      toast.error(tT("pruningFreqUpdateFailed"));
     }
   };
 

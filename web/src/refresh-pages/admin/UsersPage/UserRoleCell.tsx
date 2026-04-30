@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { UserRole, USER_ROLE_LABELS } from "@/lib/types";
 import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
 import { OpenButton } from "@opal/components";
@@ -33,6 +34,7 @@ interface UserRoleCellProps {
 }
 
 export default function UserRoleCell({ user, onMutate }: UserRoleCellProps) {
+  const tT = useTranslations("toasts.admin.users");
   const [isUpdating, setIsUpdating] = useState(false);
   const [open, setOpen] = useState(false);
   const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
@@ -52,10 +54,12 @@ export default function UserRoleCell({ user, onMutate }: UserRoleCellProps) {
     setIsUpdating(true);
     try {
       await setUserRole(user.email, newRole);
-      toast.success("Role updated");
+      toast.success(tT("roleUpdated"));
       onMutate();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to update role");
+      toast.error(
+        err instanceof Error ? err.message : tT("roleUpdateFailed")
+      );
       onMutate();
     } finally {
       setIsUpdating(false);

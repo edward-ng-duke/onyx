@@ -2,6 +2,7 @@
 
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import type { UserGroup } from "@/lib/types";
 import { SvgChevronRight, SvgUserManage, SvgUsers } from "@opal/icons";
 import { ContentAction } from "@opal/layouts";
@@ -25,6 +26,7 @@ interface GroupCardProps {
 
 function GroupCard({ group }: GroupCardProps) {
   const router = useRouter();
+  const tT = useTranslations("toasts.admin.groups");
   const { mutate } = useSWRConfig();
   const builtIn = isBuiltInGroup(group);
   const isAdmin = group.name === "Admin";
@@ -35,10 +37,10 @@ function GroupCard({ group }: GroupCardProps) {
     try {
       await renameGroup(group.id, newName);
       mutate(SWR_KEYS.adminUserGroups);
-      toast.success(`Group renamed to "${newName}"`);
+      toast.success(tT("renameSuccess", { name: newName }));
     } catch (e) {
       console.error("Failed to rename group:", e);
-      toast.error(e instanceof Error ? e.message : "Failed to rename group");
+      toast.error(e instanceof Error ? e.message : tT("renameFailed"));
     }
   }
 
