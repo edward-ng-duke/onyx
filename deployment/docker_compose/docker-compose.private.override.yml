@@ -29,7 +29,10 @@ services:
     image: searxng/searxng:latest
     restart: unless-stopped
     volumes:
-      - ./searxng:/etc/searxng:ro
+      # NOTE: rw (not :ro) — SearXNG writes limiter state and uwsgi
+      # bookkeeping files into /etc/searxng/ on first boot. A read-only
+      # mount causes a restart loop. T3 populates settings.yml here.
+      - ./searxng:/etc/searxng
     expose:
       - "8080"
     environment:
