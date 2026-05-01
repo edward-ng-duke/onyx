@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Modal from "@/refresh-components/Modal";
 import { Button } from "@opal/components";
 import { CloudEmbeddingModel } from "../../../../components/embedding/interfaces";
@@ -13,17 +14,19 @@ export default function AlreadyPickedModal({
   model,
   onClose,
 }: AlreadyPickedModalProps) {
+  const t = useTranslations("admin.embeddings.alreadyPickedModal");
+  const tCommon = useTranslations("common.actions");
   return (
     <Modal open onOpenChange={onClose}>
       <Modal.Content width="sm" height="sm">
         <Modal.Header
           icon={SvgCheck}
-          title={markdown(`*${model.model_name}* already chosen`)}
-          description="You can select a different one if you want!"
+          title={markdown(t("title", { modelName: model.model_name }))}
+          description={t("description")}
           onClose={onClose}
         />
         <Modal.Footer>
-          <Button onClick={onClose}>Close</Button>
+          <Button onClick={onClose}>{tCommon("close")}</Button>
         </Modal.Footer>
       </Modal.Content>
     </Modal>

@@ -625,7 +625,11 @@
       "unknownError": "An unknown error occurred",
       "providerTypeInvalid": "Provider type is invalid or missing.",
       "updateProviderFailedApiKey": "Failed to update provider- check your API key",
-      "updateProviderFailedApiUrl": "Failed to update provider- check your API URL"
+      "updateProviderFailedApiUrl": "Failed to update provider- check your API URL",
+      "alreadyPickedModal": {
+        "title": "*{modelName}* already chosen",
+        "description": "You can select a different one if you want!"
+      }
     },
     "codeInterpreter": {
       "headerDescription": "Safe and sandboxed Python runtime available to your LLM. See docs for more details.",
@@ -1096,6 +1100,22 @@
         "filesAddedPlural": "{count} files will be added",
         "filesAddedDetail": "New files will be uploaded, chunked, embedded, and indexed in the Document Index",
         "confirmAndSave": "Confirm & Save"
+      },
+      "deletionError": {
+        "title": "Deletion Error",
+        "description": "This error occurred while attempting to delete the connector. You may re-attempt a deletion by clicking the \"Delete\" button."
+      },
+      "configDisplay": {
+        "true": "True",
+        "false": "False",
+        "showLess": "Show less",
+        "showAllItems": "Show all ({count} items)",
+        "pruningFrequency": "Pruning Frequency",
+        "refreshFrequency": "Refresh Frequency",
+        "indexingStart": "Indexing Start",
+        "hoursValue": "{count, plural, one {# hour} other {# hours}}",
+        "minutesValue": "{count, plural, one {# minute} other {# minutes}}",
+        "daysValue": "{count, plural, one {# day} other {# days}}"
       }
     },
     "standardAnswer": {
@@ -2923,7 +2943,8 @@
         "noChangesToSave": "No changes to save.",
         "setupTitle": "Set up {providerProductName}",
         "setupDescription": "Connect to {providerDisplayName} and set up your {providerProductName} models.",
-        "editTitle": "Configure *{providerName}*"
+        "editTitle": "Configure *{providerName}*",
+        "optionalSuffix": "optional"
       },
       "azure": {
         "targetUri": "Target URI",
@@ -3035,7 +3056,11 @@
       "fullExceptionTrace": "Full Exception Trace",
       "pdfViewer": "PDF Viewer",
       "unsupportedDescription": "This file format is not supported for preview.",
-      "downloadFile": "Download File"
+      "downloadFile": "Download File",
+      "download": "Download",
+      "copyContent": "Copy content",
+      "zoomOut": "Zoom Out",
+      "zoomIn": "Zoom In"
     }
   },
   "sections": {

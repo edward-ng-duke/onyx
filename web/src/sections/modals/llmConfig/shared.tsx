@@ -105,7 +105,7 @@ export function APIKeyField({
               ? t("apiKeyDescriptionWithProvider", { providerName })
               : t("apiKeyDescription")
         }
-        suffix={optional ? "optional" : undefined}
+        suffix={optional ? t("optionalSuffix") : undefined}
       >
         <PasswordInputTypeInField name={name} />
       </InputVertical>
@@ -132,7 +132,7 @@ export function APIBaseField({
         withLabel="api_base"
         title={t("apiBaseUrl")}
         subDescription={subDescription}
-        suffix={optional ? "optional" : undefined}
+        suffix={optional ? t("optionalSuffix") : undefined}
       >
         <InputTypeInField name="api_base" placeholder={placeholder} />
       </InputVertical>

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { Button } from "@opal/components";
 import { SvgDownload, SvgZoomIn, SvgZoomOut } from "@opal/icons";
 import Text from "@/refresh-components/texts/Text";
@@ -10,13 +11,14 @@ interface DownloadButtonProps {
 }
 
 export function DownloadButton({ fileUrl, fileName }: DownloadButtonProps) {
+  const t = useTranslations("modals.preview");
   return (
     <a href={fileUrl} download={fileName}>
       <Button
         prominence="tertiary"
         size="sm"
         icon={SvgDownload}
-        tooltip="Download"
+        tooltip={t("download")}
       />
     </a>
   );
@@ -27,8 +29,9 @@ interface CopyButtonProps {
 }
 
 export function CopyButton({ getText }: CopyButtonProps) {
+  const t = useTranslations("modals.preview");
   return (
-    <CopyIconButton getCopyText={getText} tooltip="Copy content" size="sm" />
+    <CopyIconButton getCopyText={getText} tooltip={t("copyContent")} size="sm" />
   );
 }
 
@@ -39,6 +42,7 @@ interface ZoomControlsProps {
 }
 
 export function ZoomControls({ zoom, onZoomIn, onZoomOut }: ZoomControlsProps) {
+  const t = useTranslations("modals.preview");
   return (
     <div className="rounded-12 bg-background-tint-00 p-1 shadow-lg">
       <Section flexDirection="row" width="fit">
@@ -47,7 +51,7 @@ export function ZoomControls({ zoom, onZoomIn, onZoomOut }: ZoomControlsProps) {
           size="sm"
           icon={SvgZoomOut}
           onClick={onZoomOut}
-          tooltip="Zoom Out"
+          tooltip={t("zoomOut")}
         />
         <Text mainUiMono text03>
           {zoom}%
@@ -57,7 +61,7 @@ export function ZoomControls({ zoom, onZoomIn, onZoomOut }: ZoomControlsProps) {
           size="sm"
           icon={SvgZoomIn}
           onClick={onZoomIn}
-          tooltip="Zoom In"
+          tooltip={t("zoomIn")}
         />
       </Section>
     </div>

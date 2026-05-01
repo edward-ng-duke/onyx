@@ -625,7 +625,11 @@
       "unknownError": "发生未知错误",
       "providerTypeInvalid": "提供方类型无效或缺失。",
       "updateProviderFailedApiKey": "更新提供方失败——请检查 API Key",
-      "updateProviderFailedApiUrl": "更新提供方失败——请检查 API URL"
+      "updateProviderFailedApiUrl": "更新提供方失败——请检查 API URL",
+      "alreadyPickedModal": {
+        "title": "已选择 *{modelName}*",
+        "description": "如有需要，可以选择其他模型！"
+      }
     },
     "codeInterpreter": {
       "headerDescription": "安全且沙箱化的 Python 运行环境，可供 LLM 使用。详情参见文档。",
@@ -1096,6 +1100,22 @@
         "filesAddedPlural": "将新增 {count} 个文件",
         "filesAddedDetail": "新文件将被上传、分块、嵌入并索引到文档索引中",
         "confirmAndSave": "确认并保存"
+      },
+      "deletionError": {
+        "title": "删除错误",
+        "description": "在尝试删除连接器时出现此错误。你可以通过点击\"删除\"按钮重新尝试删除。"
+      },
+      "configDisplay": {
+        "true": "是",
+        "false": "否",
+        "showLess": "收起",
+        "showAllItems": "显示全部（{count} 项）",
+        "pruningFrequency": "清理频率",
+        "refreshFrequency": "刷新频率",
+        "indexingStart": "索引开始时间",
+        "hoursValue": "{count} 小时",
+        "minutesValue": "{count} 分钟",
+        "daysValue": "{count} 天"
       }
     },
     "standardAnswer": {
@@ -2923,7 +2943,8 @@
         "noChangesToSave": "没有可保存的更改。",
         "setupTitle": "配置 {providerProductName}",
         "setupDescription": "连接到 {providerDisplayName}，配置你的 {providerProductName} 模型。",
-        "editTitle": "配置 *{providerName}*"
+        "editTitle": "配置 *{providerName}*",
+        "optionalSuffix": "可选"
       },
       "azure": {
         "targetUri": "目标 URI",
@@ -3035,7 +3056,11 @@
       "fullExceptionTrace": "完整异常堆栈",
       "pdfViewer": "PDF 查看器",
       "unsupportedDescription": "此文件格式不支持预览。",
-      "downloadFile": "下载文件"
+      "downloadFile": "下载文件",
+      "download": "下载",
+      "copyContent": "复制内容",
+      "zoomOut": "缩小",
+      "zoomIn": "放大"
     }
   },
   "sections": {
