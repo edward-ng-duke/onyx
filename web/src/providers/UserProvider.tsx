@@ -179,6 +179,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
       if (!response.ok) {
         await refreshUser();
+        // internal: not user-visible — updateUserTemperatureOverrideEnabled has no callers outside UserProvider
         throw new Error("Failed to update user temperature override setting");
       }
     } catch (error) {
@@ -245,6 +246,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!response.ok) {
+        // internal: not user-visible — caller in SettingsPage fires without await/catch, error is swallowed
         throw new Error("Failed to update auto-scroll setting");
       }
     } catch (error) {
@@ -272,6 +274,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
       if (!response.ok) {
         await refreshUser();
+        // internal: not user-visible — callers use their own translated toast messages via onError callbacks
         throw new Error("Failed to update personalization settings");
       }
 

@@ -3731,6 +3731,11 @@
     "unknownError": "Unknown error",
     "failedToLoadLogs": "Failed to load logs",
     "failedToLoadItems": "Failed to load {item}. Please try again.",
-    "failedToFetchData": "Failed to fetch data"
+    "failedToFetchData": "Failed to fetch data",
+    "csv": {
+      "loadError": "Error loading CSV",
+      "loadErrorHint": "The CSV file may be too large or couldn't be loaded properly.",
+      "noData": "No data available"
+    }
   }
 }

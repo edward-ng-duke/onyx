@@ -3731,6 +3731,11 @@
     "unknownError": "未知错误",
     "failedToLoadLogs": "日志加载失败",
     "failedToLoadItems": "加载 {item} 失败，请重试",
-    "failedToFetchData": "数据加载失败"
+    "failedToFetchData": "数据加载失败",
+    "csv": {
+      "loadError": "CSV 加载错误",
+      "loadErrorHint": "CSV 文件可能过大或无法正常加载。",
+      "noData": "暂无数据"
+    }
   }
 }
