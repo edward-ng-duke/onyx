@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 from sqlalchemy import func
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 from starlette.background import BackgroundTasks
 
@@ -23,6 +24,7 @@ from onyx.db.models import Project__UserFile
 from onyx.db.models import User
 from onyx.db.models import UserFile
 from onyx.db.models import UserProject
+from onyx.file_store.file_store import get_default_file_store
 from onyx.server.documents.connector import upload_files
 from onyx.server.features.projects.projects_file_utils import categorize_uploaded_files
 from onyx.server.features.projects.projects_file_utils import RejectedFile
@@ -69,6 +71,7 @@ def create_user_files(
     # NOTE: At the moment, zip metadata is not used for user files.
     # Should revisit to decide whether this should be a feature.
     upload_response = upload_files(categorized_files.acceptable, FileOrigin.USER_FILE)
+    file_store = get_default_file_store()
     user_files = []
     rejected_files = categorized_files.rejected
     id_to_temp_id: dict[str, str] = {}
@@ -76,25 +79,103 @@ def create_user_files(
     for file_path, file in zip(
         upload_response.file_paths, categorized_files.acceptable
     ):
+        filename = file.filename or ""
+        token_count = categorized_files.acceptable_file_to_token_count[filename]
+        should_skip = filename in categorized_files.skip_indexing
+        new_status = (
+            UserFileStatus.SKIPPED if should_skip else UserFileStatus.PROCESSING
+        )
+
+        # Re-use any prior FAILED record for the same (user, name) so a re-upload
+        # behaves as a retry instead of accumulating orphan rows in the DB. If
+        # multiple stale FAILED rows exist (legacy data), reuse the oldest and
+        # mark the rest for cleanup via the standard DELETING flow.
+        existing_failed = list(
+            db_session.execute(
+                select(UserFile)
+                .where(
+                    UserFile.user_id == user.id,
+                    UserFile.name == filename,
+                    UserFile.status == UserFileStatus.FAILED,
+                )
+                .order_by(UserFile.created_at.asc())
+            )
+            .scalars()
+            .all()
+        )
+
+        if existing_failed:
+            reused, *extras = existing_failed
+            old_file_id = reused.file_id
+            reused.file_id = file_path
+            reused.token_count = token_count
+            reused.content_type = file.content_type
+            reused.file_type = file.content_type or reused.file_type
+            reused.status = new_status
+            reused.chunk_count = None
+            reused.last_accessed_at = datetime.datetime.now(datetime.timezone.utc)
+            reused.needs_project_sync = False
+            reused.needs_persona_sync = False
+            if link_url is not None:
+                reused.link_url = link_url
+            db_session.add(reused)
+
+            for extra in extras:
+                extra.status = UserFileStatus.DELETING
+                db_session.add(extra)
+
+            db_session.flush()
+
+            # Best-effort delete of the prior blob; the new upload already wrote
+            # a fresh file_id, so the old one would otherwise leak in storage.
+            try:
+                file_store.delete_file(old_file_id, error_on_missing=False)
+            except Exception:
+                logger.warning(
+                    "Failed to delete prior blob old_file_id=%s for reused user_file=%s",
+                    old_file_id,
+                    reused.id,
+                )
+
+            if project_id:
+                already_linked = db_session.execute(
+                    select(Project__UserFile).where(
+                        Project__UserFile.project_id == project_id,
+                        Project__UserFile.user_file_id == reused.id,
+                    )
+                ).scalar_one_or_none()
+                if already_linked is None:
+                    db_session.add(
+                        Project__UserFile(
+                            project_id=project_id,
+                            user_file_id=reused.id,
+                        )
+                    )
+
+            new_temp_id = (
+                temp_id_map.get(build_hashed_file_key(file)) if temp_id_map else None
+            )
+            if new_temp_id is not None:
+                id_to_temp_id[str(reused.id)] = new_temp_id
+            user_files.append(reused)
+            continue
+
         new_id = uuid.uuid4()
         new_temp_id = (
             temp_id_map.get(build_hashed_file_key(file)) if temp_id_map else None
         )
         if new_temp_id is not None:
             id_to_temp_id[str(new_id)] = new_temp_id
-        should_skip = (file.filename or "") in categorized_files.skip_indexing
         new_file = UserFile(
             id=new_id,
             user_id=user.id,
             file_id=file_path,
-            name=file.filename,
-            token_count=categorized_files.acceptable_file_to_token_count[
-                file.filename or ""
-            ],
+            name=filename,
+            token_count=token_count,
             link_url=link_url,
             content_type=file.content_type,
             file_type=file.content_type,
-            status=UserFileStatus.SKIPPED if should_skip else UserFileStatus.PROCESSING,
+            status=new_status,
             last_accessed_at=datetime.datetime.now(datetime.timezone.utc),
         )
         # Persist the UserFile first to satisfy FK constraints for association table
