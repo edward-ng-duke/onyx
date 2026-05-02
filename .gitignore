@@ -42,6 +42,10 @@ settings.json
 /backend/tests/regression/answer_quality/search_test_config.yaml
 *.egg-info
 
+# personal local-only files (not for the repo)
+/Makefile.local
+/todo/
+
 # Local .terraform directories
 **/.terraform/*
 
