@@ -1841,7 +1841,11 @@
       "deleteChatConfirm": "Are you sure you want to delete this chat? This action cannot be undone.",
       "deleteProjectTitle": "Delete Project",
       "deleteProjectConfirm": "Are you sure you want to delete this project? This action cannot be undone.",
-      "projectFallback": "Project"
+      "projectFallback": "Project",
+      "deleteChatError": "Failed to delete chat. Please try again."
+    },
+    "documentSidebar": {
+      "closeTooltip": "Close Sidebar"
     }
   },
   "chat": {
@@ -2059,6 +2063,12 @@
     "greetings": {
       "howCanIHelp": "How can I help?",
       "letsGetStarted": "Let's get started."
+    },
+    "modeSwitch": {
+      "search": "Search",
+      "chat": "Chat",
+      "searchDescription": "Quick search for documents",
+      "chatDescription": "Conversation and research"
     }
   },
   "settings": {
@@ -3212,7 +3222,37 @@
         "passthroughDescription": "Onyx will forward the user's OAuth access token directly to the server as an Authorization header. Make sure the server supports authentication with the same provider.",
         "connectingButton": "Connecting...",
         "connectButton": "Connect"
-      }
+      },
+      "refreshTools": "Refresh tools",
+      "toolsLastRefreshed": "Tools last refreshed {time}",
+      "noToolsAvailable": "No tools available",
+      "noToolsFound": "No tools found",
+      "noActionsForSchema": "No actions defined for this OpenAPI schema",
+      "noActionsMatchSearch": "No actions match your search",
+      "deleteMcpServerTitle": "Delete MCP server",
+      "deleteMcpServerBody": "All tools connected to <b>{name}</b> will be removed. Deletion is irreversible.",
+      "deleteMcpServerConfirm": "Are you sure you want to delete this MCP server?",
+      "deleteOpenApiTitle": "Delete OpenAPI action",
+      "deleteOpenApiBody": "This will permanently delete the OpenAPI action <b>{name}</b> and its configuration.",
+      "deleteOpenApiConfirm": "Are you sure you want to delete this OpenAPI action?",
+      "disconnectServer": "Disconnect Server",
+      "manageServer": "Manage Server",
+      "deleteServer": "Delete Server",
+      "authenticate": "Authenticate",
+      "reconnect": "Reconnect",
+      "fetchingTools": "Fetching tools...",
+      "viewTools": "View {count} tool",
+      "viewToolsPlural": "View {count} tools",
+      "rename": "Rename",
+      "notAuthenticated": "(Not Authenticated)",
+      "disconnected": "(Disconnected)",
+      "showAllTools": "Show all tools",
+      "showOnlyEnabledTools": "Show only enabled tools",
+      "disableAllTools": "Disable all tools",
+      "enableAll": "Enable all",
+      "searchToolsPlaceholder": "Search tools…",
+      "searchToolsAria": "Search tools",
+      "authenticateOpenApiTitle": "Authenticate OpenAPI Action"
     },
     "appHealthBanner": {
       "loggedOutTitle": "You Have Been Logged Out",
@@ -3276,6 +3316,12 @@
         "addMemoryDescription": "Add personal note or memory that Onyx should remember.",
         "viewAdd": "View / Add",
         "allMemories": "All Memories"
+      }
+    },
+    "knowledge": {
+      "sourceHierarchy": {
+        "searchPlaceholder": "Search...",
+        "selectedItems": "Selected items"
       }
     }
   },
@@ -3495,6 +3541,14 @@
       "cannotDeleteProjects": "Cannot delete file. It is associated with projects: {projects}",
       "cannotDeleteAssistants": "Cannot delete file. It is associated with assistants: {assistants}",
       "cannotDeleteBoth": "Cannot delete file. It is associated with projects: {projects} and assistants: {assistants}"
+    }
+  },
+  "agent": {
+    "knowledgePane": {
+      "title": "Knowledge",
+      "description": "Add specific connectors and documents for this agent to use to inform its responses.",
+      "useKnowledgeTitle": "Use Knowledge",
+      "useKnowledgeDescription": "Let this agent reference these documents to inform its responses."
     }
   }
 }
