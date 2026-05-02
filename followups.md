@@ -100,3 +100,33 @@ This is a manual verification pass — Wave F changes touched a large number of 
 - **Settings → Memories**: empty state, list rendering, add/edit/delete flows.
 - **Generic**: confirm no untranslated English remains beyond declared exemptions (proper nouns: Onyx, MCP, SCIM, OAuth, JSON, URL, "Ollama Cloud" tab; e.g. examples; raw API identifiers; etc.).
 
+
+---
+
+# Wave G — CN Display Cleanup Run (2026-05-02)
+
+## Run metadata
+
+- Branch: `i18n/cn-display-cleanup` (feature branch on main checkout)
+- Isolation: branch (not worktree) — same rationale as Wave F (heavy node_modules + .venv, frontend-only work)
+- Plan: `/home/edward/.claude/plans/review-review-proud-toucan.md`
+- Baseline parity test: ⚠ FAILED before run — pre-existing condition (see below); fixed before T0
+- Pre-T0 setup commit: `chore(web/i18n): bump parity test top-level count to 14`
+
+## Pre-existing baseline issue (resolved)
+
+- Parity test hardcoded `toHaveLength(13)` but commit `3f9da9bcca chore(web/i18n): pre-Wave-F infrastructure tightening` introduced a 14th top-level namespace `agent` (singular, alongside existing `agents`). Other 3 parity assertions still passed — so this was purely the literal count being out of date.
+  - Fix taken: bumped `13 → 14` in `web/src/i18n/messages.parity.test.ts` so baseline is green.
+  - **Open question for reviewer:** is `agent.knowledgePane` intentionally separated from `agents.*`? If not, recommend a follow-up wave to merge them.
+
+## Critical
+
+(none yet)
+
+## Per-task followups
+
+(filled in as tasks run)
+
+## Manual steps deferred
+
+(filled in by T4.2 — anything that needs human eyes / browser)

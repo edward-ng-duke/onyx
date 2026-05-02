@@ -63,10 +63,10 @@ const zhLeaves = flattenLeaves(zhMessages as JsonValue);
 const zhByPath = new Map(zhLeaves);
 
 describe("i18n message file parity", () => {
-  it("has 13 top-level namespaces in both files", () => {
+  it("has 14 top-level namespaces in both files", () => {
     const enKeys = Object.keys(enMessages).sort();
     const zhKeys = Object.keys(zhMessages).sort();
-    expect(enKeys).toHaveLength(13);
+    expect(enKeys).toHaveLength(14);
     expect(zhKeys).toEqual(enKeys);
   });
 
