@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useContext } from "react";
+import { useTranslations } from "next-intl";
 import { CustomTooltip } from "../tooltip/CustomTooltip";
 import { SettingsContext } from "@/providers/SettingsProvider";
 import Link from "next/link";
@@ -10,6 +11,7 @@ const DISMISSED_NOTIFICATION_COOKIE_PREFIX = "dismissed_notification_";
 const COOKIE_EXPIRY_DAYS = 1;
 
 export function AnnouncementBanner() {
+  const tAria = useTranslations("common.aria");
   const settings = useContext(SettingsContext);
   const [localNotifications, setLocalNotifications] = useState(
     settings?.settings.notifications || []
@@ -92,9 +94,9 @@ export function AnnouncementBanner() {
               <button
                 onClick={() => handleDismiss(notification.id)}
                 className="absolute top-0 right-0 mt-2 mr-2"
-                aria-label="Dismiss"
+                aria-label={tAria("dismiss")}
               >
-                <CustomTooltip showTick citation delay={100} content="Dismiss">
+                <CustomTooltip showTick citation delay={100} content={tAria("dismiss")}>
                   <SvgX className="stroke-text-04 h-5 w-5" />
                 </CustomTooltip>
               </button>

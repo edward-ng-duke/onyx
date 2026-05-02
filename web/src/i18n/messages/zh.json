@@ -50,7 +50,19 @@
     "aria": {
       "revertToDefault": "恢复默认",
       "removeFile": "移除",
-      "manageActions": "管理操作"
+      "manageActions": "管理操作",
+      "dismiss": "关闭",
+      "attachFile": "附加文件",
+      "expandDocument": "展开文档",
+      "viewFullText": "查看完整内容",
+      "download": "下载",
+      "scrollToBottom": "滚动到底部",
+      "viewGroup": "查看用户组",
+      "showFirstVisitNotice": "显示首次访问提示",
+      "requireConsentToNotice": "需要同意提示",
+      "changeAppMode": "切换应用模式",
+      "loadingActionCard": "正在加载操作卡片",
+      "removeImage": "移除图片"
     },
     "placeholders": {
       "search": "搜索…"

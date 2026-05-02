@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@opal/utils";
 
 interface ActionCardSkeletonProps {
@@ -10,6 +11,7 @@ interface ActionCardSkeletonProps {
 const ActionCardSkeleton: React.FC<ActionCardSkeletonProps> = ({
   className,
 }) => {
+  const tAria = useTranslations("common.aria");
   return (
     <div
       className={cn(
@@ -17,7 +19,7 @@ const ActionCardSkeleton: React.FC<ActionCardSkeletonProps> = ({
         className
       )}
       role="status"
-      aria-label="Loading action card"
+      aria-label={tAria("loadingActionCard")}
     >
       <div className="flex flex-col w-full">
         {/* Header Section */}

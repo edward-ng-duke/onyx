@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import InputTypeIn, {
   InputTypeInProps,
 } from "@/refresh-components/inputs/InputTypeIn";
@@ -46,6 +47,7 @@ export default function InputFile({
   className,
   ...rest
 }: InputFileProps) {
+  const tAria = useTranslations("common.aria");
   const [displayValue, setDisplayValue] = useState<string>("");
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [isFileMode, setIsFileMode] = useState<boolean>(false);
@@ -134,7 +136,7 @@ export default function InputFile({
       type="button"
       prominence="tertiary"
       size="sm"
-      aria-label="Attach file"
+      aria-label={tAria("attachFile")}
     />
   );
 

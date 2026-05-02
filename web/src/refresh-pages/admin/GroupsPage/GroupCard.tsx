@@ -26,6 +26,7 @@ interface GroupCardProps {
 
 function GroupCard({ group }: GroupCardProps) {
   const router = useRouter();
+  const tAria = useTranslations("common.aria");
   const tT = useTranslations("toasts.admin.groups");
   const { mutate } = useSWRConfig();
   const builtIn = isBuiltInGroup(group);
@@ -67,8 +68,8 @@ function GroupCard({ group }: GroupCardProps) {
             <Button
               icon={SvgChevronRight}
               prominence="tertiary"
-              tooltip="View group"
-              aria-label="View group"
+              tooltip={tAria("viewGroup")}
+              aria-label={tAria("viewGroup")}
               onClick={() => router.push(`/admin/groups/${group.id}` as Route)}
             />
           </Section>

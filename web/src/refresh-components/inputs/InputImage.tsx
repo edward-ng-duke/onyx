@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { noProp } from "@/lib/utils";
 import { cn } from "@opal/utils";
 import { SvgPlus, SvgX } from "@opal/icons";
@@ -134,6 +135,7 @@ export default function InputImage({
   size = 120,
   className,
 }: InputImageProps) {
+  const tAria = useTranslations("common.aria");
   const isInteractive = !disabled && (onEdit || onDrop);
   const hasImage = !!src;
 
@@ -268,7 +270,7 @@ export default function InputImage({
                 type="button"
                 primary
                 className="!w-5 !h-5 !p-0.5 !rounded-04"
-                aria-label="Remove image"
+                aria-label={tAria("removeImage")}
               />
             </Hoverable.Item>
           </div>

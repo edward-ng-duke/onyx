@@ -50,7 +50,19 @@
     "aria": {
       "revertToDefault": "Revert to Default",
       "removeFile": "Remove",
-      "manageActions": "Manage Actions"
+      "manageActions": "Manage Actions",
+      "dismiss": "Dismiss",
+      "attachFile": "Attach file",
+      "expandDocument": "Expand document",
+      "viewFullText": "View Full Text",
+      "download": "Download",
+      "scrollToBottom": "Scroll to bottom",
+      "viewGroup": "View group",
+      "showFirstVisitNotice": "Show First Visit Notice",
+      "requireConsentToNotice": "Require Consent to Notice",
+      "changeAppMode": "Change app mode",
+      "loadingActionCard": "Loading action card",
+      "removeImage": "Remove image"
     },
     "placeholders": {
       "search": "Search..."
