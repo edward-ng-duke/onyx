@@ -12,6 +12,7 @@ import {
 import Text from "@/refresh-components/texts/Text";
 import { Button, Divider } from "@opal/components";
 import { SvgSearchMenu, SvgX } from "@opal/icons";
+import { useTranslations } from "next-intl";
 
 // Build an OnyxDocument from basic file info
 const buildOnyxDocumentFromFile = (
@@ -43,6 +44,7 @@ interface HeaderProps {
 }
 
 function Header({ children, onClose }: HeaderProps) {
+  const t = useTranslations("nav.documentSidebar");
   return (
     <div className="sticky top-0 z-sticky bg-background-tint-01">
       <div className="flex flex-row w-full items-center justify-between gap-2 py-3">
@@ -56,7 +58,7 @@ function Header({ children, onClose }: HeaderProps) {
           icon={SvgX}
           prominence="tertiary"
           onClick={onClose}
-          tooltip="Close Sidebar"
+          tooltip={t("closeTooltip")}
         />
       </div>
       <Divider paddingParallel="fit" paddingPerpendicular="fit" />

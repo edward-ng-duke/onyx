@@ -38,6 +38,7 @@ import { timeAgo } from "@/lib/time";
 import Spacer from "@/refresh-components/Spacer";
 import { Disabled } from "@opal/core";
 import SourceHierarchyBrowser from "./SourceHierarchyBrowser";
+import { useTranslations } from "next-intl";
 
 // Knowledge pane view states
 type KnowledgeView = "main" | "add" | "document-sets" | "sources" | "recent";
@@ -879,6 +880,7 @@ export default function AgentKnowledgePane({
   initialHierarchyNodes,
   vectorDbEnabled = true,
 }: AgentKnowledgePaneProps) {
+  const t = useTranslations("agent.knowledgePane");
   // View state
   const [view, setView] = useState<KnowledgeView>("main");
   const [activeSource, setActiveSource] = useState<ValidSources | undefined>();
@@ -1138,8 +1140,8 @@ export default function AgentKnowledgePane({
   return (
     <GeneralLayouts.Section gap={0.5} alignItems="stretch" height="auto">
       <Content
-        title="Knowledge"
-        description="Add specific connectors and documents for this agent to use to inform its responses."
+        title={t("title")}
+        description={t("description")}
         sizePreset="main-content"
         variant="section"
       />
@@ -1147,8 +1149,8 @@ export default function AgentKnowledgePane({
       <Card>
         <GeneralLayouts.Section gap={0.5} alignItems="stretch" height="auto">
           <InputHorizontal
-            title="Use Knowledge"
-            description="Let this agent reference these documents to inform its responses."
+            title={t("useKnowledgeTitle")}
+            description={t("useKnowledgeDescription")}
             withLabel
           >
             <Switch
