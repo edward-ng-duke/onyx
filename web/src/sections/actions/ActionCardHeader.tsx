@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@opal/utils";
 import { ActionStatus } from "@/lib/tools/interfaces";
 import Text from "@/refresh-components/texts/Text";
@@ -28,6 +29,7 @@ function ActionCardHeader({
   onEdit,
   onRename,
 }: ActionCardHeaderProps) {
+  const t = useTranslations("sections.actions");
   const [isRenaming, setIsRenaming] = useState(false);
   const { isHovered } = useActionCardContext();
 
@@ -102,7 +104,7 @@ function ActionCardHeader({
               text03
               className="shrink-0 whitespace-nowrap"
             >
-              (Not Authenticated)
+              {t("notAuthenticated")}
             </Text>
           )}
           {isDisconnected && !isRenaming && (
@@ -112,14 +114,14 @@ function ActionCardHeader({
               text02
               className="shrink-0 whitespace-nowrap"
             >
-              (Disconnected)
+              {t("disconnected")}
             </Text>
           )}
           {showRenameIcon && (
             // TODO(@raunakab): migrate to opal Button once className/iconClassName is resolved
             <IconButton
               icon={SvgEdit}
-              tooltip="Rename"
+              tooltip={t("rename")}
               internal
               tertiary
               onClick={handleRenameClick}

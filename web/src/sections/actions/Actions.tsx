@@ -1,6 +1,7 @@
 "use client";
 import { ActionStatus } from "@/lib/tools/interfaces";
 import React from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@opal/components";
 import {
   SvgArrowExchange,
@@ -39,6 +40,7 @@ const Actions = React.memo(
     isToolsExpanded,
     onToggleTools,
   }: ActionsProps) => {
+    const t = useTranslations("sections.actions");
     const { isHovered: isParentHovered } = useActionCardContext();
     const showViewToolsButton =
       (status === ActionStatus.CONNECTED ||
@@ -63,7 +65,7 @@ const Actions = React.memo(
               >
                 <Button
                   icon={SvgUnplug}
-                  tooltip="Disconnect Server"
+                  tooltip={t("disconnectServer")}
                   prominence="tertiary"
                   onClick={onDisconnect}
                   aria-label={`Disconnect ${serverName} server`}
@@ -73,7 +75,7 @@ const Actions = React.memo(
             {onManage && (
               <Button
                 icon={SvgSettings}
-                tooltip="Manage Server"
+                tooltip={t("manageServer")}
                 prominence="tertiary"
                 onClick={onManage}
                 aria-label={`Manage ${serverName} server`}
@@ -88,8 +90,10 @@ const Actions = React.memo(
               aria-label={`View tools for ${serverName}`}
             >
               {status === ActionStatus.FETCHING
-                ? "Fetching tools..."
-                : `View ${toolCount ?? 0} tool${toolCount !== 1 ? "s" : ""}`}
+                ? t("fetchingTools")
+                : t(toolCount === 1 ? "viewTools" : "viewToolsPlural", {
+                    count: toolCount ?? 0,
+                  })}
             </Button>
           )}
         </div>
@@ -107,7 +111,7 @@ const Actions = React.memo(
               rightIcon={SvgArrowExchange}
               aria-label={`Authenticate and connect to ${serverName}`}
             >
-              Authenticate
+              {t("authenticate")}
             </Button>
           )}
           <div
@@ -121,7 +125,7 @@ const Actions = React.memo(
             {onDelete && (
               <Button
                 icon={SvgTrash}
-                tooltip="Delete Server"
+                tooltip={t("deleteServer")}
                 prominence="tertiary"
                 onClick={onDelete}
                 aria-label={`Delete ${serverName} server`}
@@ -130,7 +134,7 @@ const Actions = React.memo(
             {onManage && (
               <Button
                 icon={SvgSettings}
-                tooltip="Manage Server"
+                tooltip={t("manageServer")}
                 prominence="tertiary"
                 onClick={onManage}
                 aria-label={`Manage ${serverName} server`}
@@ -152,13 +156,13 @@ const Actions = React.memo(
               rightIcon={SvgPlug}
               aria-label={`Reconnect to ${serverName}`}
             >
-              Reconnect
+              {t("reconnect")}
             </Button>
           )}
           {onManage && (
             <Button
               icon={SvgSettings}
-              tooltip="Manage Server"
+              tooltip={t("manageServer")}
               prominence="tertiary"
               onClick={onManage}
               aria-label={`Manage ${serverName} server`}
@@ -173,7 +177,9 @@ const Actions = React.memo(
             rightIcon={SvgChevronDown}
             aria-label={`View tools for ${serverName}`}
           >
-            {`View ${toolCount ?? 0} tool${toolCount !== 1 ? "s" : ""}`}
+            {t(toolCount === 1 ? "viewTools" : "viewToolsPlural", {
+              count: toolCount ?? 0,
+            })}
           </Button>
         )}
       </div>
