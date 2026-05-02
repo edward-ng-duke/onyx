@@ -52,9 +52,6 @@ interface HookFormModalProps {
 
 const MAX_TIMEOUT_SECONDS = 600;
 
-const SOFT_DESCRIPTION =
-  "If the endpoint returns an error, Onyx logs it and continues the pipeline as normal, ignoring the hook result.";
-
 function buildInitialValues(
   hook: HookResponse | undefined,
   spec: HookPointMeta | undefined
@@ -113,13 +110,17 @@ interface TimeoutFieldProps {
 function TimeoutField({ spec }: TimeoutFieldProps) {
   const { values, setFieldValue, isSubmitting } =
     useFormikContext<HookFormState>();
+  const tForm = useTranslations("admin.hooks.form");
+  const tAria = useTranslations("common.aria");
 
   return (
     <InputVertical
       withLabel="timeout_seconds"
-      title="Timeout"
+      title={tForm("timeoutLabel")}
       suffix="(seconds)"
-      subDescription={`Maximum time Onyx will wait for the endpoint to respond before applying the fail strategy. Must be greater than 0 and at most ${MAX_TIMEOUT_SECONDS} seconds.`}
+      subDescription={tForm("timeoutSubDescription", {
+        max: MAX_TIMEOUT_SECONDS,
+      })}
     >
       <div className="[&_input]:!font-main-ui-mono [&_input::placeholder]:!font-main-ui-mono [&_input]:![appearance:textfield] [&_input::-webkit-outer-spin-button]:!appearance-none [&_input::-webkit-inner-spin-button]:!appearance-none w-full">
         <InputTypeInField
@@ -135,7 +136,7 @@ function TimeoutField({ spec }: TimeoutFieldProps) {
                 prominence="tertiary"
                 size="xs"
                 icon={SvgRevert}
-                tooltip="Revert to Default"
+                tooltip={tAria("revertToDefault")}
                 onClick={() =>
                   setFieldValue(
                     "timeout_seconds",
@@ -164,6 +165,12 @@ export default function HookFormModal({
 }: HookFormModalProps) {
   const isEdit = !!hook;
   const tValHooks = useTranslations("validation.hooks");
+  const tForm = useTranslations("admin.hooks.form");
+  const tModals = useTranslations("modals.hookForm");
+  const tToasts = useTranslations("toasts.admin.hooks");
+  const tActions = useTranslations("common.actions");
+  const tLabels = useTranslations("common.labels");
+  const tErrors = useTranslations("errors");
   const [isConnected, setIsConnected] = useState(false);
   const [apiKeyCleared, setApiKeyCleared] = useState(false);
 
@@ -211,7 +218,7 @@ export default function HookFormModal({
                 result = await updateHook(hook.id, req);
               } else {
                 if (!spec) {
-                  toast.error("No hook point specified.");
+                  toast.error(tToasts("noHookPoint"));
                   return;
                 }
                 result = await createHook({
@@ -223,7 +230,9 @@ export default function HookFormModal({
                   timeout_seconds: parseFloat(values.timeout_seconds),
                 });
               }
-              toast.success(isEdit ? "Hook updated." : "Hook created.");
+              toast.success(
+                isEdit ? tToasts("hookUpdated") : tToasts("hookCreated")
+              );
               onSuccess(result);
               if (!isEdit) {
                 setIsConnected(true);
@@ -232,20 +241,25 @@ export default function HookFormModal({
               handleClose();
             } catch (err) {
               if (err instanceof HookAuthError) {
-                helpers.setFieldError("api_key", "Invalid API key.");
+                helpers.setFieldError(
+                  "api_key",
+                  tValHooks("invalidApiKey")
+                );
               } else if (err instanceof HookTimeoutError) {
                 helpers.setFieldError(
                   "timeout_seconds",
-                  "Connection timed out. Try increasing the timeout."
+                  tValHooks("connectionTimedOut")
                 );
               } else if (err instanceof HookConnectError) {
                 helpers.setFieldError(
                   "endpoint_url",
-                  err.message || "Could not connect to endpoint."
+                  err.message || tValHooks("couldNotConnect")
                 );
               } else {
                 toast.error(
-                  err instanceof Error ? err.message : "Something went wrong."
+                  err instanceof Error
+                    ? err.message
+                    : tErrors("somethingWentWrong")
                 );
               }
             } finally {
@@ -256,7 +270,7 @@ export default function HookFormModal({
           {({ values, setFieldValue, isSubmitting, isValid, dirty }) => {
             const failStrategyDescription =
               values.fail_strategy === "soft"
-                ? SOFT_DESCRIPTION
+                ? tForm("softDescription")
                 : spec?.fail_hard_description;
 
             return (
@@ -264,12 +278,10 @@ export default function HookFormModal({
                 <Modal.Header
                   icon={SvgShareWebhook}
                   title={
-                    isEdit ? "Manage Hook Extension" : "Set Up Hook Extension"
+                    isEdit ? tModals("editTitle") : tModals("createTitle")
                   }
                   description={
-                    isEdit
-                      ? undefined
-                      : "Connect an external API endpoint to extend the hook point."
+                    isEdit ? undefined : tModals("createDescription")
                   }
                   onClose={handleClose}
                 />
@@ -288,24 +300,27 @@ export default function HookFormModal({
                           sizePreset="secondary"
                           variant="body"
                           icon={SvgShareWebhook}
-                          title="Hook Point"
+                          title={tForm("hookPointLabel")}
                           color="muted"
                           width="fit"
                         />
                         {docsUrl && (
                           <LinkButton href={docsUrl} target="_blank">
-                            Documentation
+                            {tActions("documentation")}
                           </LinkButton>
                         )}
                       </div>
                     }
                   />
 
-                  <InputVertical withLabel="name" title="Display Name">
+                  <InputVertical
+                    withLabel="name"
+                    title={tForm("displayNameLabel")}
+                  >
                     <div className="[&_input::placeholder]:!font-main-ui-muted w-full">
                       <InputTypeInField
                         name="name"
-                        placeholder="Name your extension at this hook point"
+                        placeholder={tForm("namePlaceholder")}
                         variant={isSubmitting ? "disabled" : undefined}
                       />
                     </div>
@@ -313,7 +328,7 @@ export default function HookFormModal({
 
                   <InputVertical
                     withLabel="fail_strategy"
-                    title="Fail Strategy"
+                    title={tForm("failStrategyLabel")}
                     subDescription={failStrategyDescription}
                   >
                     <InputSelect
@@ -323,23 +338,29 @@ export default function HookFormModal({
                       }
                       disabled={isSubmitting}
                     >
-                      <InputSelect.Trigger placeholder="Select strategy" />
+                      <InputSelect.Trigger
+                        placeholder={tForm("failStrategyPlaceholder")}
+                      />
                       <InputSelect.Content>
                         <InputSelect.Item value="soft">
-                          Log Error and Continue
+                          {tForm("failStrategySoft")}
                           {spec?.default_fail_strategy === "soft" && (
                             <>
                               {" "}
-                              <Text color="text-03">(Default)</Text>
+                              <Text color="text-03">
+                                {tLabels("default")}
+                              </Text>
                             </>
                           )}
                         </InputSelect.Item>
                         <InputSelect.Item value="hard">
-                          Block Pipeline on Failure
+                          {tForm("failStrategyHard")}
                           {spec?.default_fail_strategy === "hard" && (
                             <>
                               {" "}
-                              <Text color="text-03">(Default)</Text>
+                              <Text color="text-03">
+                                {tLabels("default")}
+                              </Text>
                             </>
                           )}
                         </InputSelect.Item>
@@ -351,8 +372,8 @@ export default function HookFormModal({
 
                   <InputVertical
                     withLabel="endpoint_url"
-                    title="External API Endpoint URL"
-                    subDescription="Only connect to servers you trust. You are responsible for actions taken and data shared with this connection."
+                    title={tForm("endpointUrlLabel")}
+                    subDescription={tForm("endpointUrlSubDescription")}
                   >
                     <div className="[&_input::placeholder]:!font-main-ui-muted w-full">
                       <InputTypeInField
@@ -365,15 +386,15 @@ export default function HookFormModal({
 
                   <InputVertical
                     withLabel="api_key"
-                    title="API Key"
-                    subDescription="Onyx will use this key to authenticate with your API endpoint."
+                    title={tForm("apiKeyLabel")}
+                    subDescription={tForm("apiKeySubDescription")}
                   >
                     <PasswordInputTypeInField
                       name="api_key"
                       placeholder={
                         isEdit
                           ? hook?.api_key_masked ??
-                            "Leave blank to keep current key"
+                            tForm("apiKeyEditPlaceholder")
                           : undefined
                       }
                       disabled={isSubmitting}
@@ -409,8 +430,8 @@ export default function HookFormModal({
                       </div>
                       <Text font="secondary-body" color="text-03">
                         {isConnected
-                          ? "Connection valid."
-                          : "Verifying connection…"}
+                          ? tForm("connectionValid")
+                          : tForm("verifyingConnection")}
                       </Text>
                     </Section>
                   )}
@@ -424,7 +445,7 @@ export default function HookFormModal({
                         prominence="secondary"
                         onClick={handleClose}
                       >
-                        Cancel
+                        {tActions("cancel")}
                       </Button>
                     }
                     submit={
@@ -443,7 +464,9 @@ export default function HookFormModal({
                             : undefined
                         }
                       >
-                        {isEdit ? "Save Changes" : "Connect"}
+                        {isEdit
+                          ? tActions("saveChanges")
+                          : tActions("connect")}
                       </Button>
                     }
                   />

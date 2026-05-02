@@ -33,7 +33,8 @@
       "open": "Open",
       "documentation": "Documentation",
       "connect": "Connect",
-      "reconnect": "Reconnect"
+      "reconnect": "Reconnect",
+      "saveChanges": "Save Changes"
     },
     "labels": {
       "yes": "Yes",
@@ -42,7 +43,11 @@
       "description": "Description",
       "type": "Type",
       "status": "Status",
-      "actions": "Actions"
+      "actions": "Actions",
+      "default": "(Default)"
+    },
+    "aria": {
+      "revertToDefault": "Revert to Default"
     }
   },
   "auth": {
@@ -2250,6 +2255,25 @@
         "deactivate": "Deactivate hook",
         "testConnection": "Test Connection",
         "revalidate": "Re-validate hook"
+      },
+      "form": {
+        "softDescription": "If the endpoint returns an error, Onyx logs it and continues the pipeline as normal, ignoring the hook result.",
+        "timeoutLabel": "Timeout",
+        "timeoutSubDescription": "Maximum time Onyx will wait for the endpoint to respond before applying the fail strategy. Must be greater than 0 and at most {max} seconds.",
+        "hookPointLabel": "Hook Point",
+        "displayNameLabel": "Display Name",
+        "namePlaceholder": "Name your extension at this hook point",
+        "failStrategyLabel": "Fail Strategy",
+        "failStrategyPlaceholder": "Select strategy",
+        "failStrategySoft": "Log Error and Continue",
+        "failStrategyHard": "Block Pipeline on Failure",
+        "endpointUrlLabel": "External API Endpoint URL",
+        "endpointUrlSubDescription": "Only connect to servers you trust. You are responsible for actions taken and data shared with this connection.",
+        "apiKeyLabel": "API Key",
+        "apiKeySubDescription": "Onyx will use this key to authenticate with your API endpoint.",
+        "apiKeyEditPlaceholder": "Leave blank to keep current key",
+        "connectionValid": "Connection valid",
+        "verifyingConnection": "Verifying connection…"
       }
     }
   },
@@ -2610,7 +2634,10 @@
         "disconnectFailed": "Failed to disconnect hook",
         "validateFailed": "Failed to validate hook",
         "requiresEnterprise": "Hook Extensions require an Enterprise license",
-        "notEnabled": "Hook Extensions are not enabled for this deployment"
+        "notEnabled": "Hook Extensions are not enabled for this deployment",
+        "noHookPoint": "No hook point specified",
+        "hookUpdated": "Hook updated",
+        "hookCreated": "Hook created"
       }
     },
     "shared": {
@@ -2806,7 +2833,10 @@
       "endpointUrlRequired": "Endpoint URL cannot be empty.",
       "apiKeyRequired": "API key cannot be empty.",
       "timeoutRequired": "Timeout is required.",
-      "timeoutRange": "Must be greater than 0 and at most {max} seconds."
+      "timeoutRange": "Must be greater than 0 and at most {max} seconds.",
+      "invalidApiKey": "Invalid API key",
+      "connectionTimedOut": "Connection timed out. Try increasing the timeout.",
+      "couldNotConnect": "Could not connect to endpoint"
     },
     "mcpServer": {
       "nameRequired": "Server name is required",
@@ -3134,6 +3164,11 @@
       "deleteTitle": "Delete *{name}*",
       "deleteBody": "Hook ***{name}*** will be permanently removed from this hook point. The external endpoint may still retain data previously sent to it.",
       "deletionNote": "Deletion cannot be undone."
+    },
+    "hookForm": {
+      "editTitle": "Manage Hook Extension",
+      "createTitle": "Set Up Hook Extension",
+      "createDescription": "Connect an external API endpoint to extend the hook point."
     }
   },
   "sections": {
@@ -3642,5 +3677,8 @@
       "useKnowledgeTitle": "Use Knowledge",
       "useKnowledgeDescription": "Let this agent reference these documents to inform its responses."
     }
+  },
+  "errors": {
+    "somethingWentWrong": "Something went wrong"
   }
 }
