@@ -6,6 +6,7 @@ import Button from "@/refresh-components/buttons/Button";
 import { useState } from "react";
 import { ConfirmEntityModal } from "@/components/modals/ConfirmEntityModal";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export const LeaveOrganizationButton = ({
   user,
@@ -18,6 +19,7 @@ export const LeaveOrganizationButton = ({
   className?: string;
   children?: React.ReactNode;
 }) => {
+  const tToasts = useTranslations("toasts.admin.users");
   const router = useRouter();
   const { trigger, isMutating } = useSWRMutation(
     "/api/tenants/leave-team",
@@ -25,9 +27,10 @@ export const LeaveOrganizationButton = ({
     {
       onSuccess: () => {
         mutate();
-        toast.success("Successfully left the team!");
+        toast.success(tToasts("leaveSuccess"));
       },
-      onError: (errorMsg) => toast.error(`Unable to leave team - ${errorMsg}`),
+      onError: (errorMsg) =>
+        toast.error(tToasts("leaveFailed", { error: String(errorMsg) })),
     }
   );
 

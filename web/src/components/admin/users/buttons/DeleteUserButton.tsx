@@ -5,6 +5,7 @@ import useSWRMutation from "swr/mutation";
 import Button from "@/refresh-components/buttons/Button";
 import { useState } from "react";
 import { ConfirmEntityModal } from "@/components/modals/ConfirmEntityModal";
+import { useTranslations } from "next-intl";
 
 const DeleteUserButton = ({
   user,
@@ -17,16 +18,18 @@ const DeleteUserButton = ({
   className?: string;
   children?: React.ReactNode;
 }) => {
+  const tToasts = useTranslations("toasts.admin.users");
+
   const { trigger, isMutating } = useSWRMutation(
     "/api/manage/admin/delete-user",
     userMutationFetcher,
     {
       onSuccess: () => {
         mutate();
-        toast.success("User deleted successfully!");
+        toast.success(tToasts("userDeleted"));
       },
       onError: (errorMsg) =>
-        toast.error(`Unable to delete user - ${errorMsg.message}`),
+        toast.error(tToasts("deleteFailed", { error: errorMsg.message })),
     }
   );
 

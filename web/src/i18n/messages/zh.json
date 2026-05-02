@@ -8,6 +8,8 @@
       "edit": "编辑",
       "add": "新增",
       "remove": "移除",
+      "invite": "邀请",
+      "uninvite": "取消邀请",
       "submit": "提交",
       "close": "关闭",
       "confirm": "确认",
@@ -2451,7 +2453,14 @@
         "inviteCancelled": "邀请已取消",
         "userDeactivated": "用户已停用",
         "userActivated": "用户已激活",
-        "userDeleted": "用户已删除"
+        "userDeleted": "用户已删除",
+        "inviteSuccess": "用户邀请成功",
+        "inviteFailed": "邀请用户失败 — {error}",
+        "uninviteSuccess": "已取消用户邀请",
+        "uninviteFailed": "取消邀请失败 — {error}",
+        "deleteFailed": "删除用户失败 — {error}",
+        "leaveSuccess": "已离开团队",
+        "leaveFailed": "离开团队失败 — {error}"
       },
       "codeInterpreter": {
         "actionFailed": "{action} Code Interpreter 失败"
@@ -3527,6 +3536,15 @@
       "email": "邮箱",
       "actions": "操作",
       "noMatching": "未找到匹配 \"{query}\" 的用户"
+    },
+    "inviteUser": {
+      "titleInvite": "邀请用户",
+      "titleUninvite": "取消邀请用户",
+      "bodyInvite": "确认邀请 {email} 吗？",
+      "bodyUninvite": "确认取消邀请 {email} 吗？"
+    },
+    "changeCuratorRole": {
+      "title": "更改 Curator 角色"
     }
   },
   "ui": {

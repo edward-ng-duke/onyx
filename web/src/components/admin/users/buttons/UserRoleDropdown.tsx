@@ -11,6 +11,7 @@ import InputSelect from "@/refresh-components/inputs/InputSelect";
 import GenericConfirmModal from "@/components/modals/GenericConfirmModal";
 import { useState } from "react";
 import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
+import { useTranslations } from "next-intl";
 
 export interface UserRoleDropdownProps {
   user: User;
@@ -23,6 +24,8 @@ export default function UserRoleDropdown({
   onSuccess,
   onError,
 }: UserRoleDropdownProps) {
+  const tModals = useTranslations("modals.changeCuratorRole");
+
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingRole, setPendingRole] = useState<string | null>(null);
 
@@ -61,7 +64,7 @@ export default function UserRoleDropdown({
     <>
       {showConfirmModal && (
         <GenericConfirmModal
-          title="Change Curator Role"
+          title={tModals("title")}
           message={`Warning: Switching roles from Curator to ${
             USER_ROLE_LABELS[pendingRole as UserRole] ??
             USER_ROLE_LABELS[user.role]

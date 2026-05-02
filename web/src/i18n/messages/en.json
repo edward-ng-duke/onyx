@@ -8,6 +8,8 @@
       "edit": "Edit",
       "add": "Add",
       "remove": "Remove",
+      "invite": "Invite",
+      "uninvite": "Uninvite",
       "submit": "Submit",
       "close": "Close",
       "confirm": "Confirm",
@@ -2451,7 +2453,14 @@
         "inviteCancelled": "Invite cancelled",
         "userDeactivated": "User deactivated",
         "userActivated": "User activated",
-        "userDeleted": "User deleted"
+        "userDeleted": "User deleted",
+        "inviteSuccess": "User invited successfully",
+        "inviteFailed": "Unable to invite user — {error}",
+        "uninviteSuccess": "User uninvited successfully",
+        "uninviteFailed": "Unable to uninvite user — {error}",
+        "deleteFailed": "Unable to delete user — {error}",
+        "leaveSuccess": "Successfully left the team",
+        "leaveFailed": "Unable to leave team — {error}"
       },
       "codeInterpreter": {
         "actionFailed": "Failed to {action} Code Interpreter"
@@ -3527,6 +3536,15 @@
       "email": "Email",
       "actions": "Actions",
       "noMatching": "No users found matching \"{query}\""
+    },
+    "inviteUser": {
+      "titleInvite": "Invite User",
+      "titleUninvite": "Uninvite User",
+      "bodyInvite": "Are you sure you want to invite {email}?",
+      "bodyUninvite": "Are you sure you want to uninvite {email}?"
+    },
+    "changeCuratorRole": {
+      "title": "Change Curator Role"
     }
   },
   "ui": {
