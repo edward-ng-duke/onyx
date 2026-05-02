@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import Button from "@/refresh-components/buttons/Button";
 import { Button as OpalButton, Divider } from "@opal/components";
 import {
@@ -196,6 +197,7 @@ export function FederatedConnectorForm({
   preloadedCredentialSchema,
 }: FederatedConnectorFormProps) {
   const router = useRouter();
+  const tModals = useTranslations("modals.deleteFederatedConnector");
   const sourceMetadata = getSourceMetadata(connector);
   const isEditMode = connectorId !== undefined;
 
@@ -385,9 +387,7 @@ export function FederatedConnectorForm({
   const handleDeleteConnector = async () => {
     if (!connectorId) return;
 
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this federated connector? This action cannot be undone."
-    );
+    const confirmed = window.confirm(tModals("body"));
 
     if (!confirmed) return;
 

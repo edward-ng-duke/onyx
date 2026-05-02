@@ -3085,6 +3085,9 @@
       "copyContent": "Copy content",
       "zoomOut": "Zoom Out",
       "zoomIn": "Zoom In"
+    },
+    "deleteFederatedConnector": {
+      "body": "Are you sure you want to delete this federated connector? This action cannot be undone."
     }
   },
   "sections": {

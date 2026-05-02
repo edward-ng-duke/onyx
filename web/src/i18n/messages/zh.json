@@ -3085,6 +3085,9 @@
       "copyContent": "复制内容",
       "zoomOut": "缩小",
       "zoomIn": "放大"
+    },
+    "deleteFederatedConnector": {
+      "body": "确认删除该联合 Connector 吗？此操作不可撤销"
     }
   },
   "sections": {
