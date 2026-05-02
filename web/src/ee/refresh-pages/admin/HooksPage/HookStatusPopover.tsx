@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import { noProp } from "@/lib/utils";
 import { formatDateTimeLog } from "@/lib/dateUtils";
@@ -29,9 +30,11 @@ import { cn } from "@opal/utils";
 function ErrorLogRow({
   log,
   group,
+  unknownErrorLabel,
 }: {
   log: { created_at: string; error_message: string | null };
   group: string;
+  unknownErrorLabel: string;
 }) {
   return (
     <Hoverable.Root group={group}>
@@ -64,7 +67,7 @@ function ErrorLogRow({
         </Section>
         <span className="break-all">
           <Text font="secondary-mono" color="text-03">
-            {log.error_message ?? "Unknown error"}
+            {log.error_message ?? unknownErrorLabel}
           </Text>
         </span>
       </Section>
@@ -83,6 +86,8 @@ export default function HookStatusPopover({
   spec,
   isBusy,
 }: HookStatusPopoverProps) {
+  const tHooks = useTranslations("admin.hooks");
+  const tErrors = useTranslations("errors");
   const logsModal = useCreateModal();
   const [open, setOpen] = useState(false);
   // true = opened by click (stays until dismissed); false = opened by hover (closes after 1s)
@@ -200,7 +205,7 @@ export default function HookStatusPopover({
             onClick={noProp(handleTriggerClick)}
             disabled={isBusy}
           >
-            {hook.is_reachable === false ? "Connection Lost" : "Connected"}
+            {hook.is_reachable === false ? tHooks("connectionLost") : tHooks("connected")}
           </Button>
         </Popover.Anchor>
 
@@ -233,7 +238,7 @@ export default function HookStatusPopover({
               </Section>
             ) : error ? (
               <Text font="secondary-body" color="text-03">
-                Failed to load logs.
+                {tErrors("failedToLoadLogs")}
               </Text>
             ) : hook.is_reachable === false ? (
               <>
@@ -247,7 +252,7 @@ export default function HookStatusPopover({
                         className="text-status-error-05"
                       />
                     )}
-                    title="Most Recent Errors"
+                    title={tHooks("mostRecentErrors")}
                   />
                 </div>
 
@@ -268,6 +273,7 @@ export default function HookStatusPopover({
                           key={log.created_at + String(idx)}
                           log={log}
                           group={log.created_at + String(idx)}
+                          unknownErrorLabel={tErrors("unknownError")}
                         />
                       ))}
                     </Section>
@@ -284,7 +290,7 @@ export default function HookStatusPopover({
                     logsModal.toggle(true);
                   })}
                 >
-                  View More Lines
+                  {tHooks("viewMoreLines")}
                 </LineItem>
               </>
             ) : hasRecentErrors ? (
@@ -301,12 +307,10 @@ export default function HookStatusPopover({
                     )}
                     title={
                       recentErrors.length <= 3
-                        ? `${recentErrors.length} ${
-                            recentErrors.length === 1 ? "Error" : "Errors"
-                          }`
-                        : "Most Recent Errors"
+                        ? tHooks("errorCount", { count: recentErrors.length })
+                        : tHooks("mostRecentErrors")
                     }
-                    description="in the past hour"
+                    description={tHooks("inPastHour")}
                   />
                 </div>
 
@@ -326,6 +330,7 @@ export default function HookStatusPopover({
                       key={log.created_at + String(idx)}
                       log={log}
                       group={log.created_at + String(idx)}
+                      unknownErrorLabel={tErrors("unknownError")}
                     />
                   ))}
                 </Section>
@@ -339,7 +344,7 @@ export default function HookStatusPopover({
                     logsModal.toggle(true);
                   })}
                 >
-                  View More Lines
+                  {tHooks("viewMoreLines")}
                 </LineItem>
               </>
             ) : (
@@ -350,8 +355,8 @@ export default function HookStatusPopover({
                     sizePreset="secondary"
                     variant="section"
                     icon={SvgCheckCircle}
-                    title="No Error"
-                    description="in the past hour"
+                    title={tHooks("noError")}
+                    description={tHooks("inPastHour")}
                   />
                 </div>
 
@@ -366,7 +371,7 @@ export default function HookStatusPopover({
                     logsModal.toggle(true);
                   })}
                 >
-                  View Older Errors
+                  {tHooks("viewOlderErrors")}
                 </LineItem>
               </>
             )}

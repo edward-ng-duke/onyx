@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Button, Text } from "@opal/components";
 import { SvgDownload, SvgTextLines } from "@opal/icons";
 import Modal from "@/refresh-components/Modal";
@@ -41,7 +42,15 @@ function SectionHeader({ label }: { label: string }) {
   );
 }
 
-function LogRow({ log, group }: { log: HookExecutionRecord; group: string }) {
+function LogRow({
+  log,
+  group,
+  unknownErrorLabel,
+}: {
+  log: HookExecutionRecord;
+  group: string;
+  unknownErrorLabel: string;
+}) {
   return (
     <Hoverable.Root group={group}>
       <Section
@@ -61,7 +70,7 @@ function LogRow({ log, group }: { log: HookExecutionRecord; group: string }) {
         {/* 2. Error message */}
         <span className="flex-1 min-w-0 break-all whitespace-pre-wrap text-code-code">
           <Text font="secondary-mono" color="inherit">
-            {log.error_message ?? "Unknown error"}
+            {log.error_message ?? unknownErrorLabel}
           </Text>
         </span>
         {/* 3. Copy button */}
@@ -79,6 +88,8 @@ function LogRow({ log, group }: { log: HookExecutionRecord; group: string }) {
 }
 
 export default function HookLogsModal({ hook, spec }: HookLogsModalProps) {
+  const tHooks = useTranslations("admin.hooks");
+  const tErrors = useTranslations("errors");
   const onClose = useModalClose();
 
   const { recentErrors, olderErrors, isLoading, error } = useHookExecutionLogs(
@@ -94,7 +105,7 @@ export default function HookLogsModal({ hook, spec }: HookLogsModalProps) {
       .map(
         (log) =>
           `${formatDateTimeLog(log.created_at)} ${
-            log.error_message ?? "Unknown error"
+            log.error_message ?? tErrors("unknownError")
           }`
       )
       .join("\n");
@@ -109,7 +120,7 @@ export default function HookLogsModal({ hook, spec }: HookLogsModalProps) {
       <Modal.Content width="md" height="fit">
         <Modal.Header
           icon={(props) => <SvgTextLines {...props} />}
-          title="Recent Errors"
+          title={tHooks("recentErrors")}
           description={`Hook: ${hook.name} • Hook Point: ${
             spec?.display_name ?? hook.hook_point
           }`}
@@ -122,11 +133,11 @@ export default function HookLogsModal({ hook, spec }: HookLogsModalProps) {
             </Section>
           ) : error ? (
             <Text font="main-ui-body" color="text-03">
-              Failed to load logs.
+              {tErrors("failedToLoadLogs")}
             </Text>
           ) : totalLines === 0 ? (
             <Text font="main-ui-body" color="text-03">
-              No errors in the past 30 days.
+              {tHooks("noErrorsPast30Days")}
             </Text>
           ) : (
             <>
@@ -138,6 +149,7 @@ export default function HookLogsModal({ hook, spec }: HookLogsModalProps) {
                       key={log.created_at + String(idx)}
                       log={log}
                       group={log.created_at + String(idx)}
+                      unknownErrorLabel={tErrors("unknownError")}
                     />
                   ))}
                 </>
@@ -150,6 +162,7 @@ export default function HookLogsModal({ hook, spec }: HookLogsModalProps) {
                       key={log.created_at + String(idx)}
                       log={log}
                       group={log.created_at + String(idx)}
+                      unknownErrorLabel={tErrors("unknownError")}
                     />
                   ))}
                 </>

@@ -2274,7 +2274,17 @@
         "apiKeyEditPlaceholder": "Leave blank to keep current key",
         "connectionValid": "Connection valid",
         "verifyingConnection": "Verifying connection…"
-      }
+      },
+      "connectionLost": "Connection Lost",
+      "connected": "Connected",
+      "mostRecentErrors": "Most Recent Errors",
+      "viewMoreLines": "View More Lines",
+      "viewOlderErrors": "View Older Errors",
+      "noError": "No Error",
+      "inPastHour": "in the past hour",
+      "recentErrors": "Recent Errors",
+      "noErrorsPast30Days": "No errors in the past 30 days",
+      "errorCount": "{count, plural, one {# Error} other {# Errors}}"
     }
   },
   "agents": {
@@ -3679,6 +3689,8 @@
     }
   },
   "errors": {
-    "somethingWentWrong": "Something went wrong"
+    "somethingWentWrong": "Something went wrong",
+    "unknownError": "Unknown error",
+    "failedToLoadLogs": "Failed to load logs"
   }
 }
