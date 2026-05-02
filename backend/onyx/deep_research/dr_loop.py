@@ -29,6 +29,8 @@ from onyx.deep_research.dr_mock_tools import THINK_TOOL_RESPONSE_MESSAGE
 from onyx.deep_research.dr_mock_tools import THINK_TOOL_RESPONSE_TOKEN_COUNT
 from onyx.deep_research.utils import check_special_tool_calls
 from onyx.deep_research.utils import create_think_tool_token_processor
+from onyx.error_handling.error_codes import OnyxErrorCode
+from onyx.error_handling.exceptions import OnyxError
 from onyx.llm.interfaces import LLM
 from onyx.llm.interfaces import LLMUserIdentity
 from onyx.llm.models import ToolChoiceOptions
@@ -75,6 +77,10 @@ logger = setup_logger()
 
 MAX_USER_MESSAGES_FOR_CONTEXT = 5
 MAX_FINAL_REPORT_TOKENS = 20000
+
+# Deep Research is an agentic loop whose context grows with accumulated tool calls
+# and search results. Models below this floor cannot reliably complete a session.
+MIN_DEEP_RESEARCH_INPUT_TOKENS = 50_000
 
 # 30 minute timeout before forcing final report generation
 # NOTE: The overall execution may be much longer still because it could run a research cycle at minute 29
@@ -218,9 +224,14 @@ def run_deep_research_llm_loop(
 
         # An approximate limit. In extreme cases it may still fail but this should allow deep research
         # to work in most cases.
-        if llm.config.max_input_tokens < 50000:
-            raise RuntimeError(
-                "Cannot run Deep Research with an LLM that has less than 50,000 max input tokens"
+        if llm.config.max_input_tokens < MIN_DEEP_RESEARCH_INPUT_TOKENS:
+            raise OnyxError(
+                OnyxErrorCode.QUERY_REJECTED,
+                f"Deep Research requires an LLM with at least "
+                f"{MIN_DEEP_RESEARCH_INPUT_TOKENS:,} max input tokens. "
+                f"The selected model '{llm.config.model_name}' supports only "
+                f"{llm.config.max_input_tokens:,}. "
+                f"Please choose a larger-context model.",
             )
 
         initialize_litellm()

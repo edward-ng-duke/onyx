@@ -1285,11 +1285,28 @@ def _run_models(
                     # Yield a tagged error for this model but keep the other models running.
                     # Do NOT decrement models_remaining — _run_model's finally always posts
                     # _MODEL_DONE, which is the sole completion signal.
+                    model_llm = setup.llms[model_idx]
+                    if isinstance(item, OnyxError):
+                        # Mirror the outer OnyxError handler at the bottom of this function:
+                        # surface the structured error_code/detail and skip noise-logging
+                        # for user-input rejections.
+                        if item.error_code is not OnyxErrorCode.QUERY_REJECTED:
+                            log_onyx_error(item)
+                        yield StreamingError(
+                            error=item.detail,
+                            error_code=item.error_code.code,
+                            is_retryable=item.status_code >= 500,
+                            details={
+                                "model": model_llm.config.model_name,
+                                "provider": model_llm.config.model_provider,
+                                "model_index": model_idx,
+                            },
+                        )
+                        continue
                     error_msg = str(item)
                     stack_trace = "".join(
                         traceback.format_exception(type(item), item, item.__traceback__)
                     )
-                    model_llm = setup.llms[model_idx]
                     if model_llm.config.api_key and len(model_llm.config.api_key) > 2:
                         error_msg = error_msg.replace(
                             model_llm.config.api_key, "[REDACTED_API_KEY]"
