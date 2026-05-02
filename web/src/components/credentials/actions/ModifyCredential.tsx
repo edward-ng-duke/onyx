@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 import Modal from "@/refresh-components/Modal";
 import Text from "@/refresh-components/texts/Text";
 import { Badge } from "@/components/ui/badge";
@@ -183,6 +184,9 @@ export default function ModifyCredential({
   onDeleteCredential,
   onCreateNew,
 }: ModifyCredentialProps) {
+  const tModals = useTranslations("modals.credentials");
+  const tActions = useTranslations("common.actions");
+
   const [selectedCredential, setSelectedCredential] =
     useState<Credential<any> | null>(null);
   const [confirmDeletionCredential, setConfirmDeletionCredential] =
@@ -197,13 +201,12 @@ export default function ModifyCredential({
           <Modal.Content width="sm" height="sm">
             <Modal.Header
               icon={SvgAlertTriangle}
-              title="Confirm Deletion"
+              title={tModals("confirmDeletionTitle")}
               onClose={() => setConfirmDeletionCredential(null)}
             />
             <Modal.Body>
               <Text as="p">
-                Are you sure you want to delete this credential? You cannot
-                delete credentials that are linked to live connectors.
+                {tModals("confirmDeletionBody")}
               </Text>
             </Modal.Body>
             <Modal.Footer>
@@ -213,13 +216,13 @@ export default function ModifyCredential({
                   setConfirmDeletionCredential(null);
                 }}
               >
-                Confirm
+                {tActions("confirm")}
               </Button>
               <Button
                 prominence="secondary"
                 onClick={() => setConfirmDeletionCredential(null)}
               >
-                Cancel
+                {tActions("cancel")}
               </Button>
             </Modal.Footer>
           </Modal.Content>
@@ -228,8 +231,7 @@ export default function ModifyCredential({
 
       <div className="mb-0">
         <Text as="p" className="mb-4">
-          Select a credential as needed! Ensure that you have selected a
-          credential with the proper permissions for this connector!
+          {tModals("selectionHint")}
         </Text>
 
         <CredentialSelectionTable

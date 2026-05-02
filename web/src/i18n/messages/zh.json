@@ -2827,7 +2827,10 @@
       "authMethodRequired": "请选择认证方式",
       "fileRequired": "请选择 {name} 文件",
       "fieldEmpty": "{name} 不能为空",
-      "pleaseEnter": "请输入您的 {name}"
+      "pleaseEnter": "请输入您的 {name}",
+      "invalidApiKey": "API 密钥无效",
+      "connectionTimedOut": "连接超时，可尝试增大超时时间",
+      "couldNotConnect": "无法连接到端点"
     }
   },
   "modals": {
@@ -3545,6 +3548,13 @@
     },
     "changeCuratorRole": {
       "title": "更改 Curator 角色"
+    },
+    "credentials": {
+      "updateTitle": "更新凭证",
+      "editTitle": "编辑凭证",
+      "confirmDeletionTitle": "确认删除",
+      "confirmDeletionBody": "确认删除该凭证吗？无法删除已关联到 Connector 的凭证",
+      "selectionHint": "按需选择凭证，并确保该凭证具备此 Connector 所需的权限"
     }
   },
   "ui": {

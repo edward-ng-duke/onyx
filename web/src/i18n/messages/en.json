@@ -2827,7 +2827,10 @@
       "authMethodRequired": "Please select an authentication method",
       "fileRequired": "Please select a {name} file",
       "fieldEmpty": "{name} cannot be empty",
-      "pleaseEnter": "Please enter your {name}"
+      "pleaseEnter": "Please enter your {name}",
+      "invalidApiKey": "Invalid API key",
+      "connectionTimedOut": "Connection timed out. Try increasing the timeout.",
+      "couldNotConnect": "Could not connect to endpoint"
     }
   },
   "modals": {
@@ -3545,6 +3548,13 @@
     },
     "changeCuratorRole": {
       "title": "Change Curator Role"
+    },
+    "credentials": {
+      "updateTitle": "Update Credentials",
+      "editTitle": "Edit Credential",
+      "confirmDeletionTitle": "Confirm Deletion",
+      "confirmDeletionBody": "Are you sure you want to delete this credential? You cannot delete credentials that are linked to live connectors.",
+      "selectionHint": "Select a credential as needed. Ensure the credential has the proper permissions for this connector."
     }
   },
   "ui": {
