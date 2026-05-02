@@ -3345,6 +3345,21 @@
         "searchPlaceholder": "搜索…",
         "selectedItems": "已选项"
       }
+    },
+    "search": {
+      "filter": {
+        "past24Hours": "近 24 小时",
+        "pastWeek": "近一周",
+        "pastMonth": "近一个月",
+        "pastYear": "近一年",
+        "allTime": "全部时间",
+        "tags": "标签"
+      },
+      "filterTagsPlaceholder": "筛选标签…",
+      "resultsCount": "{count, plural, other {# 项结果}}",
+      "searchFailed": "搜索失败",
+      "noResultsTitle": "未找到结果",
+      "noResultsDescription": "请检查 Connector 与筛选条件，或尝试其他关键词"
     }
   },
   "components": {

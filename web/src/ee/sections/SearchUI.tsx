@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   BaseFilters,
   MinimalOnyxDocument,
@@ -44,14 +45,19 @@ export interface SearchResultsProps {
 
 const RESULTS_PER_PAGE = 20;
 
-const TIME_FILTER_OPTIONS: { value: TimeFilter; label: string }[] = [
-  { value: "day", label: "Past 24 hours" },
-  { value: "week", label: "Past week" },
-  { value: "month", label: "Past month" },
-  { value: "year", label: "Past year" },
-];
-
 export default function SearchUI({ onDocumentClick }: SearchResultsProps) {
+  const t = useTranslations("sections.search");
+
+  const TIME_FILTER_OPTIONS = useMemo(
+    () => [
+      { value: "day" as TimeFilter, label: t("filter.past24Hours") },
+      { value: "week" as TimeFilter, label: t("filter.pastWeek") },
+      { value: "month" as TimeFilter, label: t("filter.pastMonth") },
+      { value: "year" as TimeFilter, label: t("filter.pastYear") },
+    ],
+    [t]
+  );
+
   // Available tags from backend
   const { tags: availableTags } = useTags();
   const {
@@ -224,7 +230,7 @@ export default function SearchUI({ onDocumentClick }: SearchResultsProps) {
                   }}
                 >
                   {TIME_FILTER_OPTIONS.find((o) => o.value === timeFilter)
-                    ?.label ?? "All Time"}
+                    ?.label ?? t("filter.allTime")}
                 </FilterButton>
               </Popover.Trigger>
               <Popover.Content align="start" width="md">
@@ -263,14 +269,14 @@ export default function SearchUI({ onDocumentClick }: SearchResultsProps) {
                     ? `${selectedTags.length} Tag${
                         selectedTags.length > 1 ? "s" : ""
                       }`
-                    : "Tags"}
+                    : t("filter.tags")}
                 </FilterButton>
               </Popover.Trigger>
               <Popover.Content align="start" width="lg">
                 <PopoverMenu>
                   <InputTypeIn
                     leftSearchIcon
-                    placeholder="Filter tags..."
+                    placeholder={t("filterTagsPlaceholder")}
                     value={tagQuery}
                     onChange={(e) => setTagQuery(e.target.value)}
                     onClear={() => setTagQuery("")}
@@ -316,7 +322,7 @@ export default function SearchUI({ onDocumentClick }: SearchResultsProps) {
           <div className="flex-1 flex flex-col justify-end gap-3">
             <Section alignItems="start">
               <Text text03 mainUiMuted>
-                {results.length} Results
+                {t("resultsCount", { count: results.length })}
               </Text>
             </Section>
 
@@ -336,7 +342,7 @@ export default function SearchUI({ onDocumentClick }: SearchResultsProps) {
           {error ? (
             <EmptyMessageCard
               sizePreset="main-ui"
-              title="Search failed"
+              title={t("searchFailed")}
               description={error}
             />
           ) : paginatedResults.length > 0 ? (
@@ -357,8 +363,8 @@ export default function SearchUI({ onDocumentClick }: SearchResultsProps) {
           ) : (
             <IllustrationContent
               illustration={SvgNoResult}
-              title="No results found"
-              description="Check your connectors/filters or try a different search term."
+              title={t("noResultsTitle")}
+              description={t("noResultsDescription")}
             />
           )}
         </div>

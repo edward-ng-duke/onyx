@@ -3345,6 +3345,21 @@
         "searchPlaceholder": "Search...",
         "selectedItems": "Selected items"
       }
+    },
+    "search": {
+      "filter": {
+        "past24Hours": "Past 24 hours",
+        "pastWeek": "Past week",
+        "pastMonth": "Past month",
+        "pastYear": "Past year",
+        "allTime": "All Time",
+        "tags": "Tags"
+      },
+      "filterTagsPlaceholder": "Filter tags...",
+      "resultsCount": "{count, plural, one {# Result} other {# Results}}",
+      "searchFailed": "Search failed",
+      "noResultsTitle": "No results found",
+      "noResultsDescription": "Check your connectors/filters or try a different search term."
     }
   },
   "components": {
