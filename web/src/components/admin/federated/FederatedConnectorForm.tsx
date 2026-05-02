@@ -198,6 +198,10 @@ export function FederatedConnectorForm({
 }: FederatedConnectorFormProps) {
   const router = useRouter();
   const tModals = useTranslations("modals.deleteFederatedConnector");
+  const tActions = useTranslations("common.actions");
+  const tFed = useTranslations("admin.federated");
+  const tValidation = useTranslations("validation.federated");
+  const tPlaceholders = useTranslations("common.placeholders");
   const sourceMetadata = getSourceMetadata(connector);
   const isEditMode = connectorId !== undefined;
 
@@ -360,7 +364,7 @@ export function FederatedConnectorForm({
   const handleValidateCredentials = async () => {
     if (!formState.schema) return;
     if (isEditMode && !credentialsModified) {
-      setSubmitMessage("Enter new credential values before validating.");
+      setSubmitMessage(tValidation("credentialsRequired"));
       setSubmitSuccess(false);
       return;
     }
@@ -599,8 +603,7 @@ export function FederatedConnectorForm({
           !Array.isArray(formState.config.channels) ||
           formState.config.channels.length === 0)
       ) {
-        errors.channels =
-          "At least one channel is required when 'Search All Channels' is disabled";
+        errors.channels = tValidation("channelRequired");
       }
     }
 
@@ -625,8 +628,7 @@ export function FederatedConnectorForm({
       );
     }
 
-    const channelInputPlaceholder =
-      "Type channel name or regex pattern and press Enter";
+    const channelInputPlaceholder = tFed("channelPlaceholder");
 
     return (
       <>
@@ -700,7 +702,7 @@ export function FederatedConnectorForm({
                             fieldKey === "channels" ||
                             fieldKey === "exclude_channels"
                               ? channelInputPlaceholder
-                              : "Type and press Enter to add an item"
+                              : tPlaceholders("typeAndEnter")
                           }
                           disabled={disableSlackChannelInput(fieldKey)}
                           error={!!configValidationErrors[fieldKey]}
@@ -775,15 +777,16 @@ export function FederatedConnectorForm({
         <div className="ml-2 overflow-hidden text-ellipsis whitespace-nowrap flex-1 mr-4">
           <div className="text-2xl font-bold text-text-default flex items-center gap-2">
             <span>
-              {isEditMode ? "Edit" : "Setup"} {sourceMetadata.displayName}
+              {isEditMode
+                ? tFed("editTitle", { name: sourceMetadata.displayName })
+                : tFed("setupTitle", { name: sourceMetadata.displayName })}
             </span>
             <Badge variant="outline" className="text-xs">
               Federated
             </Badge>
             <Tooltip
               tooltip={
-                sourceMetadata.federatedTooltip ||
-                "This is a federated connector. It will result in greater latency and lower search quality compared to regular connectors."
+                sourceMetadata.federatedTooltip || tFed("warningTooltip")
               }
               side="bottom"
             >
@@ -798,7 +801,7 @@ export function FederatedConnectorForm({
               <DropdownMenuTrigger asChild>
                 <div>
                   <OpalButton prominence="secondary" icon={SvgSettings}>
-                    Manage
+                    {tActions("manage")}
                   </OpalButton>
                 </div>
               </DropdownMenuTrigger>
@@ -810,7 +813,7 @@ export function FederatedConnectorForm({
                   tooltip={isDeleting ? "Deletion in progress" : undefined}
                 >
                   <Trash2Icon className="h-4 w-4" />
-                  <span>{isDeleting ? "Deleting..." : "Delete"}</span>
+                  <span>{isDeleting ? tActions("deleting") : tActions("delete")}</span>
                 </DropdownMenuItemWithTooltip>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -826,15 +829,15 @@ export function FederatedConnectorForm({
         <CardContent className="p-0">
           <form onSubmit={handleSubmit}>
             <Text as="p" headingH3>
-              Credentials
+              {tFed("credentialsHeading")}
             </Text>
             <Text as="p" mainUiMuted>
-              Enter the credentials for this connector.
+              {tFed("credentialsSubtext")}
             </Text>
             <div className="space-y-4">{renderCredentialFields()}</div>
             <Divider />
             <Text as="p" headingH3>
-              Configuration
+              {tFed("configurationHeading")}
             </Text>
             <div className="space-y-4">{renderConfigFields()}</div>
 
@@ -864,7 +867,7 @@ export function FederatedConnectorForm({
                 disabled={isValidating || !formState.schema}
                 className="flex ml-auto"
               >
-                {isValidating ? "Validating..." : "Validate"}
+                {isValidating ? tActions("validating") : tActions("validate")}
               </Button>
               {/* TODO(@raunakab): migrate to opal Button once className/iconClassName is resolved */}
               <Button
@@ -875,11 +878,11 @@ export function FederatedConnectorForm({
               >
                 {isSubmitting
                   ? isEditMode
-                    ? "Updating..."
-                    : "Creating..."
+                    ? tActions("updating")
+                    : tActions("creating")
                   : isEditMode
-                    ? "Update"
-                    : "Create"}
+                    ? tActions("update")
+                    : tActions("create")}
               </Button>
             </div>
           </form>

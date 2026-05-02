@@ -35,7 +35,12 @@
       "connect": "Connect",
       "reconnect": "Reconnect",
       "saveChanges": "Save Changes",
-      "reAuthenticate": "Re-Authenticate"
+      "reAuthenticate": "Re-Authenticate",
+      "manage": "Manage",
+      "updating": "Updating...",
+      "creating": "Creating...",
+      "validate": "Validate",
+      "validating": "Validating..."
     },
     "labels": {
       "yes": "Yes",
@@ -65,7 +70,8 @@
       "removeImage": "Remove image"
     },
     "placeholders": {
-      "search": "Search..."
+      "search": "Search...",
+      "typeAndEnter": "Type and press Enter to add an item"
     }
   },
   "auth": {
@@ -1790,6 +1796,15 @@
       "warningLabel": "Warning:",
       "trialEndingMessage": "Your trial ends in less than 5 days and no payment method has been added.",
       "updateBilling": "Update Billing Information"
+    },
+    "federated": {
+      "editTitle": "Edit {name}",
+      "setupTitle": "Setup {name}",
+      "warningTooltip": "This is a federated connector. It will result in greater latency and lower search quality compared to regular connectors.",
+      "credentialsHeading": "Credentials",
+      "credentialsSubtext": "Enter the credentials for this connector.",
+      "configurationHeading": "Configuration",
+      "channelPlaceholder": "Type channel name or regex pattern and press Enter"
     }
   },
   "nav": {
@@ -2929,6 +2944,10 @@
       "invalidApiKey": "Invalid API key",
       "connectionTimedOut": "Connection timed out. Try increasing the timeout.",
       "couldNotConnect": "Could not connect to endpoint"
+    },
+    "federated": {
+      "credentialsRequired": "Enter new credential values before validating",
+      "channelRequired": "At least one channel is required when 'Search All Channels' is disabled"
     }
   },
   "modals": {
@@ -3685,7 +3704,9 @@
       "bodyUninvite": "Are you sure you want to uninvite {email}?"
     },
     "changeCuratorRole": {
-      "title": "Change Curator Role"
+      "title": "Change Curator Role",
+      "warning": "Warning: Switching roles from Curator to {newRole} will remove their status as individual curators from all groups.",
+      "confirmButton": "Switch Role to {newRole}"
     },
     "credentials": {
       "updateTitle": "Update Credentials",

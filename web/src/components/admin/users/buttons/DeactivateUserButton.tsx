@@ -4,6 +4,7 @@ import Button from "@/refresh-components/buttons/Button";
 import useSWRMutation from "swr/mutation";
 import userMutationFetcher from "@/lib/admin/users/userMutationFetcher";
 import { SvgXCircle } from "@opal/icons";
+import { useTranslations } from "next-intl";
 const DeactivateUserButton = ({
   user,
   deactivate,
@@ -17,6 +18,7 @@ const DeactivateUserButton = ({
   className?: string;
   children?: string;
 }) => {
+  const tToasts = useTranslations("toasts.admin.users");
   const { trigger, isMutating } = useSWRMutation(
     deactivate
       ? "/api/manage/admin/deactivate-user"
@@ -25,7 +27,9 @@ const DeactivateUserButton = ({
     {
       onSuccess: () => {
         mutate();
-        toast.success(`User ${deactivate ? "deactivated" : "activated"}!`);
+        toast.success(
+          deactivate ? tToasts("userDeactivated") : tToasts("userActivated")
+        );
       },
       onError: (errorMsg) => toast.error(errorMsg.message),
     }

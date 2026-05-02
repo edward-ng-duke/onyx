@@ -35,7 +35,12 @@
       "connect": "连接",
       "reconnect": "重新连接",
       "saveChanges": "保存更改",
-      "reAuthenticate": "重新认证"
+      "reAuthenticate": "重新认证",
+      "manage": "管理",
+      "updating": "更新中…",
+      "creating": "创建中…",
+      "validate": "校验",
+      "validating": "校验中…"
     },
     "labels": {
       "yes": "是",
@@ -65,7 +70,8 @@
       "removeImage": "移除图片"
     },
     "placeholders": {
-      "search": "搜索…"
+      "search": "搜索…",
+      "typeAndEnter": "输入后按回车添加"
     }
   },
   "auth": {
@@ -1790,6 +1796,15 @@
       "warningLabel": "警告：",
       "trialEndingMessage": "你的试用将在 5 天内到期，但尚未添加付款方式。",
       "updateBilling": "更新账单信息"
+    },
+    "federated": {
+      "editTitle": "编辑 {name}",
+      "setupTitle": "配置 {name}",
+      "warningTooltip": "这是一个 Federated Connector，与普通 Connector 相比延迟更高、搜索质量更低",
+      "credentialsHeading": "凭证",
+      "credentialsSubtext": "输入此 Connector 的凭证",
+      "configurationHeading": "配置",
+      "channelPlaceholder": "输入频道名称或正则模式后按回车"
     }
   },
   "nav": {
@@ -2929,6 +2944,10 @@
       "invalidApiKey": "API 密钥无效",
       "connectionTimedOut": "连接超时，可尝试增大超时时间",
       "couldNotConnect": "无法连接到端点"
+    },
+    "federated": {
+      "credentialsRequired": "请先填写新的凭证值再校验",
+      "channelRequired": "禁用「搜索全部频道」时至少需要指定一个频道"
     }
   },
   "modals": {
@@ -3685,7 +3704,9 @@
       "bodyUninvite": "确认取消邀请 {email} 吗？"
     },
     "changeCuratorRole": {
-      "title": "更改 Curator 角色"
+      "title": "更改 Curator 角色",
+      "warning": "警告：将角色从 Curator 切换为 {newRole} 后，将移除他们在所有用户组中的 curator 身份",
+      "confirmButton": "切换角色为 {newRole}"
     },
     "credentials": {
       "updateTitle": "更新凭证",

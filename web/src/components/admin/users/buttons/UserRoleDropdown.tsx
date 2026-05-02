@@ -24,7 +24,7 @@ export default function UserRoleDropdown({
   onSuccess,
   onError,
 }: UserRoleDropdownProps) {
-  const tModals = useTranslations("modals.changeCuratorRole");
+  const tModals = useTranslations("components.changeCuratorRole");
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingRole, setPendingRole] = useState<string | null>(null);
@@ -65,14 +65,16 @@ export default function UserRoleDropdown({
       {showConfirmModal && (
         <GenericConfirmModal
           title={tModals("title")}
-          message={`Warning: Switching roles from Curator to ${
-            USER_ROLE_LABELS[pendingRole as UserRole] ??
-            USER_ROLE_LABELS[user.role]
-          } will remove their status as individual curators from all groups.`}
-          confirmText={`Switch Role to ${
-            USER_ROLE_LABELS[pendingRole as UserRole] ??
-            USER_ROLE_LABELS[user.role]
-          }`}
+          message={tModals("warning", {
+            newRole:
+              USER_ROLE_LABELS[pendingRole as UserRole] ??
+              USER_ROLE_LABELS[user.role],
+          })}
+          confirmText={tModals("confirmButton", {
+            newRole:
+              USER_ROLE_LABELS[pendingRole as UserRole] ??
+              USER_ROLE_LABELS[user.role],
+          })}
           onClose={() => setShowConfirmModal(false)}
           onConfirm={handleConfirm}
         />
