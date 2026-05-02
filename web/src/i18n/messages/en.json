@@ -2834,6 +2834,13 @@
     }
   },
   "modals": {
+    "noAgent": {
+      "title": "No Agent Available",
+      "body": "You currently have no Agent configured. To use this feature, you need to take action.",
+      "adminHelp": "As an administrator, you can create a new Agent by visiting the admin panel.",
+      "goToAdminPanel": "Go to Admin Panel",
+      "userHelp": "Please contact your administrator to configure an Agent for you."
+    },
     "feedback": {
       "title": "Feedback",
       "additionalDetails": "Provide Additional Details",
