@@ -6,6 +6,7 @@ import { useUserGroups } from "@/lib/hooks";
 import { BooleanFormField } from "@/components/Field";
 import { useUser } from "@/providers/UserProvider";
 import { GroupsMultiSelect } from "./GroupsMultiSelect";
+import { useTranslations } from "next-intl";
 
 export type IsPublicGroupSelectorFormType = {
   is_public: boolean;
@@ -29,6 +30,7 @@ export const IsPublicGroupSelector = <T extends IsPublicGroupSelectorFormType>({
   enforceGroupSelection?: boolean;
   smallLabels?: boolean;
 }) => {
+  const tActions = useTranslations("common.actions");
   const { data: userGroups, isLoading: userGroupsIsLoading } = useUserGroups();
   const { isAdmin, user, isCurator } = useUser();
   const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
@@ -57,7 +59,7 @@ export const IsPublicGroupSelector = <T extends IsPublicGroupSelectorFormType>({
   }, [user, userGroups, isPaidEnterpriseFeaturesEnabled]);
 
   if (userGroupsIsLoading) {
-    return <div>Loading...</div>;
+    return <div>{tActions("loading")}</div>;
   }
   if (!isPaidEnterpriseFeaturesEnabled) {
     return null;

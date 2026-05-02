@@ -4,6 +4,7 @@ import Button from "@/refresh-components/buttons/Button";
 import InputComboBox from "@/refresh-components/inputs/InputComboBox/InputComboBox";
 import { Disabled } from "@opal/core";
 import { SvgX } from "@opal/icons";
+import { useTranslations } from "next-intl";
 export type GenericMultiSelectFormType<T extends string> = {
   [K in T]: number[];
 };
@@ -44,6 +45,9 @@ export function GenericMultiSelect<
   disabled = false,
   disabledMessage,
 }: GenericMultiSelectProps<T, F>) {
+  const tErrors = useTranslations("errors");
+  const tPlaceholders = useTranslations("common.placeholders");
+
   if (isLoading) {
     return (
       <div className="flex flex-col gap-2 w-full">
@@ -62,7 +66,7 @@ export function GenericMultiSelect<
           {label}
         </Text>
         <Text as="p" text03 className="text-action-danger-05">
-          Failed to load {label.toLowerCase()}. Please try again.
+          {tErrors("failedToLoadItems", { item: label.toLowerCase() })}
         </Text>
       </div>
     );
@@ -116,7 +120,7 @@ export function GenericMultiSelect<
       <Disabled disabled={disabled}>
         <div>
           <InputComboBox
-            placeholder="Search..."
+            placeholder={tPlaceholders("search")}
             value=""
             onChange={() => {}}
             onValueChange={(selectedValue) => {

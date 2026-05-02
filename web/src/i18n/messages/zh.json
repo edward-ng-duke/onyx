@@ -51,6 +51,9 @@
       "revertToDefault": "恢复默认",
       "removeFile": "移除",
       "manageActions": "管理操作"
+    },
+    "placeholders": {
+      "search": "搜索…"
     }
   },
   "auth": {
@@ -2376,6 +2379,17 @@
       "starterExample2": "查找最新的销售报告。",
       "starterExample3": "整理本季度的工程目标。",
       "starterExample4": "总结一下今天的目标。"
+    },
+    "analytics": {
+      "title": "Agent 分析",
+      "description": "所选 Agent 的每日消息数与独立用户数",
+      "selectAgentPrompt": "选择 Agent 以查看分析",
+      "noData": "所选 Agent 在指定时间范围内无数据",
+      "selectPlaceholder": "选择要展示的 Agent",
+      "searchPlaceholder": "搜索 Agents…"
+    },
+    "groupsList": {
+      "noGroupsFound": "未找到用户组"
     }
   },
   "toasts": {
@@ -3667,6 +3681,9 @@
       "confirmDeletionTitle": "确认删除",
       "confirmDeletionBody": "确认删除该凭证吗？无法删除已关联到 Connector 的凭证",
       "selectionHint": "按需选择凭证，并确保该凭证具备此 Connector 所需的权限"
+    },
+    "editUser": {
+      "title": "编辑用户的用户组与角色"
     }
   },
   "ui": {
@@ -3712,6 +3729,8 @@
   "errors": {
     "somethingWentWrong": "出现错误",
     "unknownError": "未知错误",
-    "failedToLoadLogs": "日志加载失败"
+    "failedToLoadLogs": "日志加载失败",
+    "failedToLoadItems": "加载 {item} 失败，请重试",
+    "failedToFetchData": "数据加载失败"
   }
 }

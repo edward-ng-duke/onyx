@@ -8,6 +8,7 @@ import { isBuiltInGroup } from "./utils";
 import { Section } from "@/layouts/general-layouts";
 import { IllustrationContent } from "@opal/layouts";
 import SvgNoResult from "@opal/illustrations/no-result";
+import { useTranslations } from "next-intl";
 
 interface GroupsListProps {
   groups: UserGroup[];
@@ -15,6 +16,8 @@ interface GroupsListProps {
 }
 
 function GroupsList({ groups, searchQuery }: GroupsListProps) {
+  const tGroupsList = useTranslations("admin.groupsList");
+
   const filtered = useMemo(() => {
     if (!searchQuery.trim()) return groups;
     const q = searchQuery.toLowerCase();
@@ -25,7 +28,7 @@ function GroupsList({ groups, searchQuery }: GroupsListProps) {
     return (
       <IllustrationContent
         illustration={SvgNoResult}
-        title="No groups found"
+        title={tGroupsList("noGroupsFound")}
         description={`No groups matching "${searchQuery}"`}
       />
     );

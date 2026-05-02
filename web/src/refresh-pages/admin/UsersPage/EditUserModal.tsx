@@ -52,6 +52,8 @@ export default function EditUserModal({
 }: EditUserModalProps) {
   const tT = useTranslations("toasts.admin.users");
   const tShared = useTranslations("toasts.admin.shared");
+  const tModal = useTranslations("modals.editUser");
+  const tActions = useTranslations("common.actions");
   const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
   const { data: allGroups, isLoading: groupsLoading } = useGroups();
   const [searchTerm, setSearchTerm] = useState("");
@@ -174,7 +176,7 @@ export default function EditUserModal({
       <Modal.Content width="sm" ref={contentRef}>
         <Modal.Header
           icon={SvgUsers}
-          title="Edit User's Groups & Roles"
+          title={tModal("title")}
           description={
             user.personal_name
               ? `${user.personal_name} (${user.email})`
@@ -213,7 +215,7 @@ export default function EditUserModal({
                 >
                   {groupsLoading ? (
                     <LineItem skeleton description="Loading groups...">
-                      Loading...
+                      {tActions("loading")}
                     </LineItem>
                   ) : dropdownGroups.length === 0 ? (
                     <LineItem

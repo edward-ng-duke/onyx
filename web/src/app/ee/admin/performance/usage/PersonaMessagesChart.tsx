@@ -8,6 +8,7 @@ import {
 import { DateRangePickerValue } from "@/components/dateRangeSelectors/AdminDateRangeSelector";
 import { Text } from "@opal/components";
 import Title from "@/components/ui/title";
+import { useTranslations } from "next-intl";
 import CardSection from "@/components/admin/CardSection";
 import { AreaChartDisplay } from "@/components/ui/areaChart";
 import {
@@ -27,6 +28,9 @@ export function PersonaMessagesChart({
   availablePersonas: Persona[];
   timeRange: DateRangePickerValue;
 }) {
+  const tAnalytics = useTranslations("admin.analytics");
+  const tErrors = useTranslations("errors");
+
   const [selectedPersonaId, setSelectedPersonaId] = useState<
     number | undefined
   >(undefined);
@@ -146,21 +150,19 @@ export function PersonaMessagesChart({
   } else if (!availablePersonas || hasError) {
     content = (
       <div className="h-80 text-red-600 text-bold flex flex-col">
-        <p className="m-auto">Failed to fetch data...</p>
+        <p className="m-auto">{tErrors("failedToFetchData")}</p>
       </div>
     );
   } else if (selectedPersonaId === undefined) {
     content = (
       <div className="h-80 text-text-500 flex flex-col">
-        <p className="m-auto">Select an agent to view analytics</p>
+        <p className="m-auto">{tAnalytics("selectAgentPrompt")}</p>
       </div>
     );
   } else if (!personaMessagesData?.length) {
     content = (
       <div className="h-80 text-text-500 flex flex-col">
-        <p className="m-auto">
-          No data found for selected agent in the specified time range
-        </p>
+        <p className="m-auto">{tAnalytics("noData")}</p>
       </div>
     );
   } else if (chartData) {
@@ -178,11 +180,9 @@ export function PersonaMessagesChart({
 
   return (
     <CardSection className="mt-8">
-      <Title>Agent Analytics</Title>
+      <Title>{tAnalytics("title")}</Title>
       <div className="flex flex-col gap-4">
-        <Text as="p">
-          Messages and unique users per day for the selected agent
-        </Text>
+        <Text as="p">{tAnalytics("description")}</Text>
         <div className="flex items-center gap-4">
           <Select
             value={selectedPersonaId?.toString() ?? ""}
@@ -191,14 +191,14 @@ export function PersonaMessagesChart({
             }}
           >
             <SelectTrigger className="flex w-full max-w-xs">
-              <SelectValue placeholder="Select an agent to display" />
+              <SelectValue placeholder={tAnalytics("selectPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               <div className="flex items-center px-2 pb-2 sticky top-0 bg-background border-b">
                 <Search className="h-4 w-4 mr-2 shrink-0 opacity-50" />
                 <input
                   className="flex h-8 w-full rounded-sm bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Search agents..."
+                  placeholder={tAnalytics("searchPlaceholder")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onClick={(e) => e.stopPropagation()}
