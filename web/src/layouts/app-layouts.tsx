@@ -22,6 +22,7 @@
 
 import { ensureHrefProtocol, INTERACTIVE_SELECTOR, noProp } from "@/lib/utils";
 import { cn } from "@opal/utils";
+import { useTranslations } from "next-intl";
 import type { Components } from "react-markdown";
 import Text from "@/refresh-components/texts/Text";
 import { useCallback, useMemo, useRef, useState, useEffect } from "react";
@@ -82,6 +83,7 @@ import { APP_SLOGAN } from "@/lib/constants";
  * - App-Mode toggle (EE gated)
  */
 function Header() {
+  const t = useTranslations();
   const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
   const { state, setAppMode } = useQueryController();
   const settings = useSettingsContext();
@@ -194,7 +196,7 @@ function Header() {
       setDeleteModalOpen(false);
     } catch (error) {
       console.error("Failed to delete chat:", error);
-      showErrorNotification("Failed to delete chat. Please try again.");
+      showErrorNotification(t("nav.itemMenu.deleteChatError"));
     }
   }, [
     currentChatSession,
@@ -236,7 +238,7 @@ function Header() {
             sizePreset="main-ui"
             rounding="sm"
             icon={SvgFolderIn}
-            title="Move to Project"
+            title={t("nav.itemMenu.moveToProject")}
             onClick={noProp(() => setShowMoveOptions(true))}
           />,
           <LineItemButton
@@ -245,7 +247,7 @@ function Header() {
             rounding="sm"
             color="danger"
             icon={SvgTrash}
-            title="Delete"
+            title={t("nav.itemMenu.delete")}
             onClick={noProp(() => setDeleteConfirmationModalOpen(true))}
           />,
         ];
@@ -287,17 +289,16 @@ function Header() {
 
       {deleteModalOpen && (
         <ConfirmationModalLayout
-          title="Delete Chat"
+          title={t("nav.itemMenu.deleteChatTitle")}
           icon={SvgTrash}
           onClose={() => setDeleteModalOpen(false)}
           submit={
             <Button variant="danger" onClick={handleDeleteChat}>
-              Delete
+              {t("common.actions.delete")}
             </Button>
           }
         >
-          Are you sure you want to delete this chat? This action cannot be
-          undone.
+          {t("nav.itemMenu.deleteChatConfirm")}
         </ConfirmationModalLayout>
       )}
 
@@ -336,7 +337,7 @@ function Header() {
                       effectiveMode === "search" ? SvgSearchMenu : SvgBubbleText
                     }
                   >
-                    {effectiveMode === "search" ? "Search" : "Chat"}
+                    {effectiveMode === "search" ? t("chat.modeSwitch.search") : t("chat.modeSwitch.chat")}
                   </OpenButton>
                 </Popover.Trigger>
                 <Popover.Content align="start" width="lg">
@@ -346,8 +347,8 @@ function Header() {
                       rounding="sm"
                       icon={SvgSearchMenu}
                       state={effectiveMode === "search" ? "selected" : "empty"}
-                      title="Search"
-                      description="Quick search for documents"
+                      title={t("chat.modeSwitch.search")}
+                      description={t("chat.modeSwitch.searchDescription")}
                       onClick={noProp(() => {
                         setAppMode("search");
                         setModePopoverOpen(false);
@@ -358,8 +359,8 @@ function Header() {
                       rounding="sm"
                       icon={SvgBubbleText}
                       state={effectiveMode === "chat" ? "selected" : "empty"}
-                      title="Chat"
-                      description="Conversation and research"
+                      title={t("chat.modeSwitch.chat")}
+                      description={t("chat.modeSwitch.chatDescription")}
                       onClick={noProp(() => {
                         setAppMode("chat");
                         setModePopoverOpen(false);
@@ -405,7 +406,7 @@ function Header() {
                 onClick={() => setShowShareModal(true)}
                 aria-label="share-chat-button"
               >
-                Share
+                {t("nav.itemMenu.share")}
               </Button>
               <SimplePopover
                 trigger={

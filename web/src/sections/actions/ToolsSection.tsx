@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@opal/utils";
 import { Button } from "@opal/components";
 import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
@@ -18,6 +19,7 @@ const ToolsSection: React.FC<ToolsSectionProps> = ({
   onSearchQueryChange,
   className,
 }) => {
+  const t = useTranslations("sections.actions");
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onSearchQueryChange(e.target.value);
   };
@@ -28,8 +30,8 @@ const ToolsSection: React.FC<ToolsSectionProps> = ({
         {/* Search Bar */}
         <div className="flex-1 min-w-[160px]">
           <InputTypeIn
-            placeholder="Search tools…"
-            aria-label="Search tools"
+            placeholder={t("searchToolsPlaceholder")}
+            aria-label={t("searchToolsAria")}
             value={searchQuery}
             onChange={handleSearchChange}
             leftSearchIcon

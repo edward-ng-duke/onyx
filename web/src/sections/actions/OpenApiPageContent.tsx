@@ -20,6 +20,7 @@ import ActionCardSkeleton from "./skeleton/ActionCardSkeleton";
 import useOpenApiTools from "@/hooks/useOpenApiTools";
 
 export default function OpenApiPageContent() {
+  const t = useTranslations("sections.actions");
   const tToast = useTranslations("toasts.admin.actions.openApi");
   const {
     openApiTools,
@@ -308,7 +309,7 @@ export default function OpenApiPageContent() {
 
   const authenticationModalTitle = useMemo(() => {
     if (!selectedTool) {
-      return "Authenticate OpenAPI Action";
+      return t("authenticateOpenApiTitle");
     }
     const hasExistingAuth =
       Boolean(selectedTool.oauth_config_id) ||
@@ -317,7 +318,7 @@ export default function OpenApiPageContent() {
       ? "Update authentication for"
       : "Authenticate";
     return `${prefix} ${selectedTool.name}`;
-  }, [selectedTool]);
+  }, [selectedTool, t]);
 
   const authenticationDefaultMethod = useMemo<AuthMethod>(() => {
     if (!selectedTool) {

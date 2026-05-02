@@ -1841,7 +1841,11 @@
       "deleteChatConfirm": "确定要删除这条对话吗？此操作无法撤销。",
       "deleteProjectTitle": "删除项目",
       "deleteProjectConfirm": "确定要删除这个项目吗？此操作无法撤销。",
-      "projectFallback": "项目"
+      "projectFallback": "项目",
+      "deleteChatError": "删除对话失败，请稍后重试。"
+    },
+    "documentSidebar": {
+      "closeTooltip": "关闭侧边栏"
     }
   },
   "chat": {
@@ -2059,6 +2063,12 @@
     "greetings": {
       "howCanIHelp": "需要我帮什么忙？",
       "letsGetStarted": "我们开始吧。"
+    },
+    "modeSwitch": {
+      "search": "搜索",
+      "chat": "对话",
+      "searchDescription": "快速搜索文档",
+      "chatDescription": "对话与研究"
     }
   },
   "settings": {
@@ -3212,7 +3222,37 @@
         "passthroughDescription": "Onyx 会将用户的 OAuth 访问令牌作为 Authorization 头直接转发给该服务器。请确保该服务器支持相同身份提供商的认证。",
         "connectingButton": "连接中…",
         "connectButton": "连接"
-      }
+      },
+      "refreshTools": "刷新工具",
+      "toolsLastRefreshed": "工具最近刷新于 {time}",
+      "noToolsAvailable": "暂无可用工具",
+      "noToolsFound": "未找到匹配的工具",
+      "noActionsForSchema": "该 OpenAPI 模式未定义任何动作",
+      "noActionsMatchSearch": "没有匹配的动作",
+      "deleteMcpServerTitle": "删除 MCP 服务器",
+      "deleteMcpServerBody": "连接到 <b>{name}</b> 的所有工具都会被移除。删除不可撤销。",
+      "deleteMcpServerConfirm": "确定要删除此 MCP 服务器吗？",
+      "deleteOpenApiTitle": "删除 OpenAPI 动作",
+      "deleteOpenApiBody": "这将永久删除 OpenAPI 动作 <b>{name}</b> 及其配置。",
+      "deleteOpenApiConfirm": "确定要删除此 OpenAPI 动作吗？",
+      "disconnectServer": "断开服务器",
+      "manageServer": "管理服务器",
+      "deleteServer": "删除服务器",
+      "authenticate": "授权连接",
+      "reconnect": "重新连接",
+      "fetchingTools": "正在获取工具…",
+      "viewTools": "查看 {count} 个工具",
+      "viewToolsPlural": "查看 {count} 个工具",
+      "rename": "重命名",
+      "notAuthenticated": "（未授权）",
+      "disconnected": "（已断开）",
+      "showAllTools": "显示全部工具",
+      "showOnlyEnabledTools": "仅显示已启用工具",
+      "disableAllTools": "禁用全部工具",
+      "enableAll": "全部启用",
+      "searchToolsPlaceholder": "搜索工具…",
+      "searchToolsAria": "搜索工具",
+      "authenticateOpenApiTitle": "为 OpenAPI 动作授权"
     },
     "appHealthBanner": {
       "loggedOutTitle": "你已退出登录",
@@ -3276,6 +3316,12 @@
         "addMemoryDescription": "添加希望 Onyx 记住的个人笔记或记忆。",
         "viewAdd": "查看 / 添加",
         "allMemories": "全部记忆"
+      }
+    },
+    "knowledge": {
+      "sourceHierarchy": {
+        "searchPlaceholder": "搜索…",
+        "selectedItems": "已选项"
       }
     }
   },
@@ -3495,6 +3541,14 @@
       "cannotDeleteProjects": "无法删除文件，已关联以下项目：{projects}",
       "cannotDeleteAssistants": "无法删除文件，已关联以下助手：{assistants}",
       "cannotDeleteBoth": "无法删除文件，已关联以下项目：{projects} 以及助手：{assistants}"
+    }
+  },
+  "agent": {
+    "knowledgePane": {
+      "title": "知识库",
+      "description": "为该 Agent 添加特定的连接器和文档，用于辅助其生成回答。",
+      "useKnowledgeTitle": "使用知识库",
+      "useKnowledgeDescription": "允许该 Agent 引用这些文档来辅助生成回答。"
     }
   }
 }

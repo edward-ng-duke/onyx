@@ -46,6 +46,7 @@ import {
 import { AttachedDocumentSnapshot } from "@/app/admin/agents/interfaces";
 import { timeAgo } from "@/lib/time";
 import Spacer from "@/refresh-components/Spacer";
+import { useTranslations } from "next-intl";
 
 // ============================================================================
 // HIERARCHY BREADCRUMB - Navigation path for folder hierarchy
@@ -155,6 +156,7 @@ export default function SourceHierarchyBrowser({
   initialAttachedDocuments,
   onSelectionCountChange,
 }: SourceHierarchyBrowserProps) {
+  const t = useTranslations("sections.knowledge.sourceHierarchy");
   // State for hierarchy nodes (loaded once per source)
   const [allNodes, setAllNodes] = useState<HierarchyNodeSummary[]>([]);
   const [isLoadingNodes, setIsLoadingNodes] = useState(false);
@@ -686,7 +688,7 @@ export default function SourceHierarchyBrowser({
             leftSearchIcon
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="Search..."
+            placeholder={t("searchPlaceholder")}
             variant="internal"
           />
         </GeneralLayouts.Section>
@@ -701,7 +703,7 @@ export default function SourceHierarchyBrowser({
             prominence="tertiary"
             onClick={handleToggleViewSelected}
           >
-            Selected items
+            {t("selectedItems")}
           </Button>
         </>
       ) : (
