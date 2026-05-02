@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslations } from "next-intl";
 import Text from "@/refresh-components/texts/Text";
 import { OptionItem } from "./OptionItem";
 import { ComboBoxOption } from "../types";
@@ -49,6 +50,7 @@ export const OptionsList: React.FC<OptionsListProps> = ({
   showCreateOption,
   createPrefix,
 }) => {
+  const tUi = useTranslations("ui.comboBox");
   // Index offset for other options when create option is shown
   const indexOffset = showCreateOption ? 1 : 0;
 
@@ -59,7 +61,7 @@ export const OptionsList: React.FC<OptionsListProps> = ({
   ) {
     return (
       <div className="px-3 py-2 text-text-02 font-secondary-body">
-        No options found
+        {tUi("noOptionsFound")}
       </div>
     );
   }

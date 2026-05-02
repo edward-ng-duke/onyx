@@ -34,7 +34,8 @@
       "documentation": "文档",
       "connect": "连接",
       "reconnect": "重新连接",
-      "saveChanges": "保存更改"
+      "saveChanges": "保存更改",
+      "reAuthenticate": "重新认证"
     },
     "labels": {
       "yes": "是",
@@ -47,7 +48,9 @@
       "default": "（默认）"
     },
     "aria": {
-      "revertToDefault": "恢复默认"
+      "revertToDefault": "恢复默认",
+      "removeFile": "移除",
+      "manageActions": "管理操作"
     }
   },
   "auth": {
@@ -3678,6 +3681,24 @@
       "cannotDeleteProjects": "无法删除文件，已关联以下项目：{projects}",
       "cannotDeleteAssistants": "无法删除文件，已关联以下助手：{assistants}",
       "cannotDeleteBoth": "无法删除文件，已关联以下项目：{projects} 以及助手：{assistants}"
+    },
+    "modelList": {
+      "searchPlaceholder": "搜索模型…",
+      "loading": "正在加载模型…",
+      "noModelsFound": "未找到模型"
+    },
+    "actionsPopover": {
+      "searchPlaceholder": "搜索操作",
+      "searchFilterPlaceholder": "搜索筛选条件",
+      "disableAllSources": "全部停用数据源",
+      "enableAllSources": "全部启用数据源",
+      "searchMcpToolsPlaceholder": "搜索 {server} 工具",
+      "disableAllTools": "全部停用工具",
+      "enableAllTools": "全部启用工具",
+      "moreActions": "更多操作"
+    },
+    "comboBox": {
+      "noOptionsFound": "未找到选项"
     }
   },
   "agent": {

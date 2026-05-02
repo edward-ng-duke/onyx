@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import type { FunctionComponent } from "react";
 
 import { noProp } from "@/lib/utils";
@@ -33,6 +36,7 @@ interface RemoveButtonProps {
 }
 
 function RemoveButton({ onRemove }: RemoveButtonProps) {
+  const tCommon = useTranslations("common");
   return (
     <div
       className={cn(
@@ -47,8 +51,8 @@ function RemoveButton({ onRemove }: RemoveButtonProps) {
             e.stopPropagation();
             onRemove();
           }}
-          title="Remove"
-          aria-label="Remove"
+          title={tCommon("aria.removeFile")}
+          aria-label={tCommon("aria.removeFile")}
           className={cn(
             "h-4 w-4",
             "flex items-center justify-center",

@@ -34,7 +34,8 @@
       "documentation": "Documentation",
       "connect": "Connect",
       "reconnect": "Reconnect",
-      "saveChanges": "Save Changes"
+      "saveChanges": "Save Changes",
+      "reAuthenticate": "Re-Authenticate"
     },
     "labels": {
       "yes": "Yes",
@@ -47,7 +48,9 @@
       "default": "(Default)"
     },
     "aria": {
-      "revertToDefault": "Revert to Default"
+      "revertToDefault": "Revert to Default",
+      "removeFile": "Remove",
+      "manageActions": "Manage Actions"
     }
   },
   "auth": {
@@ -3678,6 +3681,24 @@
       "cannotDeleteProjects": "Cannot delete file. It is associated with projects: {projects}",
       "cannotDeleteAssistants": "Cannot delete file. It is associated with assistants: {assistants}",
       "cannotDeleteBoth": "Cannot delete file. It is associated with projects: {projects} and assistants: {assistants}"
+    },
+    "modelList": {
+      "searchPlaceholder": "Search models...",
+      "loading": "Loading models...",
+      "noModelsFound": "No models found"
+    },
+    "actionsPopover": {
+      "searchPlaceholder": "Search Actions",
+      "searchFilterPlaceholder": "Search Filters",
+      "disableAllSources": "Disable All Sources",
+      "enableAllSources": "Enable All Sources",
+      "searchMcpToolsPlaceholder": "Search {server} tools",
+      "disableAllTools": "Disable All Tools",
+      "enableAllTools": "Enable All Tools",
+      "moreActions": "More Actions"
+    },
+    "comboBox": {
+      "noOptionsFound": "No options found"
     }
   },
   "agent": {
