@@ -26,16 +26,6 @@ export interface Toast extends ToastOptions {
 
 export const MAX_VISIBLE_TOASTS = 3;
 const DEFAULT_DURATION = 4000;
-const TOAST_CONSOLE_METHOD: Record<
-  ToastLevel,
-  "log" | "warn" | "error" | "info"
-> = {
-  error: "error",
-  warning: "warn",
-  info: "info",
-  success: "log",
-  default: "log",
-};
 
 // ---------------------------------------------------------------------------
 // Module‑level store (external to React)
@@ -66,11 +56,13 @@ function addToast(options: ToastOptions): string {
   };
 
   if (process.env.NODE_ENV === "development") {
-    const method = TOAST_CONSOLE_METHOD[level];
+    // Always use console.log; Next.js dev overlay intercepts console.error /
+    // console.warn and surfaces them as captured runtime errors, which is
+    // wrong for routine user-facing toasts.
     if (entry.description) {
-      console[method](`[Toast] ${entry.message}`, entry.description);
+      console.log(`[Toast/${level}] ${entry.message}`, entry.description);
     } else {
-      console[method](`[Toast] ${entry.message}`);
+      console.log(`[Toast/${level}] ${entry.message}`);
     }
   }
 

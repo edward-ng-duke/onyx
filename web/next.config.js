@@ -24,6 +24,34 @@ const devAllowedOrigins = (process.env.NEXT_DEV_ALLOWED_ORIGINS ?? "")
   .map((origin) => origin.trim())
   .filter((origin) => origin.length > 0);
 
+// Next.js dev indicator (the "N" floating icon in dev mode) overlaps the
+// sidebar's account button in the bottom-left corner. Default it to the
+// bottom-right corner and allow operators to override or hide it via
+// NEXT_DEV_INDICATOR=off|bottom-left|bottom-right|top-left|top-right.
+const devIndicatorRaw = (process.env.NEXT_DEV_INDICATOR ?? "")
+  .trim()
+  .toLowerCase();
+const DEV_INDICATOR_HIDDEN_VALUES = ["off", "false", "hidden", "0"];
+const DEV_INDICATOR_VALID_POSITIONS = [
+  "bottom-left",
+  "bottom-right",
+  "top-left",
+  "top-right",
+];
+let devIndicators;
+if (DEV_INDICATOR_HIDDEN_VALUES.includes(devIndicatorRaw)) {
+  devIndicators = false;
+} else if (DEV_INDICATOR_VALID_POSITIONS.includes(devIndicatorRaw)) {
+  devIndicators = { position: devIndicatorRaw };
+} else {
+  if (devIndicatorRaw) {
+    console.warn(
+      `[next.config] Unknown NEXT_DEV_INDICATOR="${devIndicatorRaw}", falling back to bottom-right`
+    );
+  }
+  devIndicators = { position: "bottom-right" };
+}
+
 const nextConfig = {
   productionBrowserSourceMaps: false,
   output: "standalone",
@@ -31,6 +59,7 @@ const nextConfig = {
   typedRoutes: true,
   reactCompiler: true,
   allowedDevOrigins: devAllowedOrigins,
+  devIndicators,
   images: {
     // Used to fetch favicons
     remotePatterns: [
