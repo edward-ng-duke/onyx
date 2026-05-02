@@ -30,7 +30,10 @@
       "retry": "重试",
       "copy": "复制",
       "copied": "已复制",
-      "open": "打开"
+      "open": "打开",
+      "documentation": "文档",
+      "connect": "连接",
+      "reconnect": "重新连接"
     },
     "labels": {
       "yes": "是",
@@ -2232,6 +2235,22 @@
         "warningSuffix": "账号中的内容。",
         "warningExisting": "你仍可继续在已有会话中引用 {name} 的内容。"
       }
+    },
+    "hooks": {
+      "pageDescription": "通过注册在 chat 或 indexing 流程特定时点触发的外部 API 端点，扩展 Onyx 管道",
+      "searchPlaceholder": "搜索 hooks…",
+      "disconnectedSuffix": "（已断开）",
+      "empty": {
+        "noResults": "未找到结果",
+        "noHookPoints": "暂无可用 hook 点",
+        "noResultsDescription": "可尝试其他关键词"
+      },
+      "aria": {
+        "disconnect": "断开 hook",
+        "deactivate": "停用 hook",
+        "testConnection": "测试连接",
+        "revalidate": "重新校验 hook"
+      }
     }
   },
   "agents": {
@@ -2582,6 +2601,16 @@
       },
       "sidebar": {
         "moveChatFailed": "移动会话失败，请重试。"
+      },
+      "hooks": {
+        "validationSuccess": "hook 校验成功",
+        "deleteFailed": "删除 hook 失败",
+        "reconnectFailed": "重新连接 hook 失败",
+        "deactivateFailed": "停用 hook 失败",
+        "disconnectFailed": "断开 hook 失败",
+        "validateFailed": "校验 hook 失败",
+        "requiresEnterprise": "Hook 扩展需要 Enterprise 许可证",
+        "notEnabled": "当前部署未启用 Hook 扩展"
       }
     },
     "shared": {
@@ -3095,6 +3124,16 @@
     },
     "deleteFederatedConnector": {
       "body": "确认删除该联合 Connector 吗？此操作不可撤销"
+    },
+    "hooks": {
+      "disconnectTitle": "断开 *{name}*",
+      "disconnectBody": "Onyx 将在触发此 hook 时停止调用此端点（hook: ***{name}***）。进行中的请求将继续运行，外部端点此前收到的数据仍会保留。你可在稍后重新连接此 hook",
+      "disconnectDeleteNote": "你也可以选择删除此 hook，删除后不可恢复",
+      "disconnect": "断开",
+      "disconnectAndDelete": "断开并删除",
+      "deleteTitle": "删除 *{name}*",
+      "deleteBody": "hook ***{name}*** 将被永久从此 hook 点移除。外部端点此前收到的数据仍会保留",
+      "deletionNote": "删除后不可恢复"
     }
   },
   "sections": {

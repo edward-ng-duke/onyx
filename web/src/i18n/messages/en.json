@@ -30,7 +30,10 @@
       "retry": "Retry",
       "copy": "Copy",
       "copied": "Copied",
-      "open": "Open"
+      "open": "Open",
+      "documentation": "Documentation",
+      "connect": "Connect",
+      "reconnect": "Reconnect"
     },
     "labels": {
       "yes": "Yes",
@@ -2232,6 +2235,22 @@
         "warningSuffix": "account.",
         "warningExisting": "You can still continue existing sessions referencing {name} content."
       }
+    },
+    "hooks": {
+      "pageDescription": "Extend Onyx pipelines by registering external API endpoints as callbacks at predefined hook points.",
+      "searchPlaceholder": "Search hooks...",
+      "disconnectedSuffix": "(Disconnected)",
+      "empty": {
+        "noResults": "No results found",
+        "noHookPoints": "No hook points available",
+        "noResultsDescription": "Try using a different search term."
+      },
+      "aria": {
+        "disconnect": "Disconnect Hook",
+        "deactivate": "Deactivate hook",
+        "testConnection": "Test Connection",
+        "revalidate": "Re-validate hook"
+      }
     }
   },
   "agents": {
@@ -2582,6 +2601,16 @@
       },
       "sidebar": {
         "moveChatFailed": "Failed to move chat. Please try again."
+      },
+      "hooks": {
+        "validationSuccess": "Hook validated successfully",
+        "deleteFailed": "Failed to delete hook",
+        "reconnectFailed": "Failed to reconnect hook",
+        "deactivateFailed": "Failed to deactivate hook",
+        "disconnectFailed": "Failed to disconnect hook",
+        "validateFailed": "Failed to validate hook",
+        "requiresEnterprise": "Hook Extensions require an Enterprise license",
+        "notEnabled": "Hook Extensions are not enabled for this deployment"
       }
     },
     "shared": {
@@ -3095,6 +3124,16 @@
     },
     "deleteFederatedConnector": {
       "body": "Are you sure you want to delete this federated connector? This action cannot be undone."
+    },
+    "hooks": {
+      "disconnectTitle": "Disconnect *{name}*",
+      "disconnectBody": "Onyx will stop calling this endpoint for hook ***{name}***. In-flight requests will continue to run. The external endpoint may still retain data previously sent to it. You can reconnect this hook later if needed.",
+      "disconnectDeleteNote": "You can also delete this hook. Deletion cannot be undone.",
+      "disconnect": "Disconnect",
+      "disconnectAndDelete": "Disconnect & Delete",
+      "deleteTitle": "Delete *{name}*",
+      "deleteBody": "Hook ***{name}*** will be permanently removed from this hook point. The external endpoint may still retain data previously sent to it.",
+      "deletionNote": "Deletion cannot be undone."
     }
   },
   "sections": {
