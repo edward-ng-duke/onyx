@@ -1636,6 +1636,8 @@
       "connectingToStripe": "Connecting...",
       "connectToStripe": "Connect to Stripe",
       "managePlan": "Manage Plan",
+      "upgradeNow": "Upgrade now",
+      "upgrading": "Upgrading...",
       "managedThroughSales": "Your plan is managed through sales.",
       "contactBilling": "Contact billing",
       "contactBillingSuffix": " to make changes.",

@@ -1636,6 +1636,8 @@
       "connectingToStripe": "连接中…",
       "connectToStripe": "连接到 Stripe",
       "managePlan": "管理套餐",
+      "upgradeNow": "立即升级",
+      "upgrading": "升级中…",
       "managedThroughSales": "你的套餐由销售团队管理。",
       "contactBilling": "联系账单团队",
       "contactBillingSuffix": "以进行调整。",
