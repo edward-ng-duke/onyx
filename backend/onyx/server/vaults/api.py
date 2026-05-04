@@ -30,6 +30,9 @@ from onyx.db.vault import (
 from onyx.error_handling.error_codes import OnyxErrorCode
 from onyx.error_handling.exceptions import OnyxError
 from onyx.server.vaults.acl import require_vault_role
+from onyx.server.vaults.chat_history import add_assistant_message
+from onyx.server.vaults.chat_history import add_user_message
+from onyx.server.vaults.chat_history import get_session as ch_get_session
 from onyx.server.vaults.rag_client import RagAnythingClient
 from onyx.server.vaults.schemas import (
     AddMemberRequest,
@@ -37,6 +40,7 @@ from onyx.server.vaults.schemas import (
     MemberResponse,
     UpdateVaultRequest,
     VaultBrief,
+    VaultChatSendRequest,
     VaultDetail,
     VaultListResponse,
     VaultRole,
@@ -355,3 +359,30 @@ def get_job(
     return _rag.get_job(
         job_id, rag_tenant_id=vault.rag_tenant_id, user_id=user.id
     )
+
+
+@router.post("/{vault_id}/query/sync")
+def query_sync_endpoint(
+    body: VaultChatSendRequest,
+    vault: Vault = Depends(require_vault_role(VaultRole.READER)),
+    user: User = Depends(current_user),
+    db: Session = Depends(get_session),
+) -> dict:
+    rag_body = body.model_dump(exclude={"session_id"})
+    upstream = _rag.query_sync(
+        rag_tenant_id=vault.rag_tenant_id, body=rag_body, user_id=user.id,
+    )
+    if body.session_id is not None:
+        sess = ch_get_session(db, session_id=body.session_id, user_id=user.id)
+        if sess is not None:
+            add_user_message(db, session_id=sess.id, content=body.question)
+            add_assistant_message(
+                db,
+                session_id=sess.id,
+                content=upstream.get("answer", ""),
+                sources=upstream.get("sources"),
+                tokens=upstream.get("tokens"),
+                request_id=upstream.get("request_id"),
+            )
+            db.commit()
+    return upstream
