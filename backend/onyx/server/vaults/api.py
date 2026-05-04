@@ -7,7 +7,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, File, Query, UploadFile
 from sqlalchemy.orm import Session
 
 from onyx.auth.users import current_user
@@ -285,3 +285,62 @@ def remove_vault_member(
     if not removed:
         raise OnyxError(OnyxErrorCode.NOT_FOUND, "Member not found")
     db.commit()
+
+
+@router.post("/{vault_id}/documents", status_code=202)
+def upload_document(
+    file: UploadFile = File(...),
+    vault: Vault = Depends(require_vault_role(VaultRole.COLLABORATOR)),
+    user: User = Depends(current_user),
+) -> dict:
+    contents = file.file.read()
+    return _rag.upload_document(
+        rag_tenant_id=vault.rag_tenant_id,
+        file_bytes=contents,
+        file_name=file.filename or "upload",
+        mime_type=file.content_type or "application/octet-stream",
+        user_id=user.id,
+    )
+
+
+@router.get("/{vault_id}/documents")
+def list_documents(
+    cursor: str | None = Query(default=None),
+    limit: int = Query(default=50, ge=1, le=200),
+    status_filter: str | None = Query(default=None, alias="status"),
+    vault: Vault = Depends(require_vault_role(VaultRole.READER)),
+    user: User = Depends(current_user),
+) -> dict:
+    return _rag.list_documents(
+        rag_tenant_id=vault.rag_tenant_id,
+        user_id=user.id,
+        cursor=cursor,
+        limit=limit,
+        status_filter=status_filter,
+    )
+
+
+@router.get("/{vault_id}/documents/{document_id}")
+def get_document(
+    document_id: str,
+    vault: Vault = Depends(require_vault_role(VaultRole.READER)),
+    user: User = Depends(current_user),
+) -> dict:
+    return _rag.get_document(
+        document_id,
+        rag_tenant_id=vault.rag_tenant_id,
+        user_id=user.id,
+    )
+
+
+@router.delete("/{vault_id}/documents/{document_id}", status_code=204)
+def delete_document(
+    document_id: str,
+    vault: Vault = Depends(require_vault_role(VaultRole.COLLABORATOR)),
+    user: User = Depends(current_user),
+) -> None:
+    _rag.delete_document(
+        document_id,
+        rag_tenant_id=vault.rag_tenant_id,
+        user_id=user.id,
+    )
