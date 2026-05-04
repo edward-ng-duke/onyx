@@ -184,4 +184,32 @@ export const SWR_KEYS = {
   // ── Index Attempts ────────────────────────────────────────────────────────
   indexAttemptStageMetrics: (indexAttemptId: number) =>
     `/api/manage/admin/index-attempt/${indexAttemptId}/stage-metrics`,
+
+  // ── Vaults ────────────────────────────────────────────────────────────────
+  vaults: "/api/onyx/vaults",
+  vault: (id: string) => `/api/onyx/vaults/${id}`,
+  vaultMembers: (id: string) => `/api/onyx/vaults/${id}/members`,
+  vaultDocuments: (id: string, q?: string) =>
+    `/api/onyx/vaults/${id}/documents${q ? `?${q}` : ""}`,
+  vaultDocument: (id: string, docId: string) =>
+    `/api/onyx/vaults/${id}/documents/${docId}`,
+  vaultJob: (id: string, jobId: string) =>
+    `/api/onyx/vaults/${id}/jobs/${jobId}`,
+  vaultChatSessions: (id: string) =>
+    `/api/onyx/vaults/${id}/chat/sessions`,
+  vaultChatMessages: (id: string, sessionId: string) =>
+    `/api/onyx/vaults/${id}/chat/sessions/${sessionId}/messages`,
+  vaultKgEntities: (id: string, q?: string) =>
+    `/api/onyx/vaults/${id}/kg/entities${q ? `?${q}` : ""}`,
+  vaultKgEntity: (id: string, eid: string) =>
+    `/api/onyx/vaults/${id}/kg/entities/${eid}`,
+  vaultKgEntityNeighbors: (id: string, eid: string, depth = 1) =>
+    `/api/onyx/vaults/${id}/kg/entities/${eid}/neighbors?depth=${depth}`,
+  vaultKgRelations: (id: string, q?: string) =>
+    `/api/onyx/vaults/${id}/kg/relations${q ? `?${q}` : ""}`,
+  vaultKgChunk: (id: string, cid: string) =>
+    `/api/onyx/vaults/${id}/kg/chunks/${cid}`,
+  vaultKgStats: (id: string) => `/api/onyx/vaults/${id}/kg/stats`,
+  vaultKgSubgraph: (id: string, entities: string, depth = 2) =>
+    `/api/onyx/vaults/${id}/kg/subgraph?entities=${entities}&depth=${depth}`,
 } as const;
