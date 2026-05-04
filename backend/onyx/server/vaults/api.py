@@ -4,6 +4,9 @@ This module owns ACL, RAG roundtrip, and chat-history persistence.
 """
 from __future__ import annotations
 
+from datetime import datetime, timezone
+from uuid import UUID
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -12,20 +15,26 @@ from onyx.db.engine.sql_engine import get_session
 from onyx.db.models import User, Vault
 from onyx.db.vault import (
     compute_effective_role,
+    get_member_role,
     get_vault_by_id,
     hard_delete_vault,
     increment_delete_retry,
     insert_member,
     insert_vault,
+    list_members,
     list_vaults_for_user,
+    remove_member,
     soft_delete_vault,
     update_vault_fields,
 )
+from onyx.error_handling.error_codes import OnyxErrorCode
 from onyx.error_handling.exceptions import OnyxError
 from onyx.server.vaults.acl import require_vault_role
 from onyx.server.vaults.rag_client import RagAnythingClient
 from onyx.server.vaults.schemas import (
+    AddMemberRequest,
     CreateVaultRequest,
+    MemberResponse,
     UpdateVaultRequest,
     VaultBrief,
     VaultDetail,
@@ -222,4 +231,57 @@ def delete_vault(
         return
     # 3. hard-delete locally
     hard_delete_vault(db, vault.id)
+    db.commit()
+
+
+@router.get("/{vault_id}/members")
+def list_vault_members(
+    vault: Vault = Depends(require_vault_role(VaultRole.READER)),
+    db: Session = Depends(get_session),
+) -> list[MemberResponse]:
+    rows = list_members(db, vault.id)
+    return [
+        MemberResponse(
+            user_id=r.user_id, role=VaultRole(r.role), granted_at=r.granted_at
+        )
+        for r in rows
+    ]
+
+
+@router.post("/{vault_id}/members", status_code=201)
+def add_vault_member(
+    body: AddMemberRequest,
+    vault: Vault = Depends(require_vault_role(VaultRole.OWNER)),
+    db: Session = Depends(get_session),
+) -> MemberResponse:
+    if body.role == VaultRole.READER:
+        raise OnyxError(
+            OnyxErrorCode.INVALID_INPUT,
+            "READER is implicit; add a collaborator or owner instead",
+        )
+    existing = get_member_role(db, vault.id, body.user_id)
+    if existing is not None:
+        raise OnyxError(OnyxErrorCode.INVALID_INPUT, "User already a member")
+    insert_member(db, vault.id, body.user_id, body.role)
+    db.commit()
+    return MemberResponse(
+        user_id=body.user_id,
+        role=body.role,
+        granted_at=datetime.now(timezone.utc),
+    )
+
+
+@router.delete("/{vault_id}/members/{user_id}", status_code=204)
+def remove_vault_member(
+    user_id: UUID,
+    vault: Vault = Depends(require_vault_role(VaultRole.OWNER)),
+    db: Session = Depends(get_session),
+) -> None:
+    if user_id == vault.owner_user_id:
+        raise OnyxError(
+            OnyxErrorCode.INVALID_INPUT, "Cannot remove the vault owner"
+        )
+    removed = remove_member(db, vault.id, user_id)
+    if not removed:
+        raise OnyxError(OnyxErrorCode.NOT_FOUND, "Member not found")
     db.commit()
