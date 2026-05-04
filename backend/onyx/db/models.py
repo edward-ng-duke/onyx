@@ -5561,3 +5561,67 @@ class HookExecutionLog(Base):
     )
 
     hook: Mapped["Hook"] = relationship("Hook", back_populates="execution_logs")
+
+
+class Vault(Base):
+    __tablename__ = "onyx_vault"
+
+    id: Mapped[UUID] = mapped_column(postgresql.UUID(as_uuid=True), primary_key=True,
+                                     server_default=text("gen_random_uuid()"))
+    rag_tenant_id: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
+    display_name: Mapped[str] = mapped_column(Text, nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    visibility: Mapped[str] = mapped_column(Text, nullable=False, server_default="private")
+    owner_user_id: Mapped[UUID] = mapped_column(postgresql.UUID(as_uuid=True),
+                                                ForeignKey("user.id"), nullable=False)
+    storage_quota_mb: Mapped[int] = mapped_column(Integer, nullable=False, server_default="1024")
+    delete_retry_count: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    deleted_at: Mapped[datetime.datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class VaultMember(Base):
+    __tablename__ = "onyx_vault_member"
+
+    vault_id: Mapped[UUID] = mapped_column(postgresql.UUID(as_uuid=True),
+                                           ForeignKey("onyx_vault.id", ondelete="CASCADE"),
+                                           primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(postgresql.UUID(as_uuid=True),
+                                          ForeignKey("user.id", ondelete="CASCADE"),
+                                          primary_key=True)
+    role: Mapped[str] = mapped_column(Text, nullable=False)
+    granted_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class VaultChatSession(Base):
+    __tablename__ = "onyx_vault_chat_session"
+
+    id: Mapped[UUID] = mapped_column(postgresql.UUID(as_uuid=True), primary_key=True,
+                                     server_default=text("gen_random_uuid()"))
+    vault_id: Mapped[UUID] = mapped_column(postgresql.UUID(as_uuid=True),
+                                           ForeignKey("onyx_vault.id", ondelete="CASCADE"),
+                                           nullable=False)
+    user_id: Mapped[UUID] = mapped_column(postgresql.UUID(as_uuid=True),
+                                          ForeignKey("user.id", ondelete="CASCADE"),
+                                          nullable=False)
+    title: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class VaultChatMessage(Base):
+    __tablename__ = "onyx_vault_chat_message"
+
+    id: Mapped[UUID] = mapped_column(postgresql.UUID(as_uuid=True), primary_key=True,
+                                     server_default=text("gen_random_uuid()"))
+    session_id: Mapped[UUID] = mapped_column(postgresql.UUID(as_uuid=True),
+                                             ForeignKey("onyx_vault_chat_session.id",
+                                                        ondelete="CASCADE"),
+                                             nullable=False)
+    role: Mapped[str] = mapped_column(Text, nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    sources_json: Mapped[dict | None] = mapped_column(postgresql.JSONB, nullable=True)
+    tokens_json: Mapped[dict | None] = mapped_column(postgresql.JSONB, nullable=True)
+    request_id: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
