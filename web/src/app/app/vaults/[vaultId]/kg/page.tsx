@@ -1,7 +1,8 @@
 "use client";
-import { useParams } from "next/navigation";
+import { use } from "react";
+import { VaultGraphView } from "@/sections/vault/VaultGraphView";
 
-export default function KgPage() {
-  const { vaultId } = useParams<{ vaultId: string }>();
-  return <div className="p-4">KG tab for vault {vaultId}</div>;
+export default function KgPage({ params }: { params: Promise<{ vaultId: string }> }) {
+  const { vaultId } = use(params);
+  return <VaultGraphView vaultId={vaultId} />;
 }
