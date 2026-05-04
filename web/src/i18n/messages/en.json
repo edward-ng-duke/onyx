@@ -3550,5 +3550,82 @@
       "useKnowledgeTitle": "Use Knowledge",
       "useKnowledgeDescription": "Let this agent reference these documents to inform its responses."
     }
+  },
+  "vault": {
+    "nav": {
+      "title": "Knowledge Vaults",
+      "createButton": "New Vault"
+    },
+    "list": {
+      "tabsOwned": "Owned",
+      "tabsCollaborator": "Shared with me",
+      "tabsWorkspace": "Workspace",
+      "emptyOwned": "You haven't created any vaults yet",
+      "documentCount": "{count} docs"
+    },
+    "create": {
+      "title": "Create Vault",
+      "namePlaceholder": "Vault name",
+      "descPlaceholder": "Description (optional)",
+      "visibilityPrivate": "Private",
+      "visibilityWorkspace": "Workspace",
+      "quotaLabel": "Storage quota (MB)",
+      "submit": "Create"
+    },
+    "tabs": {
+      "chat": "Chat",
+      "docs": "Documents",
+      "kg": "Knowledge Graph"
+    },
+    "chat": {
+      "composerPlaceholder": "Ask a question...",
+      "modeHybrid": "Hybrid",
+      "modeLocal": "Local",
+      "modeGlobal": "Global",
+      "modeNaive": "Naive",
+      "modeMix": "Mix",
+      "vlmEnhanced": "VLM enhanced",
+      "stop": "Stop",
+      "retry": "Retry",
+      "sourcesTitle": "Sources",
+      "empty": "Ask a question to get started"
+    },
+    "docs": {
+      "dropHint": "Drop files here or click to browse",
+      "accepted": "PDF, DOC, DOCX, PNG, JPEG, TXT — up to 1GB",
+      "statusPending": "Pending",
+      "statusParsing": "Parsing",
+      "statusIndexed": "Indexed",
+      "statusFailed": "Failed",
+      "statusDeleted": "Deleted",
+      "deleteConfirm": "Delete this document? This will trigger KG rebuild (may take minutes)."
+    },
+    "kg": {
+      "entityTypes": "Entity types",
+      "depth": "Depth",
+      "empty": "No entities yet — upload documents to populate",
+      "tooManyNodesWarning": "Too many nodes; showing top 200"
+    },
+    "errors": {
+      "notFound": "Vault not found or no permission",
+      "quotaExceeded": "Vault storage quota reached",
+      "serviceUnavailable": "Knowledge Vault service unavailable, please retry",
+      "rateLimited": "Too many requests, please wait",
+      "uploadFailed": "Upload failed",
+      "unsupportedFile": "Unsupported file type",
+      "upstream": "AI service error, retrying"
+    },
+    "share": {
+      "title": "Share Vault",
+      "invite": "Invite",
+      "roleOwner": "Owner",
+      "roleCollaborator": "Collaborator",
+      "removeConfirm": "Remove this member?"
+    },
+    "delete": {
+      "confirmTitle": "Delete Vault",
+      "confirmBody": "Delete '{name}'? All documents and chat history will be lost.",
+      "confirmButton": "Delete forever"
+    }
   }
 }

@@ -3550,5 +3550,82 @@
       "useKnowledgeTitle": "使用知识库",
       "useKnowledgeDescription": "允许该 Agent 引用这些文档来辅助生成回答。"
     }
+  },
+  "vault": {
+    "nav": {
+      "title": "知识库",
+      "createButton": "新建知识库"
+    },
+    "list": {
+      "tabsOwned": "我的",
+      "tabsCollaborator": "协作",
+      "tabsWorkspace": "Workspace 共享",
+      "emptyOwned": "你还没有创建任何知识库",
+      "documentCount": "{count} 个文档"
+    },
+    "create": {
+      "title": "创建知识库",
+      "namePlaceholder": "知识库名称",
+      "descPlaceholder": "描述（可选）",
+      "visibilityPrivate": "私有",
+      "visibilityWorkspace": "Workspace 共享",
+      "quotaLabel": "存储配额（MB）",
+      "submit": "创建"
+    },
+    "tabs": {
+      "chat": "对话",
+      "docs": "文档",
+      "kg": "知识图谱"
+    },
+    "chat": {
+      "composerPlaceholder": "请输入问题…",
+      "modeHybrid": "混合",
+      "modeLocal": "局部",
+      "modeGlobal": "全局",
+      "modeNaive": "朴素",
+      "modeMix": "混排",
+      "vlmEnhanced": "启用视觉模型",
+      "stop": "停止",
+      "retry": "重试",
+      "sourcesTitle": "引用来源",
+      "empty": "提一个问题开始使用"
+    },
+    "docs": {
+      "dropHint": "将文件拖放到此处，或点击选择文件",
+      "accepted": "支持 PDF、DOC、DOCX、PNG、JPEG、TXT，单文件最大 1GB",
+      "statusPending": "等待中",
+      "statusParsing": "解析中",
+      "statusIndexed": "已索引",
+      "statusFailed": "失败",
+      "statusDeleted": "已删除",
+      "deleteConfirm": "删除该文档？这将触发知识图谱重建（可能需要数分钟）。"
+    },
+    "kg": {
+      "entityTypes": "实体类型",
+      "depth": "深度",
+      "empty": "暂无实体——请上传文档以生成",
+      "tooManyNodesWarning": "节点过多，仅显示前 200 个"
+    },
+    "errors": {
+      "notFound": "知识库不存在或无权限访问",
+      "quotaExceeded": "知识库存储配额已用尽",
+      "serviceUnavailable": "知识库服务暂不可用，请稍后重试",
+      "rateLimited": "请求过于频繁，请稍候",
+      "uploadFailed": "上传失败",
+      "unsupportedFile": "不支持的文件类型",
+      "upstream": "AI 服务异常，正在重试"
+    },
+    "share": {
+      "title": "共享知识库",
+      "invite": "邀请",
+      "roleOwner": "所有者",
+      "roleCollaborator": "协作者",
+      "removeConfirm": "移除该成员？"
+    },
+    "delete": {
+      "confirmTitle": "删除知识库",
+      "confirmBody": "确认删除「{name}」？所有文档与对话历史将永久丢失。",
+      "confirmButton": "永久删除"
+    }
   }
 }
