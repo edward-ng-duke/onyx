@@ -7,11 +7,13 @@ maps non-2xx responses to OnyxError.
 from __future__ import annotations
 
 import uuid
+from typing import Any
 from uuid import UUID
 
 import httpx
 
 from onyx.configs.app_configs import RAG_ANYTHING_BASE_URL
+from onyx.configs.app_configs import RAG_ANYTHING_TIMEOUT_SEC
 from onyx.configs.app_configs import RAG_ANYTHING_TOKEN
 from onyx.error_handling.error_codes import OnyxErrorCode
 from onyx.error_handling.exceptions import OnyxError
@@ -118,3 +120,82 @@ class RagAnythingClient:
     @property
     def base(self) -> str:
         return self._base
+
+    # ---- KB methods -------------------------------------------------------
+
+    def create_kb(
+        self,
+        *,
+        display_name: str,
+        onyx_workspace_id: str | None,
+        onyx_owner_user_id: str | None,
+        storage_quota_mb: int,
+        user_id: UUID,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
+        resp = self.client.post(
+            f"{self._base}/v1/onyx/kb",
+            json={
+                "display_name": display_name,
+                "onyx_workspace_id": onyx_workspace_id,
+                "onyx_owner_user_id": onyx_owner_user_id,
+                "storage_quota_mb": storage_quota_mb,
+            },
+            headers=self._headers(user_id=user_id, request_id=request_id),
+            timeout=RAG_ANYTHING_TIMEOUT_SEC,
+        )
+        self._raise_for_status(resp)
+        return resp.json()
+
+    def get_kb(
+        self,
+        rag_tenant_id: str,
+        *,
+        user_id: UUID,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
+        resp = self.client.get(
+            f"{self._base}/v1/onyx/kb/{rag_tenant_id}",
+            headers=self._headers(
+                user_id=user_id, kb_id=rag_tenant_id, request_id=request_id
+            ),
+            timeout=RAG_ANYTHING_TIMEOUT_SEC,
+        )
+        self._raise_for_status(resp)
+        return resp.json()
+
+    def list_kbs(
+        self,
+        *,
+        user_id: UUID,
+        cursor: str | None = None,
+        limit: int = 50,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {"limit": limit}
+        if cursor:
+            params["cursor"] = cursor
+        resp = self.client.get(
+            f"{self._base}/v1/onyx/kb",
+            params=params,
+            headers=self._headers(user_id=user_id, request_id=request_id),
+            timeout=RAG_ANYTHING_TIMEOUT_SEC,
+        )
+        self._raise_for_status(resp)
+        return resp.json()
+
+    def delete_kb(
+        self,
+        rag_tenant_id: str,
+        *,
+        user_id: UUID,
+        request_id: str | None = None,
+    ) -> None:
+        resp = self.client.delete(
+            f"{self._base}/v1/onyx/kb/{rag_tenant_id}",
+            headers=self._headers(
+                user_id=user_id, kb_id=rag_tenant_id, request_id=request_id
+            ),
+            timeout=RAG_ANYTHING_TIMEOUT_SEC,
+        )
+        self._raise_for_status(resp)
