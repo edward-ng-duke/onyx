@@ -7,12 +7,14 @@ maps non-2xx responses to OnyxError.
 from __future__ import annotations
 
 import uuid
+from collections.abc import Iterator
 from typing import Any
 from uuid import UUID
 
 import httpx
 
 from onyx.configs.app_configs import RAG_ANYTHING_BASE_URL
+from onyx.configs.app_configs import RAG_ANYTHING_SSE_TIMEOUT_SEC
 from onyx.configs.app_configs import RAG_ANYTHING_TIMEOUT_SEC
 from onyx.configs.app_configs import RAG_ANYTHING_TOKEN
 from onyx.error_handling.error_codes import OnyxErrorCode
@@ -306,3 +308,55 @@ class RagAnythingClient:
         )
         self._raise_for_status(resp)
         return resp.json()
+
+    # ---- Query -----------------------------------------------------------
+
+    def query_sync(
+        self,
+        *,
+        rag_tenant_id: str,
+        body: dict[str, Any],
+        user_id: UUID,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
+        resp = self.client.post(
+            f"{self._base}/v1/onyx/query/sync",
+            json=body,
+            headers=self._headers(
+                user_id=user_id, kb_id=rag_tenant_id, request_id=request_id
+            ),
+            timeout=120,
+        )
+        self._raise_for_status(resp)
+        return resp.json()
+
+    def stream_query(
+        self,
+        *,
+        rag_tenant_id: str,
+        body: dict[str, Any],
+        user_id: UUID,
+        request_id: str | None = None,
+    ) -> Iterator[bytes]:
+        """Yield raw bytes from the upstream SSE stream.
+
+        Caller is responsible for forwarding bytes to client + parsing
+        the `done` frame for chat-history persistence.
+        """
+        with self.client.stream(
+            "POST",
+            f"{self._base}/v1/onyx/query",
+            json=body,
+            headers=self._headers(
+                user_id=user_id, kb_id=rag_tenant_id, request_id=request_id
+            ),
+            timeout=httpx.Timeout(
+                connect=10, read=RAG_ANYTHING_SSE_TIMEOUT_SEC, write=10, pool=10
+            ),
+        ) as resp:
+            if resp.status_code != 200:
+                # Drain body to read JSON detail, then raise
+                resp.read()
+                self._raise_for_status(resp)
+            for chunk in resp.iter_bytes():
+                yield chunk
