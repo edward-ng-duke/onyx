@@ -957,6 +957,19 @@ CODE_INTERPRETER_MAX_OUTPUT_LENGTH = int(
     os.environ.get("CODE_INTERPRETER_MAX_OUTPUT_LENGTH") or 50_000
 )
 
+# RAG-Anything integration (Knowledge Vaults)
+RAG_ANYTHING_BASE_URL = os.environ.get("RAG_ANYTHING_BASE_URL", "")
+RAG_ANYTHING_TOKEN = os.environ.get("RAG_ANYTHING_TOKEN", "")
+RAG_ANYTHING_TIMEOUT_SEC = int(os.environ.get("RAG_ANYTHING_TIMEOUT_SEC", "120"))
+RAG_ANYTHING_SSE_TIMEOUT_SEC = int(os.environ.get("RAG_ANYTHING_SSE_TIMEOUT_SEC", "600"))
+RAG_ANYTHING_MAX_RETRIES = int(os.environ.get("RAG_ANYTHING_MAX_RETRIES", "2"))
+
+if RAG_ANYTHING_TOKEN and len(RAG_ANYTHING_TOKEN) < 64:
+    raise RuntimeError(
+        "RAG_ANYTHING_TOKEN must be ≥64 characters "
+        "(RAG-Anything backend rejects shorter tokens at startup)"
+    )
+
 
 #####
 # Miscellaneous
