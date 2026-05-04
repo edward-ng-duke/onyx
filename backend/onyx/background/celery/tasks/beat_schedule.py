@@ -174,6 +174,16 @@ beat_task_templates: list[dict] = [
             "queue": OnyxCeleryQueues.SANDBOX,
         },
     },
+    {
+        "name": "vault-reconcile-failed-deletes",
+        "task": OnyxCeleryTask.VAULT_RECONCILE_FAILED_DELETES,
+        "schedule": timedelta(seconds=60),
+        "options": {
+            "priority": OnyxCeleryPriority.LOW,
+            "expires": 60,
+            "queue": OnyxCeleryQueues.VAULT_RECONCILE,
+        },
+    },
 ]
 
 # Mirror set_is_ee_based_on_env_variable(): EE features are active when either

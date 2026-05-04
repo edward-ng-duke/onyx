@@ -415,6 +415,7 @@ class OnyxCeleryQueues:
     LLM_MODEL_UPDATE = "llm_model_update"
     CHECKPOINT_CLEANUP = "checkpoint_cleanup"
     INDEX_ATTEMPT_CLEANUP = "index_attempt_cleanup"
+    VAULT_RECONCILE = "vault_reconcile"
     # Heavy queue
     CONNECTOR_PRUNING = "connector_pruning"
     CONNECTOR_DOC_PERMISSIONS_SYNC = "connector_doc_permissions_sync"
