@@ -146,6 +146,7 @@ from onyx.server.settings.api import admin_router as settings_admin_router
 from onyx.server.settings.api import basic_router as settings_router
 from onyx.server.token_rate_limits.api import router as token_rate_limit_settings_router
 from onyx.server.utils import BasicAuthenticationError
+from onyx.server.vaults.api import router as vaults_router
 from onyx.setup import setup_multitenant_onyx
 from onyx.setup import setup_onyx
 from onyx.tracing.setup import setup_tracing
@@ -469,6 +470,7 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     include_router_with_global_prefix_prepended(application, admin_input_prompt_router)
     include_router_with_global_prefix_prepended(application, cc_pair_router)
     include_router_with_global_prefix_prepended(application, projects_router)
+    include_router_with_global_prefix_prepended(application, vaults_router)
     include_router_with_global_prefix_prepended(application, public_build_router)
     include_router_with_global_prefix_prepended(application, build_router)
     include_router_with_global_prefix_prepended(application, document_set_router)
