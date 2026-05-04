@@ -58,6 +58,7 @@ import useAppFocus from "@/hooks/useAppFocus";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import { useModalContext } from "@/components/context/ModalContext";
 import {
+  SvgBooksStackSmall,
   SvgDevKit,
   SvgEditBig,
   SvgFolderPlus,
@@ -203,6 +204,7 @@ const MemoizedAppSidebarInner = memo(function AppSidebarInner() {
   const { newTenantInfo, invitationInfo } = useModalContext();
   const { setAppMode, reset } = useQueryController();
   const t = useTranslations("nav.sidebar");
+  const tVault = useTranslations("vault");
 
   // Use SWR hooks for data fetching
   const {
@@ -543,6 +545,20 @@ const MemoizedAppSidebarInner = memo(function AppSidebarInner() {
     ),
     [folded, t]
   );
+  const vaultsButton = useMemo(
+    () => (
+      <div data-testid="AppSidebar/vaults">
+        <SidebarTab
+          icon={SvgBooksStackSmall}
+          folded={folded}
+          href="/app/vaults"
+        >
+          {tVault("nav.title")}
+        </SidebarTab>
+      </div>
+    ),
+    [folded, tVault]
+  );
   const moreAgentsButton = useMemo(
     () => (
       <div data-testid="AppSidebar/more-agents">
@@ -674,6 +690,7 @@ const MemoizedAppSidebarInner = memo(function AppSidebarInner() {
         <div className="flex flex-col">
           {newSessionButton}
           {searchChatsButton}
+          {vaultsButton}
           {isOnyxCraftEnabled && buildButton}
           {folded && moreAgentsButton}
           {folded && newProjectButton}
