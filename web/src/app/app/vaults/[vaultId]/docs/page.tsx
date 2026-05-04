@@ -1,7 +1,8 @@
 "use client";
-import { useParams } from "next/navigation";
+import { use } from "react";
+import { VaultDocumentsView } from "@/sections/vault/VaultDocumentsView";
 
-export default function DocsPage() {
-  const { vaultId } = useParams<{ vaultId: string }>();
-  return <div className="p-4">Docs tab for vault {vaultId}</div>;
+export default function DocsPage({ params }: { params: Promise<{ vaultId: string }> }) {
+  const { vaultId } = use(params);
+  return <VaultDocumentsView vaultId={vaultId} />;
 }
