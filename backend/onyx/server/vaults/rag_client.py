@@ -199,3 +199,108 @@ class RagAnythingClient:
             timeout=RAG_ANYTHING_TIMEOUT_SEC,
         )
         self._raise_for_status(resp)
+
+    # ---- Documents -------------------------------------------------------
+
+    def upload_document(
+        self,
+        *,
+        rag_tenant_id: str,
+        file_bytes: bytes,
+        file_name: str,
+        mime_type: str,
+        user_id: UUID,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
+        files = {"file": (file_name, file_bytes, mime_type)}
+        resp = self.client.post(
+            f"{self._base}/v1/onyx/documents",
+            files=files,
+            headers=self._headers(
+                user_id=user_id, kb_id=rag_tenant_id, request_id=request_id
+            ),
+            timeout=60,
+        )
+        self._raise_for_status(resp)
+        return resp.json()
+
+    def list_documents(
+        self,
+        *,
+        rag_tenant_id: str,
+        user_id: UUID,
+        cursor: str | None = None,
+        limit: int = 50,
+        status_filter: str | None = None,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {"limit": limit}
+        if cursor:
+            params["cursor"] = cursor
+        if status_filter:
+            params["status"] = status_filter
+        resp = self.client.get(
+            f"{self._base}/v1/onyx/documents",
+            params=params,
+            headers=self._headers(
+                user_id=user_id, kb_id=rag_tenant_id, request_id=request_id
+            ),
+            timeout=10,
+        )
+        self._raise_for_status(resp)
+        return resp.json()
+
+    def get_document(
+        self,
+        document_id: str,
+        *,
+        rag_tenant_id: str,
+        user_id: UUID,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
+        resp = self.client.get(
+            f"{self._base}/v1/onyx/documents/{document_id}",
+            headers=self._headers(
+                user_id=user_id, kb_id=rag_tenant_id, request_id=request_id
+            ),
+            timeout=10,
+        )
+        self._raise_for_status(resp)
+        return resp.json()
+
+    def delete_document(
+        self,
+        document_id: str,
+        *,
+        rag_tenant_id: str,
+        user_id: UUID,
+        request_id: str | None = None,
+    ) -> None:
+        resp = self.client.delete(
+            f"{self._base}/v1/onyx/documents/{document_id}",
+            headers=self._headers(
+                user_id=user_id, kb_id=rag_tenant_id, request_id=request_id
+            ),
+            timeout=10,
+        )
+        self._raise_for_status(resp)
+
+    # ---- Jobs ------------------------------------------------------------
+
+    def get_job(
+        self,
+        job_id: str,
+        *,
+        rag_tenant_id: str,
+        user_id: UUID,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
+        resp = self.client.get(
+            f"{self._base}/v1/onyx/jobs/{job_id}",
+            headers=self._headers(
+                user_id=user_id, kb_id=rag_tenant_id, request_id=request_id
+            ),
+            timeout=5,
+        )
+        self._raise_for_status(resp)
+        return resp.json()
