@@ -34,7 +34,11 @@ from onyx.error_handling.exceptions import OnyxError
 from onyx.server.vaults.acl import require_vault_role
 from onyx.server.vaults.chat_history import add_assistant_message
 from onyx.server.vaults.chat_history import add_user_message
+from onyx.server.vaults.chat_history import create_session as ch_create
+from onyx.server.vaults.chat_history import delete_session as ch_delete
 from onyx.server.vaults.chat_history import get_session as ch_get_session
+from onyx.server.vaults.chat_history import list_messages as ch_messages
+from onyx.server.vaults.chat_history import list_sessions as ch_list
 from onyx.server.metrics.vault_metrics import vault_proxy_sse_dropped_total
 from onyx.server.vaults.rag_client import RagAnythingClient
 from onyx.server.vaults.schemas import (
@@ -43,7 +47,9 @@ from onyx.server.vaults.schemas import (
     MemberResponse,
     UpdateVaultRequest,
     VaultBrief,
+    VaultChatMessageResponse,
     VaultChatSendRequest,
+    VaultChatSessionBrief,
     VaultDetail,
     VaultListResponse,
     VaultRole,
@@ -566,3 +572,80 @@ def kg_get_subgraph(
         entities=entities,
         depth=depth,
     )
+
+
+@router.get("/{vault_id}/chat/sessions")
+def list_chat_sessions(
+    vault: Vault = Depends(require_vault_role(VaultRole.READER)),
+    user: User = Depends(current_user),
+    db: Session = Depends(get_session),
+) -> list[VaultChatSessionBrief]:
+    rows = ch_list(db, vault_id=vault.id, user_id=user.id)
+    return [
+        VaultChatSessionBrief(
+            id=r.id,
+            title=r.title,
+            created_at=r.created_at,
+            updated_at=r.updated_at,
+        )
+        for r in rows
+    ]
+
+
+@router.post("/{vault_id}/chat/sessions", status_code=201)
+def create_chat_session(
+    body: dict,
+    vault: Vault = Depends(require_vault_role(VaultRole.READER)),
+    user: User = Depends(current_user),
+    db: Session = Depends(get_session),
+) -> VaultChatSessionBrief:
+    s = ch_create(
+        db, vault_id=vault.id, user_id=user.id, title=body.get("title")
+    )
+    db.commit()
+    return VaultChatSessionBrief(
+        id=s.id,
+        title=s.title,
+        created_at=s.created_at,
+        updated_at=s.updated_at,
+    )
+
+
+@router.delete("/{vault_id}/chat/sessions/{session_id}", status_code=204)
+def delete_chat_session(
+    session_id: UUID,
+    vault: Vault = Depends(require_vault_role(VaultRole.READER)),
+    user: User = Depends(current_user),
+    db: Session = Depends(get_session),
+) -> None:
+    sess = ch_get_session(db, session_id=session_id, user_id=user.id)
+    if sess is None or sess.vault_id != vault.id:
+        raise OnyxError(OnyxErrorCode.NOT_FOUND, "Session not found")
+    ch_delete(db, session_id)
+    db.commit()
+
+
+@router.get("/{vault_id}/chat/sessions/{session_id}/messages")
+def list_chat_messages(
+    session_id: UUID,
+    vault: Vault = Depends(require_vault_role(VaultRole.READER)),
+    user: User = Depends(current_user),
+    db: Session = Depends(get_session),
+) -> list[VaultChatMessageResponse]:
+    sess = ch_get_session(db, session_id=session_id, user_id=user.id)
+    if sess is None or sess.vault_id != vault.id:
+        raise OnyxError(OnyxErrorCode.NOT_FOUND, "Session not found")
+    msgs = ch_messages(db, session_id=session_id)
+    return [
+        VaultChatMessageResponse(
+            id=m.id,
+            session_id=m.session_id,
+            role=m.role,
+            content=m.content,
+            sources_json=m.sources_json,
+            tokens_json=m.tokens_json,
+            request_id=m.request_id,
+            created_at=m.created_at,
+        )
+        for m in msgs
+    ]
