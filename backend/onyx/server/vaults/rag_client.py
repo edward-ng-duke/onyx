@@ -18,6 +18,7 @@ from onyx.configs.app_configs import RAG_ANYTHING_TOKEN
 from onyx.error_handling.error_codes import OnyxErrorCode
 from onyx.error_handling.exceptions import OnyxError
 from onyx.httpx.httpx_pool import HttpxPool
+from onyx.server.metrics.vault_metrics import vault_proxy_errors_total
 
 
 class RagUpstreamError(Exception):
@@ -84,6 +85,7 @@ class RagAnythingClient:
             detail_text = resp.text[:500]
 
         s = resp.status_code
+        vault_proxy_errors_total.labels(path="rag_upstream", error_code=str(s)).inc()
         if s == 400:
             raise OnyxError(
                 OnyxErrorCode.INVALID_INPUT, detail_text or "Invalid request"
