@@ -636,6 +636,9 @@ class OnyxCeleryTask:
         "migrate_chunks_from_vespa_to_opensearch_task"
     )
 
+    # Knowledge Vaults
+    VAULT_RECONCILE_FAILED_DELETES = "onyx.tasks.vault_reconcile.failed_deletes"
+
 
 # this needs to correspond to the matching entry in supervisord
 ONYX_CELERY_BEAT_HEARTBEAT_KEY = "onyx:celery:beat:heartbeat"
