@@ -22,7 +22,7 @@ describe("parseSSE", () => {
     const events: { event: string; data: any }[] = [];
     for await (const e of parseSSE(stream)) events.push(e);
     expect(events.map((e) => e.event)).toEqual(["meta", "chunk", "done"]);
-    expect(events[2].data.answer).toBe("hi");
+    expect(events[2]?.data?.answer).toBe("hi");
   });
 
   it("ignores keepalive comments", async () => {
