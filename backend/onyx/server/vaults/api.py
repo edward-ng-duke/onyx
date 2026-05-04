@@ -344,3 +344,14 @@ def delete_document(
         rag_tenant_id=vault.rag_tenant_id,
         user_id=user.id,
     )
+
+
+@router.get("/{vault_id}/jobs/{job_id}")
+def get_job(
+    job_id: str,
+    vault: Vault = Depends(require_vault_role(VaultRole.READER)),
+    user: User = Depends(current_user),
+) -> dict:
+    return _rag.get_job(
+        job_id, rag_tenant_id=vault.rag_tenant_id, user_id=user.id
+    )
