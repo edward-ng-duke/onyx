@@ -4,10 +4,12 @@ This module owns ACL, RAG roundtrip, and chat-history persistence.
 """
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from onyx.auth.users import current_user
@@ -33,6 +35,7 @@ from onyx.server.vaults.acl import require_vault_role
 from onyx.server.vaults.chat_history import add_assistant_message
 from onyx.server.vaults.chat_history import add_user_message
 from onyx.server.vaults.chat_history import get_session as ch_get_session
+from onyx.server.metrics.vault_metrics import vault_proxy_sse_dropped_total
 from onyx.server.vaults.rag_client import RagAnythingClient
 from onyx.server.vaults.schemas import (
     AddMemberRequest,
@@ -386,3 +389,80 @@ def query_sync_endpoint(
             )
             db.commit()
     return upstream
+
+
+def _try_capture_done(frame: bytes, state: dict) -> None:
+    """Parse one SSE frame; if it's `event: done`, store its data dict."""
+    text = frame.decode("utf-8", errors="ignore")
+    if not text.strip() or text.startswith(":"):
+        return
+    event_name = None
+    data_lines: list[str] = []
+    for line in text.splitlines():
+        if line.startswith("event:"):
+            event_name = line[len("event:"):].strip()
+        elif line.startswith("data:"):
+            data_lines.append(line[len("data:"):].lstrip())
+    if event_name == "done" and data_lines:
+        try:
+            state["done_payload"] = json.loads("\n".join(data_lines))
+        except json.JSONDecodeError:
+            pass
+
+
+@router.post("/{vault_id}/query")
+def query_stream(
+    body: VaultChatSendRequest,
+    vault: Vault = Depends(require_vault_role(VaultRole.READER)),
+    user: User = Depends(current_user),
+    db: Session = Depends(get_session),
+) -> StreamingResponse:
+    rag_body = body.model_dump(exclude={"session_id"})
+    session_id = body.session_id
+    state: dict = {"answer_parts": [], "done_payload": None, "buffer": b""}
+    question = body.question
+    vault_rag_tenant_id = vault.rag_tenant_id
+    user_id = user.id
+
+    def gen():  # type: ignore[no-untyped-def]
+        try:
+            for chunk in _rag.stream_query(
+                rag_tenant_id=vault_rag_tenant_id,
+                body=rag_body,
+                user_id=user_id,
+            ):
+                yield chunk
+                state["buffer"] += chunk
+                while b"\n\n" in state["buffer"]:
+                    frame, state["buffer"] = state["buffer"].split(b"\n\n", 1)
+                    _try_capture_done(frame, state)
+        except Exception:
+            vault_proxy_sse_dropped_total.inc()
+            raise
+        finally:
+            if session_id is not None and state["done_payload"] is not None:
+                try:
+                    sess = ch_get_session(
+                        db, session_id=session_id, user_id=user_id
+                    )
+                    if sess is not None:
+                        add_user_message(
+                            db, session_id=sess.id, content=question
+                        )
+                        payload = state["done_payload"]
+                        add_assistant_message(
+                            db,
+                            session_id=sess.id,
+                            content=payload.get("answer", ""),
+                            sources=payload.get("sources"),
+                            tokens=payload.get("tokens"),
+                        )
+                        db.commit()
+                except Exception:
+                    pass
+
+    return StreamingResponse(
+        gen(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
