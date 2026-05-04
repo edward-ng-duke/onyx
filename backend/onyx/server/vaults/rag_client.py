@@ -360,3 +360,148 @@ class RagAnythingClient:
                 self._raise_for_status(resp)
             for chunk in resp.iter_bytes():
                 yield chunk
+
+    # ---- KG --------------------------------------------------------------
+
+    def kg_entities(
+        self,
+        *,
+        rag_tenant_id: str,
+        user_id: UUID,
+        type_filter: str | None = None,
+        search: str | None = None,
+        cursor: str | None = None,
+        limit: int = 50,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {"limit": limit}
+        if type_filter:
+            params["type"] = type_filter
+        if search:
+            params["search"] = search
+        if cursor:
+            params["cursor"] = cursor
+        return self._kg_get(
+            "/v1/onyx/kg/entities", params, rag_tenant_id, user_id, request_id
+        )
+
+    def kg_entity(
+        self,
+        entity_id: str,
+        *,
+        rag_tenant_id: str,
+        user_id: UUID,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
+        return self._kg_get(
+            f"/v1/onyx/kg/entities/{entity_id}",
+            {},
+            rag_tenant_id,
+            user_id,
+            request_id,
+        )
+
+    def kg_neighbors(
+        self,
+        entity_id: str,
+        *,
+        rag_tenant_id: str,
+        user_id: UUID,
+        depth: int = 1,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
+        return self._kg_get(
+            f"/v1/onyx/kg/entities/{entity_id}/neighbors",
+            {"depth": depth},
+            rag_tenant_id,
+            user_id,
+            request_id,
+        )
+
+    def kg_relations(
+        self,
+        *,
+        rag_tenant_id: str,
+        user_id: UUID,
+        source: str | None = None,
+        target: str | None = None,
+        type_filter: str | None = None,
+        cursor: str | None = None,
+        limit: int = 50,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {"limit": limit}
+        if source:
+            params["source"] = source
+        if target:
+            params["target"] = target
+        if type_filter:
+            params["type"] = type_filter
+        if cursor:
+            params["cursor"] = cursor
+        return self._kg_get(
+            "/v1/onyx/kg/relations", params, rag_tenant_id, user_id, request_id
+        )
+
+    def kg_chunk(
+        self,
+        chunk_id: str,
+        *,
+        rag_tenant_id: str,
+        user_id: UUID,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
+        return self._kg_get(
+            f"/v1/onyx/kg/chunks/{chunk_id}",
+            {},
+            rag_tenant_id,
+            user_id,
+            request_id,
+        )
+
+    def kg_stats(
+        self,
+        *,
+        rag_tenant_id: str,
+        user_id: UUID,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
+        return self._kg_get(
+            "/v1/onyx/kg/stats", {}, rag_tenant_id, user_id, request_id
+        )
+
+    def kg_subgraph(
+        self,
+        *,
+        rag_tenant_id: str,
+        user_id: UUID,
+        entities: str,
+        depth: int = 2,
+        request_id: str | None = None,
+    ) -> dict[str, Any]:
+        return self._kg_get(
+            "/v1/onyx/kg/subgraph",
+            {"entities": entities, "depth": depth},
+            rag_tenant_id,
+            user_id,
+            request_id,
+        )
+
+    def _kg_get(
+        self,
+        path: str,
+        params: dict,
+        rag_tenant_id: str,
+        user_id: UUID,
+        request_id: str | None,
+    ) -> dict[str, Any]:
+        resp = self.client.get(
+            f"{self._base}{path}",
+            params=params,
+            headers=self._headers(
+                user_id=user_id, kb_id=rag_tenant_id, request_id=request_id
+            ),
+            timeout=10,
+        )
+        self._raise_for_status(resp)
+        return resp.json()

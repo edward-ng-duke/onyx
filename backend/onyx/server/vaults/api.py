@@ -466,3 +466,103 @@ def query_stream(
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+
+@router.get("/{vault_id}/kg/entities")
+def kg_list_entities(
+    type: str | None = Query(default=None),  # noqa: A002
+    search: str | None = Query(default=None),
+    cursor: str | None = Query(default=None),
+    limit: int = Query(default=50, ge=1, le=200),
+    vault: Vault = Depends(require_vault_role(VaultRole.READER)),
+    user: User = Depends(current_user),
+) -> dict:
+    return _rag.kg_entities(
+        rag_tenant_id=vault.rag_tenant_id,
+        user_id=user.id,
+        type_filter=type,
+        search=search,
+        cursor=cursor,
+        limit=limit,
+    )
+
+
+@router.get("/{vault_id}/kg/entities/{entity_id}")
+def kg_get_entity(
+    entity_id: str,
+    vault: Vault = Depends(require_vault_role(VaultRole.READER)),
+    user: User = Depends(current_user),
+) -> dict:
+    return _rag.kg_entity(
+        entity_id, rag_tenant_id=vault.rag_tenant_id, user_id=user.id
+    )
+
+
+@router.get("/{vault_id}/kg/entities/{entity_id}/neighbors")
+def kg_get_neighbors(
+    entity_id: str,
+    depth: int = Query(default=1, ge=1, le=3),
+    vault: Vault = Depends(require_vault_role(VaultRole.READER)),
+    user: User = Depends(current_user),
+) -> dict:
+    return _rag.kg_neighbors(
+        entity_id,
+        rag_tenant_id=vault.rag_tenant_id,
+        user_id=user.id,
+        depth=depth,
+    )
+
+
+@router.get("/{vault_id}/kg/relations")
+def kg_list_relations(
+    source: str | None = Query(default=None),
+    target: str | None = Query(default=None),
+    type: str | None = Query(default=None),  # noqa: A002
+    cursor: str | None = Query(default=None),
+    limit: int = Query(default=50, ge=1, le=200),
+    vault: Vault = Depends(require_vault_role(VaultRole.READER)),
+    user: User = Depends(current_user),
+) -> dict:
+    return _rag.kg_relations(
+        rag_tenant_id=vault.rag_tenant_id,
+        user_id=user.id,
+        source=source,
+        target=target,
+        type_filter=type,
+        cursor=cursor,
+        limit=limit,
+    )
+
+
+@router.get("/{vault_id}/kg/chunks/{chunk_id}")
+def kg_get_chunk(
+    chunk_id: str,
+    vault: Vault = Depends(require_vault_role(VaultRole.READER)),
+    user: User = Depends(current_user),
+) -> dict:
+    return _rag.kg_chunk(
+        chunk_id, rag_tenant_id=vault.rag_tenant_id, user_id=user.id
+    )
+
+
+@router.get("/{vault_id}/kg/stats")
+def kg_get_stats(
+    vault: Vault = Depends(require_vault_role(VaultRole.READER)),
+    user: User = Depends(current_user),
+) -> dict:
+    return _rag.kg_stats(rag_tenant_id=vault.rag_tenant_id, user_id=user.id)
+
+
+@router.get("/{vault_id}/kg/subgraph")
+def kg_get_subgraph(
+    entities: str = Query(...),
+    depth: int = Query(default=2, ge=1, le=3),
+    vault: Vault = Depends(require_vault_role(VaultRole.READER)),
+    user: User = Depends(current_user),
+) -> dict:
+    return _rag.kg_subgraph(
+        rag_tenant_id=vault.rag_tenant_id,
+        user_id=user.id,
+        entities=entities,
+        depth=depth,
+    )
