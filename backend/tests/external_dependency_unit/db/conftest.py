@@ -18,7 +18,32 @@ from sqlalchemy.orm import Session
 
 from ee.onyx.db.scim import ScimDAL
 from onyx.db.models import ScimToken
+from onyx.db.models import User
 from onyx.db.models import UserGroup
+from tests.external_dependency_unit.conftest import create_test_user
+
+
+@pytest.fixture
+def test_user(db_session: Session) -> User:
+    user = create_test_user(db_session, "alice")
+    db_session.commit()
+    return user
+
+
+@pytest.fixture
+def other_user_same_tenant(db_session: Session) -> User:
+    """Same Postgres schema (single-tenant dev) — counts as 'same tenant' for ACL purposes."""
+    user = create_test_user(db_session, "bob")
+    db_session.commit()
+    return user
+
+
+@pytest.fixture
+def stranger_user(db_session: Session) -> User:
+    """A user not in any vault. Same physical schema in dev; ACL still excludes them from private vaults."""
+    user = create_test_user(db_session, "carol")
+    db_session.commit()
+    return user
 
 
 @pytest.fixture
