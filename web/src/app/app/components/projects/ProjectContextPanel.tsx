@@ -13,13 +13,18 @@ import AddInstructionModal from "@/components/modals/AddInstructionModal";
 import UserFilesModal from "@/components/modals/UserFilesModal";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import Text from "@/refresh-components/texts/Text";
-import CreateButton from "@/refresh-components/buttons/CreateButton";
 import { FileCard, FileCardSkeleton } from "@/sections/cards/FileCard";
 import { hasNonImageFiles } from "@/lib/utils";
 import IconButton from "@/refresh-components/buttons/IconButton";
 import ButtonRenaming from "@/refresh-components/buttons/ButtonRenaming";
 import { UserFileStatus } from "../../projects/projectsService";
-import { SvgAddLines, SvgEdit, SvgFiles, SvgFolderOpen } from "@opal/icons";
+import {
+  SvgAddLines,
+  SvgEdit,
+  SvgFiles,
+  SvgFolderOpen,
+  SvgPlusCircle,
+} from "@opal/icons";
 import { Hoverable } from "@opal/core";
 
 export interface ProjectContextPanelProps {

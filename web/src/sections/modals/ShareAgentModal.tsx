@@ -239,7 +239,6 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
                       ? t("userDirectoryRestrictedTooltip")
                       : undefined
                   }
-                  tooltipSide="bottom"
                 >
                   <div className="w-full">
                     <InputComboBox
