@@ -126,8 +126,6 @@ const AppInputBar = React.memo(
     onToggleTabReading,
   }: AppInputBarProps) => {
     const t = useTranslations("chat.composer");
-    // Internal message state - kept local to avoid parent re-renders on every keystroke
-    const [message, setMessage] = useState(initialMessage);
     const [isRecording, setIsRecording] = useState(false);
     const [recordingCycleCount, setRecordingCycleCount] = useState(0);
     const [isMuted, setIsMuted] = useState(false);

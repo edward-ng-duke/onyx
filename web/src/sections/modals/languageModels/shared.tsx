@@ -733,7 +733,9 @@ function ModalWrapperInner({
   } = getProvider(providerName);
 
   const title = llmProvider
-    ? markdown(t("editTitle", { providerName: llmProvider.name }))
+    ? markdown(
+        t("editTitle", { providerName: llmProvider.name ?? providerProductName })
+      )
     : t("setupTitle", { providerProductName });
   const description =
     descriptionOverride ??

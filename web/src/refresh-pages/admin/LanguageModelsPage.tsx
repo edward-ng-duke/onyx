@@ -106,7 +106,7 @@ function ExistingProviderCard({
       {deleteModal.isOpen && (
         <ConfirmationModalLayout
           icon={SvgTrash}
-          title={markdown(t("deleteTitle", { name: provider.name }))}
+          title={markdown(t("deleteTitle", { name: providerDisplayName(provider) }))}
           onClose={() => deleteModal.toggle(false)}
           submit={
             <Button
@@ -127,7 +127,7 @@ function ExistingProviderCard({
               <>
                 <Text font="main-ui-body" color="text-03">
                   {markdown(
-                    t("deleteWarning", { name: provider.name })
+                    t("deleteWarning", { name: providerDisplayName(provider) })
                   )}
                 </Text>
                 {isLastProvider && (
@@ -170,7 +170,7 @@ function ExistingProviderCard({
                   <Button
                     icon={SvgTrash}
                     prominence="tertiary"
-                    aria-label={t("deleteProviderAria", { name: provider.name })}
+                    aria-label={t("deleteProviderAria", { name: providerDisplayName(provider) })}
                     onClick={(e) => {
                       e.stopPropagation();
                       deleteModal.toggle(true);
@@ -180,7 +180,7 @@ function ExistingProviderCard({
                 <Button
                   icon={SvgSettings}
                   prominence="tertiary"
-                  aria-label={t("editProviderAria", { name: provider.name })}
+                  aria-label={t("editProviderAria", { name: providerDisplayName(provider) })}
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsOpen(true);

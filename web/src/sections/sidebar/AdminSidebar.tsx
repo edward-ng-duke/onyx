@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useSettingsContext } from "@/providers/SettingsProvider";
 import SidebarSection from "@/sections/sidebar/SidebarSection";
 import * as SidebarLayouts from "@/layouts/sidebar-layouts";
-import { useSidebarFolded } from "@/layouts/sidebar-layouts";
+import { useSidebarFolded, useSidebarState } from "@/layouts/sidebar-layouts";
 import { useCustomAnalyticsEnabled } from "@/lib/hooks/useCustomAnalyticsEnabled";
 import { useUser } from "@/providers/UserProvider";
 import { UserRole } from "@/lib/types";
@@ -25,6 +25,8 @@ import {
   AdminRouteEntry,
   sidebarItem,
 } from "@/lib/admin-routes";
+import { NEXT_PUBLIC_CLOUD_ENABLED } from "@/lib/constants";
+import { markdown } from "@opal/utils";
 import useFilter from "@/hooks/useFilter";
 import { IconFunctionComponent } from "@opal/types";
 import AccountPopover from "@/sections/sidebar/AccountPopover";

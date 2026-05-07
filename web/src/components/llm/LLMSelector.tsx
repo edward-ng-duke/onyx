@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { parseLlmDescriptor, structureValue } from "@/lib/llmConfig/utils";
+import { parseLlmDescriptor, structureValue } from "@/lib/languageModels/utils";
 import { DefaultModel, LLMProviderDescriptor } from "@/interfaces/llm";
 import { getModelIcon, getProvider } from "@/lib/languageModels";
 import InputSelect from "@/refresh-components/inputs/InputSelect";
