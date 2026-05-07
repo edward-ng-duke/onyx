@@ -1507,15 +1507,16 @@ function AccountsAccessSettings() {
                         variant="internal"
                       />
                     )}
-                    <CreateButton
-                      onClick={() => setShowCreateModal(true)}
-                      secondary={false}
-                      internal
-                      transient={showCreateModal}
-                      rightIcon
-                    >
-                      {t("tokens.newTokenButton")}
-                    </CreateButton>
+                    <div className="shrink-0">
+                      <Button
+                        rightIcon={SvgPlusCircle}
+                        prominence="internal"
+                        interaction={showCreateModal ? "active" : "rest"}
+                        onClick={() => setShowCreateModal(true)}
+                      >
+                        {t("tokens.newTokenButton")}
+                      </Button>
+                    </div>
                   </Section>
 
                   <Section gap={0.25}>

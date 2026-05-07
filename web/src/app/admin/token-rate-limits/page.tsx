@@ -115,9 +115,13 @@ function Main() {
         </li>
       </ul>
 
-      <CreateButton onClick={() => setModalIsOpen(true)}>
+      <Button
+        icon={SvgPlusCircle}
+        prominence="secondary"
+        onClick={() => setModalIsOpen(true)}
+      >
         {t("createButton")}
-      </CreateButton>
+      </Button>
 
       {isPaidEnterpriseFeaturesEnabled ? (
         <SimpleTabs

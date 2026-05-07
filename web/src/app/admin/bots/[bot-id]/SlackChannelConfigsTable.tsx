@@ -53,9 +53,13 @@ export default function SlackChannelConfigsTable({
         >
           {t("editDefaultConfiguration")}
         </Button>
-        <CreateButton href={`/admin/bots/${slackBotId}/channels/new`} secondary>
+        <Button
+          icon={SvgPlusCircle}
+          prominence="secondary"
+          href={`/admin/bots/${slackBotId}/channels/new`}
+        >
           {t("newChannelConfiguration")}
-        </CreateButton>
+        </Button>
       </div>
 
       <div>

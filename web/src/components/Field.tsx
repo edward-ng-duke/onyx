@@ -900,7 +900,7 @@ export function TextArrayField<T extends Yup.AnyObject>({
               disabled={disabled}
             >
               {t("addNew")}
-            </CreateButton>
+            </Button>
           </div>
         )}
       />

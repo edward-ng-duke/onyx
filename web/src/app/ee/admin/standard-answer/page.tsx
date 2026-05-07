@@ -403,9 +403,13 @@ function Main() {
       )}
       <div className="mb-2"></div>
 
-      <CreateButton href="/admin/standard-answer/new">
+      <Button
+        icon={SvgPlusCircle}
+        prominence="secondary"
+        href="/admin/standard-answer/new"
+      >
         {t("newStandardAnswer")}
-      </CreateButton>
+      </Button>
 
       <Divider />
 

@@ -205,7 +205,7 @@ export default function UserFilesModal({
                   onClick={triggerUploadPicker}
                 >
                   {t("addFiles")}
-                </CreateButton>
+                </Button>
               )}
             </Section>
           </Modal.Header>

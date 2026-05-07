@@ -396,9 +396,13 @@ function Main() {
       <div className="mb-3"></div>
 
       <div className="flex mb-6">
-        <CreateButton href="/admin/documents/sets/new">
+        <Button
+          icon={SvgPlusCircle}
+          prominence="secondary"
+          href="/admin/documents/sets/new"
+        >
           {t("newDocumentSet")}
-        </CreateButton>
+        </Button>
       </div>
 
       {documentSets.length > 0 && (

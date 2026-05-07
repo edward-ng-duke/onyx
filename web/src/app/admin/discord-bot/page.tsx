@@ -114,7 +114,7 @@ function DiscordBotContent() {
             disabled={isCreating || !isBotAvailable}
           >
             {isCreating ? t("creating") : t("addServer")}
-          </CreateButton>
+          </Button>
         </Section>
         <DiscordGuildsTable guilds={guilds} onRefresh={refreshGuilds} />
       </Card>
