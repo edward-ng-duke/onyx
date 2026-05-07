@@ -56,7 +56,7 @@ from onyx.server.vaults.schemas import (
     VaultVisibility,
 )
 
-router = APIRouter(prefix="/api/onyx/vaults", tags=["vaults"])
+router = APIRouter(prefix="/onyx/vaults", tags=["vaults"])
 
 # Single per-process client. Cheap: HttpxPool memoizes the underlying httpx.
 _rag = RagAnythingClient()

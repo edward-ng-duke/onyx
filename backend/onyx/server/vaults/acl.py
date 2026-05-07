@@ -35,4 +35,8 @@ def require_vault_role(min_role: VaultRole = VaultRole.READER):
             raise OnyxError(OnyxErrorCode.NOT_FOUND, "Vault not found")
         return vault
 
+    # Mark this closure so onyx.server.auth_check recognizes it as carrying
+    # auth (it shallow-inspects route dependencies and only accepts a known
+    # set of identifier-deps OR closures tagged with this attribute).
+    _dep._is_require_permission = True  # type: ignore[attr-defined]
     return _dep
