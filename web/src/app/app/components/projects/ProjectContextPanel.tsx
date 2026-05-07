@@ -13,13 +13,18 @@ import AddInstructionModal from "@/components/modals/AddInstructionModal";
 import UserFilesModal from "@/components/modals/UserFilesModal";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import Text from "@/refresh-components/texts/Text";
-import CreateButton from "@/refresh-components/buttons/CreateButton";
 import { FileCard, FileCardSkeleton } from "@/sections/cards/FileCard";
 import { hasNonImageFiles } from "@/lib/utils";
 import IconButton from "@/refresh-components/buttons/IconButton";
 import ButtonRenaming from "@/refresh-components/buttons/ButtonRenaming";
 import { UserFileStatus } from "../../projects/projectsService";
-import { SvgAddLines, SvgEdit, SvgFiles, SvgFolderOpen } from "@opal/icons";
+import {
+  SvgAddLines,
+  SvgEdit,
+  SvgFiles,
+  SvgFolderOpen,
+  SvgPlusCircle,
+} from "@opal/icons";
 import { Hoverable } from "@opal/core";
 
 export interface ProjectContextPanelProps {
@@ -209,11 +214,13 @@ export default function ProjectContextPanel({
             </div>
             <FilePickerPopover
               trigger={(open) => (
-                // The `secondary={undefined}` is required here because `CreateButton` sets it to true.
-                // Therefore, we need to first remove the truthiness before passing in the other `tertiary` flag.
-                <CreateButton secondary={undefined} tertiary transient={open}>
+                <Button
+                  icon={SvgPlusCircle}
+                  prominence="tertiary"
+                  interaction={open ? "active" : "rest"}
+                >
                   {t("addFiles")}
-                </CreateButton>
+                </Button>
               )}
               onFileClick={handleOnView}
               onPickRecent={async (file) => {

@@ -8,7 +8,8 @@ import { useSlackBots } from "./[bot-id]/hooks";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
 import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
-import CreateButton from "@/refresh-components/buttons/CreateButton";
+import { Button } from "@opal/components";
+import { SvgPlusCircle } from "@opal/icons";
 import { DOCS_ADMINS_PATH } from "@/lib/constants";
 import { useTranslations } from "next-intl";
 
@@ -67,7 +68,13 @@ function Main() {
         {t("guideSuffix")}
       </p>
 
-      <CreateButton href="/admin/bots/new">{t("newSlackBot")}</CreateButton>
+      <Button
+        icon={SvgPlusCircle}
+        prominence="secondary"
+        href="/admin/bots/new"
+      >
+        {t("newSlackBot")}
+      </Button>
 
       <SlackBotTable slackBots={slackBots} />
     </div>

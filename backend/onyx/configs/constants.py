@@ -287,6 +287,7 @@ class NotificationType(str, Enum):
     ASSISTANT_FILES_READY = "assistant_files_ready"
     FEATURE_ANNOUNCEMENT = "feature_announcement"
     CONNECTOR_REPEATED_ERRORS = "connector_repeated_errors"
+    LICENSE_EXPIRY_WARNING = "license_expiry_warning"
 
 
 class BlobType(str, Enum):
@@ -573,6 +574,9 @@ class OnyxCeleryTask:
     CHECK_FOR_USER_FILE_DELETE = "check_for_user_file_delete"
     DELETE_SINGLE_USER_FILE = "delete_single_user_file"
 
+    # Targeted reindex
+    TARGETED_REINDEX_TASK = "targeted_reindex_task"
+
     # Connector checkpoint cleanup
     CHECK_FOR_CHECKPOINT_CLEANUP = "check_for_checkpoint_cleanup"
     CLEANUP_CHECKPOINT = "cleanup_checkpoint"
@@ -619,6 +623,9 @@ class OnyxCeleryTask:
 
     # Hook execution log retention
     HOOK_EXECUTION_LOG_CLEANUP_TASK = "hook_execution_log_cleanup_task"
+
+    # License expiry tiered warnings
+    CHECK_LICENSE_EXPIRY_NOTIFICATIONS = "check_license_expiry_notifications"
 
     # Sandbox cleanup
     CLEANUP_IDLE_SANDBOXES = "cleanup_idle_sandboxes"

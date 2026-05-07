@@ -2,7 +2,7 @@
 
 import SimpleTabs from "@/refresh-components/SimpleTabs";
 import * as SettingsLayouts from "@/layouts/settings-layouts";
-import { Text } from "@opal/components";
+import { Button, Text } from "@opal/components";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import {
@@ -17,8 +17,7 @@ import { SWR_KEYS } from "@/lib/swr-keys";
 import { toast } from "@/hooks/useToast";
 import CreateRateLimitModal from "./CreateRateLimitModal";
 import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
-import CreateButton from "@/refresh-components/buttons/CreateButton";
-import { SvgGlobe, SvgUser, SvgUsers } from "@opal/icons";
+import { SvgGlobe, SvgPlusCircle, SvgUser, SvgUsers } from "@opal/icons";
 import { Section } from "@/layouts/general-layouts";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
 import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
@@ -116,9 +115,13 @@ function Main() {
         </li>
       </ul>
 
-      <CreateButton onClick={() => setModalIsOpen(true)}>
+      <Button
+        icon={SvgPlusCircle}
+        prominence="secondary"
+        onClick={() => setModalIsOpen(true)}
+      >
         {t("createButton")}
-      </CreateButton>
+      </Button>
 
       {isPaidEnterpriseFeaturesEnabled ? (
         <SimpleTabs

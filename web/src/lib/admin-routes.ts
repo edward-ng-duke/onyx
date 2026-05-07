@@ -204,7 +204,7 @@ export const ADMIN_ROUTES = {
     titleKey: "configurationCodeInterpreter",
   },
   INDEX_SETTINGS: {
-    path: "/admin/configuration/search",
+    path: "/admin/configuration/index-settings",
     icon: SvgSearchMenu,
     title: "Index Settings",
     sidebarLabel: "Index Settings",

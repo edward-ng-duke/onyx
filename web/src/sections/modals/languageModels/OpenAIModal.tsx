@@ -1,0 +1,112 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+import { useSWRConfig } from "swr";
+import { LLMProviderFormProps, LLMProviderName } from "@/interfaces/llm";
+import {
+  useInitialValues,
+  buildValidationSchema,
+} from "@/sections/modals/languageModels/utils";
+import { submitProvider } from "@/sections/modals/languageModels/svc";
+import { LLMProviderConfiguredSource } from "@/lib/analytics";
+import {
+  APIKeyField,
+  ModelSelectionField,
+  DisplayNameField,
+  ModelAccessField,
+  ModalWrapper,
+} from "@/sections/modals/languageModels/shared";
+import { InputDivider } from "@opal/layouts";
+import { refreshLlmProviderCaches } from "@/lib/languageModels/cache";
+import { toast } from "@/hooks/useToast";
+
+export default function OpenAIModal({
+  variant = "llm-configuration",
+  existingLlmProvider,
+  shouldMarkAsDefault,
+  onOpenChange,
+  onSuccess,
+}: LLMProviderFormProps) {
+  const tToast = useTranslations("toasts.admin.llm");
+  const tValLlm = useTranslations("validation.llm");
+  const isOnboarding = variant === "onboarding";
+  const { mutate } = useSWRConfig();
+
+  const onClose = () => onOpenChange?.(false);
+
+  const initialValues = useInitialValues(
+    isOnboarding,
+    LLMProviderName.OPENAI,
+    existingLlmProvider
+  );
+
+  const validationSchema = buildValidationSchema(isOnboarding, tValLlm, {
+    apiKey: true,
+  });
+
+  return (
+    <ModalWrapper
+      providerName={LLMProviderName.OPENAI}
+      llmProvider={existingLlmProvider}
+      onClose={onClose}
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={async (values, { setSubmitting, setStatus }) => {
+        await submitProvider({
+          analyticsSource: isOnboarding
+            ? LLMProviderConfiguredSource.CHAT_ONBOARDING
+            : LLMProviderConfiguredSource.ADMIN_PAGE,
+          providerName: LLMProviderName.OPENAI,
+          values,
+          initialValues,
+          existingLlmProvider,
+          shouldMarkAsDefault,
+          setStatus,
+          setSubmitting,
+          onClose,
+          onSuccess: async () => {
+            if (onSuccess) {
+              await onSuccess();
+            } else {
+              await refreshLlmProviderCaches(mutate);
+              toast.success(
+                existingLlmProvider
+                  ? tToast("providerUpdatedSuccess")
+                  : tToast("providerEnabledSuccess")
+              );
+            }
+          },
+          messages: {
+            providerUpdateFailed: (error: string) =>
+              tToast("providerUpdateFailedDetail", { error }),
+            providerEnableFailed: (error: string) =>
+              tToast("providerEnableFailedDetail", { error }),
+            setProviderAsDefaultFailed: tToast("setProviderAsDefaultFailed"),
+            setNewProviderAsDefaultFailed: tToast(
+              "setNewProviderAsDefaultFailed"
+            ),
+          },
+        });
+      }}
+    >
+      <APIKeyField providerName="OpenAI" />
+
+      {!isOnboarding && (
+        <>
+          <InputDivider />
+          <DisplayNameField />
+        </>
+      )}
+
+      <InputDivider />
+      <ModelSelectionField shouldShowAutoUpdateToggle={true} />
+
+      {!isOnboarding && (
+        <>
+          <InputDivider />
+          <ModelAccessField />
+        </>
+      )}
+    </ModalWrapper>
+  );
+}
