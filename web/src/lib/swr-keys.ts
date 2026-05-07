@@ -187,6 +187,19 @@ export const SWR_KEYS = {
   indexAttemptStageMetrics: (indexAttemptId: number) =>
     `/api/manage/admin/index-attempt/${indexAttemptId}/stage-metrics`,
 
+  // ── CC-Pair Sync Attempts ─────────────────────────────────────────────────
+  // The `*Probe` variants are single-row reads used to surface the
+  // `applicable` flag without paying for a full page; see
+  // `useSyncAttemptsPaginatedFetch`.
+  ccPairPermissionSyncAttempts: (ccPairId: number) =>
+    `/api/manage/admin/cc-pair/${ccPairId}/permission-sync-attempts`,
+  ccPairPermissionSyncAttemptsProbe: (ccPairId: number) =>
+    `/api/manage/admin/cc-pair/${ccPairId}/permission-sync-attempts?page_num=0&page_size=1`,
+  ccPairExternalGroupSyncAttempts: (ccPairId: number) =>
+    `/api/manage/admin/cc-pair/${ccPairId}/external-group-sync-attempts`,
+  ccPairExternalGroupSyncAttemptsProbe: (ccPairId: number) =>
+    `/api/manage/admin/cc-pair/${ccPairId}/external-group-sync-attempts?page_num=0&page_size=1`,
+
   // ── Vaults ────────────────────────────────────────────────────────────────
   vaults: "/api/onyx/vaults",
   vault: (id: string) => `/api/onyx/vaults/${id}`,
