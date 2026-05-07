@@ -42,6 +42,7 @@ import MCPLineItem, {
 import { useProjectsContext } from "@/providers/ProjectsContext";
 import { SvgActions, SvgChevronRight, SvgKey, SvgSliders } from "@opal/icons";
 import { Button } from "@opal/components";
+import { useTranslations } from "next-intl";
 
 function buildTooltipMessage(
   actionDescription: string,
@@ -160,6 +161,8 @@ export default function ActionsPopover({
   availableSources = [],
   disabled = false,
 }: ActionsPopoverProps) {
+  const tUi = useTranslations("ui.actionsPopover");
+  const tCommon = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [secondaryView, setSecondaryView] = useState<SecondaryViewState | null>(
     null
@@ -718,7 +721,7 @@ export default function ActionsPopover({
         <Button icon={SvgChevronRight} prominence="tertiary" size="sm" />
       }
     >
-      Re-Authenticate
+      {tCommon("actions.reAuthenticate")}
     </LineItem>
   ) : undefined;
 
@@ -825,7 +828,7 @@ export default function ActionsPopover({
       {[
         <InputTypeIn
           key="search"
-          placeholder="Search Actions"
+          placeholder={tUi("searchPlaceholder")}
           value={searchTerm}
           onChange={(event) => setSearchTerm(event.target.value)}
           autoFocus
@@ -921,7 +924,7 @@ export default function ActionsPopover({
 
         (isAdmin || isCurator) && (
           <LineItem href="/admin/actions" icon={SvgActions} key="more-actions">
-            More Actions
+            {tUi("moreActions")}
           </LineItem>
         ),
       ]}
@@ -931,12 +934,12 @@ export default function ActionsPopover({
   const toolsView = (
     <SwitchList
       items={sourceToggleItems}
-      searchPlaceholder="Search Filters"
+      searchPlaceholder={tUi("searchFilterPlaceholder")}
       allDisabled={allSourcesDisabled}
       onDisableAll={handleDisableAllSources}
       onEnableAll={handleEnableAllSources}
-      disableAllLabel="Disable All Sources"
-      enableAllLabel="Enable All Sources"
+      disableAllLabel={tUi("disableAllSources")}
+      enableAllLabel={tUi("enableAllSources")}
       onBack={() => setSecondaryView(null)}
     />
   );
@@ -944,12 +947,12 @@ export default function ActionsPopover({
   const mcpView = (
     <SwitchList
       items={mcpToggleItems}
-      searchPlaceholder={`Search ${selectedMcpServer?.name ?? "server"} tools`}
+      searchPlaceholder={tUi("searchMcpToolsPlaceholder", { server: selectedMcpServer?.name ?? "server" })}
       allDisabled={mcpAllDisabled}
       onDisableAll={disableAllToolsForSelectedServer}
       onEnableAll={enableAllToolsForSelectedServer}
-      disableAllLabel="Disable All Tools"
-      enableAllLabel="Enable All Tools"
+      disableAllLabel={tUi("disableAllTools")}
+      enableAllLabel={tUi("enableAllTools")}
       onBack={() => setSecondaryView(null)}
       footer={mcpFooter}
     />
@@ -968,7 +971,7 @@ export default function ActionsPopover({
               icon={SvgSliders}
               interaction={open ? "hover" : "rest"}
               prominence="tertiary"
-              tooltip="Manage Actions"
+              tooltip={tCommon("aria.manageActions")}
             />
           </div>
         </Popover.Trigger>

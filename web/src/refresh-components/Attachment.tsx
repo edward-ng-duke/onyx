@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Text from "@/refresh-components/texts/Text";
 import { Button } from "@opal/components";
 import { SvgFileText, SvgMaximize2 } from "@opal/icons";
@@ -7,6 +8,7 @@ export interface AttachmentsProps {
 }
 
 export default function Attachments({ fileName, open }: AttachmentsProps) {
+  const tAria = useTranslations("common.aria");
   return (
     <div className="flex items-center border bg-background-tint-00 rounded-12 p-1 gap-1">
       <div className="p-2 bg-background-tint-01 rounded-08">
@@ -23,7 +25,7 @@ export default function Attachments({ fileName, open }: AttachmentsProps) {
 
       {open && (
         <Button
-          aria-label="Expand document"
+          aria-label={tAria("expandDocument")}
           onClick={open}
           icon={SvgMaximize2}
           prominence="tertiary"

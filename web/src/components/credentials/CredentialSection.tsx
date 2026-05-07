@@ -51,6 +51,7 @@ export default function CredentialSection({
   refresh,
 }: CredentialSectionProps) {
   const tToast = useTranslations("toasts.admin.credentials");
+  const tModals = useTranslations("modals.credentials");
   const { data: credentials } = useSWR<Credential<ConfluenceCredentialJson>[]>(
     buildSimilarCredentialInfoURL(sourceType),
     errorHandlingFetcher,
@@ -223,7 +224,7 @@ export default function CredentialSection({
                   transition-colors"
               >
                 <FiEdit2 className="h-4 w-4" />
-                <span className="sr-only">Update Credentials</span>
+                <span className="sr-only">{tModals("updateTitle")}</span>
               </button>
             </div>
           </div>
@@ -235,7 +236,7 @@ export default function CredentialSection({
           <Modal.Content>
             <Modal.Header
               icon={SvgEdit}
-              title="Update Credentials"
+              title={tModals("updateTitle")}
               onClose={closeModifyCredential}
             />
             <Modal.Body>
@@ -263,7 +264,7 @@ export default function CredentialSection({
           <Modal.Content>
             <Modal.Header
               icon={SvgEdit}
-              title="Edit Credential"
+              title={tModals("editTitle")}
               onClose={closeEditingCredential}
             />
             <Modal.Body>

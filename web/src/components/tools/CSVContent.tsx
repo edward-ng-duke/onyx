@@ -13,11 +13,13 @@ import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
 import { SvgAlertCircle } from "@opal/icons";
 import Text from "@/refresh-components/texts/Text";
 import { cn } from "@opal/utils";
+import { useTranslations } from "next-intl";
 
 const CsvContent: React.FC<ContentComponentProps> = ({
   fileDescriptor,
   expanded = false,
 }) => {
+  const tErr = useTranslations("errors");
   const [data, setData] = useState<Record<string, string>[]>([]);
   const [headers, setHeaders] = useState<string[]>([]);
   const [isFetching, setIsFetching] = useState(true);
@@ -46,6 +48,7 @@ const CsvContent: React.FC<ContentComponentProps> = ({
         cache: "force-cache",
       });
       if (!response.ok) {
+        // internal: not user-visible — caught by fetchCSV catch which only console.errors and resets state
         throw new Error("Failed to fetch CSV file");
       }
 
@@ -56,6 +59,7 @@ const CsvContent: React.FC<ContentComponentProps> = ({
       const MAX_FILE_SIZE_MB = 5;
 
       if (fileSizeInMB > MAX_FILE_SIZE_MB) {
+        // internal: not user-visible — caught by fetchCSV catch which only console.errors and resets state
         throw new Error("File size exceeds the maximum limit of 5MB");
       }
 
@@ -150,12 +154,12 @@ const CsvContent: React.FC<ContentComponentProps> = ({
                   <SvgAlertCircle className="w-8 h-8 stroke-error" />
                   <Text as="p" text03 mainUiBody>
                     {headers.length === 0
-                      ? "Error loading CSV"
-                      : "No data available"}
+                      ? tErr("csv.loadError")
+                      : tErr("csv.noData")}
                   </Text>
                   <Text as="p" text04 mainUiBody>
                     {headers.length === 0
-                      ? "The CSV file may be too large or couldn't be loaded properly."
+                      ? tErr("csv.loadErrorHint")
                       : ""}
                   </Text>
                 </div>

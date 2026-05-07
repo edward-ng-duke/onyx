@@ -8,6 +8,8 @@
       "edit": "Edit",
       "add": "Add",
       "remove": "Remove",
+      "invite": "Invite",
+      "uninvite": "Uninvite",
       "submit": "Submit",
       "close": "Close",
       "confirm": "Confirm",
@@ -28,7 +30,17 @@
       "retry": "Retry",
       "copy": "Copy",
       "copied": "Copied",
-      "open": "Open"
+      "open": "Open",
+      "documentation": "Documentation",
+      "connect": "Connect",
+      "reconnect": "Reconnect",
+      "saveChanges": "Save Changes",
+      "reAuthenticate": "Re-Authenticate",
+      "manage": "Manage",
+      "updating": "Updating...",
+      "creating": "Creating...",
+      "validate": "Validate",
+      "validating": "Validating..."
     },
     "labels": {
       "yes": "Yes",
@@ -37,7 +49,29 @@
       "description": "Description",
       "type": "Type",
       "status": "Status",
-      "actions": "Actions"
+      "actions": "Actions",
+      "default": "(Default)"
+    },
+    "aria": {
+      "revertToDefault": "Revert to Default",
+      "removeFile": "Remove",
+      "manageActions": "Manage Actions",
+      "dismiss": "Dismiss",
+      "attachFile": "Attach file",
+      "expandDocument": "Expand document",
+      "viewFullText": "View Full Text",
+      "download": "Download",
+      "scrollToBottom": "Scroll to bottom",
+      "viewGroup": "View group",
+      "showFirstVisitNotice": "Show First Visit Notice",
+      "requireConsentToNotice": "Require Consent to Notice",
+      "changeAppMode": "Change app mode",
+      "loadingActionCard": "Loading action card",
+      "removeImage": "Remove image"
+    },
+    "placeholders": {
+      "search": "Search...",
+      "typeAndEnter": "Type and press Enter to add an item"
     }
   },
   "auth": {
@@ -1762,6 +1796,15 @@
       "warningLabel": "Warning:",
       "trialEndingMessage": "Your trial ends in less than 5 days and no payment method has been added.",
       "updateBilling": "Update Billing Information"
+    },
+    "federated": {
+      "editTitle": "Edit {name}",
+      "setupTitle": "Setup {name}",
+      "warningTooltip": "This is a federated connector. It will result in greater latency and lower search quality compared to regular connectors.",
+      "credentialsHeading": "Credentials",
+      "credentialsSubtext": "Enter the credentials for this connector.",
+      "configurationHeading": "Configuration",
+      "channelPlaceholder": "Type channel name or regex pattern and press Enter"
     }
   },
   "nav": {
@@ -2230,6 +2273,51 @@
         "warningSuffix": "account.",
         "warningExisting": "You can still continue existing sessions referencing {name} content."
       }
+    },
+    "hooks": {
+      "pageDescription": "Extend Onyx pipelines by registering external API endpoints as callbacks at predefined hook points.",
+      "searchPlaceholder": "Search hooks...",
+      "disconnectedSuffix": "(Disconnected)",
+      "empty": {
+        "noResults": "No results found",
+        "noHookPoints": "No hook points available",
+        "noResultsDescription": "Try using a different search term."
+      },
+      "aria": {
+        "disconnect": "Disconnect Hook",
+        "deactivate": "Deactivate hook",
+        "testConnection": "Test Connection",
+        "revalidate": "Re-validate hook"
+      },
+      "form": {
+        "softDescription": "If the endpoint returns an error, Onyx logs it and continues the pipeline as normal, ignoring the hook result.",
+        "timeoutLabel": "Timeout",
+        "timeoutSubDescription": "Maximum time Onyx will wait for the endpoint to respond before applying the fail strategy. Must be greater than 0 and at most {max} seconds.",
+        "hookPointLabel": "Hook Point",
+        "displayNameLabel": "Display Name",
+        "namePlaceholder": "Name your extension at this hook point",
+        "failStrategyLabel": "Fail Strategy",
+        "failStrategyPlaceholder": "Select strategy",
+        "failStrategySoft": "Log Error and Continue",
+        "failStrategyHard": "Block Pipeline on Failure",
+        "endpointUrlLabel": "External API Endpoint URL",
+        "endpointUrlSubDescription": "Only connect to servers you trust. You are responsible for actions taken and data shared with this connection.",
+        "apiKeyLabel": "API Key",
+        "apiKeySubDescription": "Onyx will use this key to authenticate with your API endpoint.",
+        "apiKeyEditPlaceholder": "Leave blank to keep current key",
+        "connectionValid": "Connection valid",
+        "verifyingConnection": "Verifying connection…"
+      },
+      "connectionLost": "Connection Lost",
+      "connected": "Connected",
+      "mostRecentErrors": "Most Recent Errors",
+      "viewMoreLines": "View More Lines",
+      "viewOlderErrors": "View Older Errors",
+      "noError": "No Error",
+      "inPastHour": "in the past hour",
+      "recentErrors": "Recent Errors",
+      "noErrorsPast30Days": "No errors in the past 30 days",
+      "errorCount": "{count, plural, one {# Error} other {# Errors}}"
     }
   },
   "agents": {
@@ -2318,6 +2406,17 @@
       "starterExample2": "Find the latest sales report.",
       "starterExample3": "Compile a list of our engineering goals for this quarter.",
       "starterExample4": "Summarize my goals for today."
+    },
+    "analytics": {
+      "title": "Agent Analytics",
+      "description": "Messages and unique users per day for the selected agent",
+      "selectAgentPrompt": "Select an Agent to view analytics",
+      "noData": "No data found for the selected Agent in the specified time range",
+      "selectPlaceholder": "Select an Agent to display",
+      "searchPlaceholder": "Search agents..."
+    },
+    "groupsList": {
+      "noGroupsFound": "No groups found"
     }
   },
   "toasts": {
@@ -2451,7 +2550,14 @@
         "inviteCancelled": "Invite cancelled",
         "userDeactivated": "User deactivated",
         "userActivated": "User activated",
-        "userDeleted": "User deleted"
+        "userDeleted": "User deleted",
+        "inviteSuccess": "User invited successfully",
+        "inviteFailed": "Unable to invite user — {error}",
+        "uninviteSuccess": "User uninvited successfully",
+        "uninviteFailed": "Unable to uninvite user — {error}",
+        "deleteFailed": "Unable to delete user — {error}",
+        "leaveSuccess": "Successfully left the team",
+        "leaveFailed": "Unable to leave team — {error}"
       },
       "codeInterpreter": {
         "actionFailed": "Failed to {action} Code Interpreter"
@@ -2573,6 +2679,19 @@
       },
       "sidebar": {
         "moveChatFailed": "Failed to move chat. Please try again."
+      },
+      "hooks": {
+        "validationSuccess": "Hook validated successfully",
+        "deleteFailed": "Failed to delete hook",
+        "reconnectFailed": "Failed to reconnect hook",
+        "deactivateFailed": "Failed to deactivate hook",
+        "disconnectFailed": "Failed to disconnect hook",
+        "validateFailed": "Failed to validate hook",
+        "requiresEnterprise": "Hook Extensions require an Enterprise license",
+        "notEnabled": "Hook Extensions are not enabled for this deployment",
+        "noHookPoint": "No hook point specified",
+        "hookUpdated": "Hook updated",
+        "hookCreated": "Hook created"
       }
     },
     "shared": {
@@ -2768,7 +2887,10 @@
       "endpointUrlRequired": "Endpoint URL cannot be empty.",
       "apiKeyRequired": "API key cannot be empty.",
       "timeoutRequired": "Timeout is required.",
-      "timeoutRange": "Must be greater than 0 and at most {max} seconds."
+      "timeoutRange": "Must be greater than 0 and at most {max} seconds.",
+      "invalidApiKey": "Invalid API key",
+      "connectionTimedOut": "Connection timed out. Try increasing the timeout.",
+      "couldNotConnect": "Could not connect to endpoint"
     },
     "mcpServer": {
       "nameRequired": "Server name is required",
@@ -2818,10 +2940,24 @@
       "authMethodRequired": "Please select an authentication method",
       "fileRequired": "Please select a {name} file",
       "fieldEmpty": "{name} cannot be empty",
-      "pleaseEnter": "Please enter your {name}"
+      "pleaseEnter": "Please enter your {name}",
+      "invalidApiKey": "Invalid API key",
+      "connectionTimedOut": "Connection timed out. Try increasing the timeout.",
+      "couldNotConnect": "Could not connect to endpoint"
+    },
+    "federated": {
+      "credentialsRequired": "Enter new credential values before validating",
+      "channelRequired": "At least one channel is required when 'Search All Channels' is disabled"
     }
   },
   "modals": {
+    "noAgent": {
+      "title": "No Agent Available",
+      "body": "You currently have no Agent configured. To use this feature, you need to take action.",
+      "adminHelp": "As an administrator, you can create a new Agent by visiting the admin panel.",
+      "goToAdminPanel": "Go to Admin Panel",
+      "userHelp": "Please contact your administrator to configure an Agent for you."
+    },
     "feedback": {
       "title": "Feedback",
       "additionalDetails": "Provide Additional Details",
@@ -3073,6 +3209,24 @@
       "copyContent": "Copy content",
       "zoomOut": "Zoom Out",
       "zoomIn": "Zoom In"
+    },
+    "deleteFederatedConnector": {
+      "body": "Are you sure you want to delete this federated connector? This action cannot be undone."
+    },
+    "hooks": {
+      "disconnectTitle": "Disconnect *{name}*",
+      "disconnectBody": "Onyx will stop calling this endpoint for hook ***{name}***. In-flight requests will continue to run. The external endpoint may still retain data previously sent to it. You can reconnect this hook later if needed.",
+      "disconnectDeleteNote": "You can also delete this hook. Deletion cannot be undone.",
+      "disconnect": "Disconnect",
+      "disconnectAndDelete": "Disconnect & Delete",
+      "deleteTitle": "Delete *{name}*",
+      "deleteBody": "Hook ***{name}*** will be permanently removed from this hook point. The external endpoint may still retain data previously sent to it.",
+      "deletionNote": "Deletion cannot be undone."
+    },
+    "hookForm": {
+      "editTitle": "Manage Hook Extension",
+      "createTitle": "Set Up Hook Extension",
+      "createDescription": "Connect an external API endpoint to extend the hook point."
     }
   },
   "sections": {
@@ -3323,6 +3477,21 @@
         "searchPlaceholder": "Search...",
         "selectedItems": "Selected items"
       }
+    },
+    "search": {
+      "filter": {
+        "past24Hours": "Past 24 hours",
+        "pastWeek": "Past week",
+        "pastMonth": "Past month",
+        "pastYear": "Past year",
+        "allTime": "All Time",
+        "tags": "Tags"
+      },
+      "filterTagsPlaceholder": "Filter tags...",
+      "resultsCount": "{count, plural, one {# Result} other {# Results}}",
+      "searchFailed": "Search failed",
+      "noResultsTitle": "No results found",
+      "noResultsDescription": "Check your connectors/filters or try a different search term."
     }
   },
   "components": {
@@ -3527,6 +3696,27 @@
       "email": "Email",
       "actions": "Actions",
       "noMatching": "No users found matching \"{query}\""
+    },
+    "inviteUser": {
+      "titleInvite": "Invite User",
+      "titleUninvite": "Uninvite User",
+      "bodyInvite": "Are you sure you want to invite {email}?",
+      "bodyUninvite": "Are you sure you want to uninvite {email}?"
+    },
+    "changeCuratorRole": {
+      "title": "Change Curator Role",
+      "warning": "Warning: Switching roles from Curator to {newRole} will remove their status as individual curators from all groups.",
+      "confirmButton": "Switch Role to {newRole}"
+    },
+    "credentials": {
+      "updateTitle": "Update Credentials",
+      "editTitle": "Edit Credential",
+      "confirmDeletionTitle": "Confirm Deletion",
+      "confirmDeletionBody": "Are you sure you want to delete this credential? You cannot delete credentials that are linked to live connectors.",
+      "selectionHint": "Select a credential as needed. Ensure the credential has the proper permissions for this connector."
+    },
+    "editUser": {
+      "title": "Edit User's Groups & Roles"
     }
   },
   "ui": {
@@ -3541,6 +3731,24 @@
       "cannotDeleteProjects": "Cannot delete file. It is associated with projects: {projects}",
       "cannotDeleteAssistants": "Cannot delete file. It is associated with assistants: {assistants}",
       "cannotDeleteBoth": "Cannot delete file. It is associated with projects: {projects} and assistants: {assistants}"
+    },
+    "modelList": {
+      "searchPlaceholder": "Search models...",
+      "loading": "Loading models...",
+      "noModelsFound": "No models found"
+    },
+    "actionsPopover": {
+      "searchPlaceholder": "Search Actions",
+      "searchFilterPlaceholder": "Search Filters",
+      "disableAllSources": "Disable All Sources",
+      "enableAllSources": "Enable All Sources",
+      "searchMcpToolsPlaceholder": "Search {server} tools",
+      "disableAllTools": "Disable All Tools",
+      "enableAllTools": "Enable All Tools",
+      "moreActions": "More Actions"
+    },
+    "comboBox": {
+      "noOptionsFound": "No options found"
     }
   },
   "agent": {
@@ -3549,6 +3757,18 @@
       "description": "Add specific connectors and documents for this agent to use to inform its responses.",
       "useKnowledgeTitle": "Use Knowledge",
       "useKnowledgeDescription": "Let this agent reference these documents to inform its responses."
+    }
+  },
+  "errors": {
+    "somethingWentWrong": "Something went wrong",
+    "unknownError": "Unknown error",
+    "failedToLoadLogs": "Failed to load logs",
+    "failedToLoadItems": "Failed to load {item}. Please try again.",
+    "failedToFetchData": "Failed to fetch data",
+    "csv": {
+      "loadError": "Error loading CSV",
+      "loadErrorHint": "The CSV file may be too large or couldn't be loaded properly.",
+      "noData": "No data available"
     }
   }
 }

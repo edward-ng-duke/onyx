@@ -8,6 +8,8 @@
       "edit": "编辑",
       "add": "新增",
       "remove": "移除",
+      "invite": "邀请",
+      "uninvite": "取消邀请",
       "submit": "提交",
       "close": "关闭",
       "confirm": "确认",
@@ -28,7 +30,17 @@
       "retry": "重试",
       "copy": "复制",
       "copied": "已复制",
-      "open": "打开"
+      "open": "打开",
+      "documentation": "文档",
+      "connect": "连接",
+      "reconnect": "重新连接",
+      "saveChanges": "保存更改",
+      "reAuthenticate": "重新认证",
+      "manage": "管理",
+      "updating": "更新中…",
+      "creating": "创建中…",
+      "validate": "校验",
+      "validating": "校验中…"
     },
     "labels": {
       "yes": "是",
@@ -37,7 +49,29 @@
       "description": "描述",
       "type": "类型",
       "status": "状态",
-      "actions": "操作"
+      "actions": "操作",
+      "default": "（默认）"
+    },
+    "aria": {
+      "revertToDefault": "恢复默认",
+      "removeFile": "移除",
+      "manageActions": "管理操作",
+      "dismiss": "关闭",
+      "attachFile": "附加文件",
+      "expandDocument": "展开文档",
+      "viewFullText": "查看完整内容",
+      "download": "下载",
+      "scrollToBottom": "滚动到底部",
+      "viewGroup": "查看用户组",
+      "showFirstVisitNotice": "显示首次访问提示",
+      "requireConsentToNotice": "需要同意提示",
+      "changeAppMode": "切换应用模式",
+      "loadingActionCard": "正在加载操作卡片",
+      "removeImage": "移除图片"
+    },
+    "placeholders": {
+      "search": "搜索…",
+      "typeAndEnter": "输入后按回车添加"
     }
   },
   "auth": {
@@ -1762,6 +1796,15 @@
       "warningLabel": "警告：",
       "trialEndingMessage": "你的试用将在 5 天内到期，但尚未添加付款方式。",
       "updateBilling": "更新账单信息"
+    },
+    "federated": {
+      "editTitle": "编辑 {name}",
+      "setupTitle": "配置 {name}",
+      "warningTooltip": "这是一个 Federated Connector，与普通 Connector 相比延迟更高、搜索质量更低",
+      "credentialsHeading": "凭证",
+      "credentialsSubtext": "输入此 Connector 的凭证",
+      "configurationHeading": "配置",
+      "channelPlaceholder": "输入频道名称或正则模式后按回车"
     }
   },
   "nav": {
@@ -2230,6 +2273,51 @@
         "warningSuffix": "账号中的内容。",
         "warningExisting": "你仍可继续在已有会话中引用 {name} 的内容。"
       }
+    },
+    "hooks": {
+      "pageDescription": "通过注册在 chat 或 indexing 流程特定时点触发的外部 API 端点，扩展 Onyx 管道",
+      "searchPlaceholder": "搜索 hooks…",
+      "disconnectedSuffix": "（已断开）",
+      "empty": {
+        "noResults": "未找到结果",
+        "noHookPoints": "暂无可用 hook 点",
+        "noResultsDescription": "可尝试其他关键词"
+      },
+      "aria": {
+        "disconnect": "断开 hook",
+        "deactivate": "停用 hook",
+        "testConnection": "测试连接",
+        "revalidate": "重新校验 hook"
+      },
+      "form": {
+        "softDescription": "若端点返回错误，Onyx 将记录日志并继续正常执行 pipeline，忽略 hook 结果。",
+        "timeoutLabel": "超时",
+        "timeoutSubDescription": "Onyx 等待端点响应的最长时间，超时后将执行失败策略。必须大于 0 且不超过 {max} 秒。",
+        "hookPointLabel": "Hook 点",
+        "displayNameLabel": "显示名称",
+        "namePlaceholder": "为该 hook 点命名你的扩展",
+        "failStrategyLabel": "失败策略",
+        "failStrategyPlaceholder": "选择策略",
+        "failStrategySoft": "记录错误并继续",
+        "failStrategyHard": "失败时阻断流程",
+        "endpointUrlLabel": "外部 API 端点 URL",
+        "endpointUrlSubDescription": "仅连接你信任的服务器。你对该连接所执行的操作及共享的数据负责。",
+        "apiKeyLabel": "API 密钥",
+        "apiKeySubDescription": "Onyx 将使用此密钥对你的 API 端点进行身份验证",
+        "apiKeyEditPlaceholder": "留空以保留当前密钥",
+        "connectionValid": "连接有效",
+        "verifyingConnection": "正在校验连接…"
+      },
+      "connectionLost": "连接已断开",
+      "connected": "已连接",
+      "mostRecentErrors": "最近的错误",
+      "viewMoreLines": "查看更多行",
+      "viewOlderErrors": "查看更早的错误",
+      "noError": "无错误",
+      "inPastHour": "（过去一小时内）",
+      "recentErrors": "最近的错误",
+      "noErrorsPast30Days": "过去 30 天内无错误",
+      "errorCount": "{count, plural, other {# 个错误}}"
     }
   },
   "agents": {
@@ -2318,6 +2406,17 @@
       "starterExample2": "查找最新的销售报告。",
       "starterExample3": "整理本季度的工程目标。",
       "starterExample4": "总结一下今天的目标。"
+    },
+    "analytics": {
+      "title": "Agent 分析",
+      "description": "所选 Agent 的每日消息数与独立用户数",
+      "selectAgentPrompt": "选择 Agent 以查看分析",
+      "noData": "所选 Agent 在指定时间范围内无数据",
+      "selectPlaceholder": "选择要展示的 Agent",
+      "searchPlaceholder": "搜索 Agents…"
+    },
+    "groupsList": {
+      "noGroupsFound": "未找到用户组"
     }
   },
   "toasts": {
@@ -2451,7 +2550,14 @@
         "inviteCancelled": "邀请已取消",
         "userDeactivated": "用户已停用",
         "userActivated": "用户已激活",
-        "userDeleted": "用户已删除"
+        "userDeleted": "用户已删除",
+        "inviteSuccess": "用户邀请成功",
+        "inviteFailed": "邀请用户失败 — {error}",
+        "uninviteSuccess": "已取消用户邀请",
+        "uninviteFailed": "取消邀请失败 — {error}",
+        "deleteFailed": "删除用户失败 — {error}",
+        "leaveSuccess": "已离开团队",
+        "leaveFailed": "离开团队失败 — {error}"
       },
       "codeInterpreter": {
         "actionFailed": "{action} Code Interpreter 失败"
@@ -2573,6 +2679,19 @@
       },
       "sidebar": {
         "moveChatFailed": "移动会话失败，请重试。"
+      },
+      "hooks": {
+        "validationSuccess": "hook 校验成功",
+        "deleteFailed": "删除 hook 失败",
+        "reconnectFailed": "重新连接 hook 失败",
+        "deactivateFailed": "停用 hook 失败",
+        "disconnectFailed": "断开 hook 失败",
+        "validateFailed": "校验 hook 失败",
+        "requiresEnterprise": "Hook 扩展需要 Enterprise 许可证",
+        "notEnabled": "当前部署未启用 Hook 扩展",
+        "noHookPoint": "未指定 hook 点",
+        "hookUpdated": "hook 已更新",
+        "hookCreated": "hook 已创建"
       }
     },
     "shared": {
@@ -2768,7 +2887,10 @@
       "endpointUrlRequired": "终端 URL 不能为空。",
       "apiKeyRequired": "API 密钥不能为空。",
       "timeoutRequired": "超时时间为必填项。",
-      "timeoutRange": "必须大于 0 且不超过 {max} 秒。"
+      "timeoutRange": "必须大于 0 且不超过 {max} 秒。",
+      "invalidApiKey": "API 密钥无效",
+      "connectionTimedOut": "连接超时，可尝试增大超时时间",
+      "couldNotConnect": "无法连接到端点"
     },
     "mcpServer": {
       "nameRequired": "服务器名称为必填项",
@@ -2818,10 +2940,24 @@
       "authMethodRequired": "请选择认证方式",
       "fileRequired": "请选择 {name} 文件",
       "fieldEmpty": "{name} 不能为空",
-      "pleaseEnter": "请输入您的 {name}"
+      "pleaseEnter": "请输入您的 {name}",
+      "invalidApiKey": "API 密钥无效",
+      "connectionTimedOut": "连接超时，可尝试增大超时时间",
+      "couldNotConnect": "无法连接到端点"
+    },
+    "federated": {
+      "credentialsRequired": "请先填写新的凭证值再校验",
+      "channelRequired": "禁用「搜索全部频道」时至少需要指定一个频道"
     }
   },
   "modals": {
+    "noAgent": {
+      "title": "暂无可用 Agent",
+      "body": "你尚未配置任何 Agent，需要先进行配置才能使用此功能。",
+      "adminHelp": "作为管理员，你可以前往管理面板创建新的 Agent。",
+      "goToAdminPanel": "前往管理面板",
+      "userHelp": "请联系管理员为你配置 Agent。"
+    },
     "feedback": {
       "title": "反馈",
       "additionalDetails": "补充详细信息",
@@ -3073,6 +3209,24 @@
       "copyContent": "复制内容",
       "zoomOut": "缩小",
       "zoomIn": "放大"
+    },
+    "deleteFederatedConnector": {
+      "body": "确认删除该联合 Connector 吗？此操作不可撤销"
+    },
+    "hooks": {
+      "disconnectTitle": "断开 *{name}*",
+      "disconnectBody": "Onyx 将在触发此 hook 时停止调用此端点（hook: ***{name}***）。进行中的请求将继续运行，外部端点此前收到的数据仍会保留。你可在稍后重新连接此 hook",
+      "disconnectDeleteNote": "你也可以选择删除此 hook，删除后不可恢复",
+      "disconnect": "断开",
+      "disconnectAndDelete": "断开并删除",
+      "deleteTitle": "删除 *{name}*",
+      "deleteBody": "hook ***{name}*** 将被永久从此 hook 点移除。外部端点此前收到的数据仍会保留",
+      "deletionNote": "删除后不可恢复"
+    },
+    "hookForm": {
+      "editTitle": "管理 Hook 扩展",
+      "createTitle": "配置 Hook 扩展",
+      "createDescription": "通过连接外部 API 端点扩展 hook 触发点"
     }
   },
   "sections": {
@@ -3323,6 +3477,21 @@
         "searchPlaceholder": "搜索…",
         "selectedItems": "已选项"
       }
+    },
+    "search": {
+      "filter": {
+        "past24Hours": "近 24 小时",
+        "pastWeek": "近一周",
+        "pastMonth": "近一个月",
+        "pastYear": "近一年",
+        "allTime": "全部时间",
+        "tags": "标签"
+      },
+      "filterTagsPlaceholder": "筛选标签…",
+      "resultsCount": "{count, plural, other {# 项结果}}",
+      "searchFailed": "搜索失败",
+      "noResultsTitle": "未找到结果",
+      "noResultsDescription": "请检查 Connector 与筛选条件，或尝试其他关键词"
     }
   },
   "components": {
@@ -3527,6 +3696,27 @@
       "email": "邮箱",
       "actions": "操作",
       "noMatching": "未找到匹配 \"{query}\" 的用户"
+    },
+    "inviteUser": {
+      "titleInvite": "邀请用户",
+      "titleUninvite": "取消邀请用户",
+      "bodyInvite": "确认邀请 {email} 吗？",
+      "bodyUninvite": "确认取消邀请 {email} 吗？"
+    },
+    "changeCuratorRole": {
+      "title": "更改 Curator 角色",
+      "warning": "警告：将角色从 Curator 切换为 {newRole} 后，将移除他们在所有用户组中的 curator 身份",
+      "confirmButton": "切换角色为 {newRole}"
+    },
+    "credentials": {
+      "updateTitle": "更新凭证",
+      "editTitle": "编辑凭证",
+      "confirmDeletionTitle": "确认删除",
+      "confirmDeletionBody": "确认删除该凭证吗？无法删除已关联到 Connector 的凭证",
+      "selectionHint": "按需选择凭证，并确保该凭证具备此 Connector 所需的权限"
+    },
+    "editUser": {
+      "title": "编辑用户的用户组与角色"
     }
   },
   "ui": {
@@ -3541,6 +3731,24 @@
       "cannotDeleteProjects": "无法删除文件，已关联以下项目：{projects}",
       "cannotDeleteAssistants": "无法删除文件，已关联以下助手：{assistants}",
       "cannotDeleteBoth": "无法删除文件，已关联以下项目：{projects} 以及助手：{assistants}"
+    },
+    "modelList": {
+      "searchPlaceholder": "搜索模型…",
+      "loading": "正在加载模型…",
+      "noModelsFound": "未找到模型"
+    },
+    "actionsPopover": {
+      "searchPlaceholder": "搜索操作",
+      "searchFilterPlaceholder": "搜索筛选条件",
+      "disableAllSources": "全部停用数据源",
+      "enableAllSources": "全部启用数据源",
+      "searchMcpToolsPlaceholder": "搜索 {server} 工具",
+      "disableAllTools": "全部停用工具",
+      "enableAllTools": "全部启用工具",
+      "moreActions": "更多操作"
+    },
+    "comboBox": {
+      "noOptionsFound": "未找到选项"
     }
   },
   "agent": {
@@ -3549,6 +3757,18 @@
       "description": "为该 Agent 添加特定的连接器和文档，用于辅助其生成回答。",
       "useKnowledgeTitle": "使用知识库",
       "useKnowledgeDescription": "允许该 Agent 引用这些文档来辅助生成回答。"
+    }
+  },
+  "errors": {
+    "somethingWentWrong": "出现错误",
+    "unknownError": "未知错误",
+    "failedToLoadLogs": "日志加载失败",
+    "failedToLoadItems": "加载 {item} 失败，请重试",
+    "failedToFetchData": "数据加载失败",
+    "csv": {
+      "loadError": "CSV 加载错误",
+      "loadErrorHint": "CSV 文件可能过大或无法正常加载。",
+      "noData": "暂无数据"
     }
   }
 }

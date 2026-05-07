@@ -83,6 +83,7 @@ import { APP_SLOGAN } from "@/lib/constants";
  */
 function Header() {
   const t = useTranslations();
+  const tAria = useTranslations("common.aria");
   const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
   const { state, setAppMode } = useQueryController();
   const settings = useSettingsContext();
@@ -331,7 +332,7 @@ function Header() {
               <Popover open={modePopoverOpen} onOpenChange={setModePopoverOpen}>
                 <Popover.Trigger asChild>
                   <OpenButton
-                    aria-label="Change app mode"
+                    aria-label={tAria("changeAppMode")}
                     icon={
                       effectiveMode === "search" ? SvgSearchMenu : SvgBubbleText
                     }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect, useLayoutEffect } from "react";
+import { useTranslations } from "next-intl";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import Modal from "@/refresh-components/Modal";
 import CopyIconButton from "@/refresh-components/buttons/CopyIconButton";
@@ -119,6 +120,7 @@ export default function ExpandableTextDisplay({
   renderContent,
   isStreaming = false,
 }: ExpandableTextDisplayProps) {
+  const tAria = useTranslations("common.aria");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -312,7 +314,7 @@ export default function ExpandableTextDisplay({
               prominence="tertiary"
               size="sm"
               icon={SvgMaximize2}
-              tooltip="View Full Text"
+              tooltip={tAria("viewFullText")}
               onClick={() => setIsModalOpen(true)}
             />
           )}
@@ -375,7 +377,7 @@ export default function ExpandableTextDisplay({
                 prominence="tertiary"
                 size="sm"
                 icon={SvgDownload}
-                tooltip="Download"
+                tooltip={tAria("download")}
                 onClick={handleDownload}
               />
             </div>

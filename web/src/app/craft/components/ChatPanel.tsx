@@ -62,6 +62,7 @@ export default function BuildChatPanel({
   existingSessionId,
 }: BuildChatPanelProps) {
   const tToast = useTranslations("toasts.craft");
+  const tAria = useTranslations("common.aria");
   const router = useRouter();
   const outputPanelOpen = useOutputPanelOpen();
   const session = useSession();
@@ -457,7 +458,7 @@ export default function BuildChatPanel({
                         "transition-all duration-200",
                         "hover:bg-background-tint-inverted-01"
                       )}
-                      aria-label="Scroll to bottom"
+                      aria-label={tAria("scrollToBottom")}
                     >
                       <SvgChevronDown
                         size={20}

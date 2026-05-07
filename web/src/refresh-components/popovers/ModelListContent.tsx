@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { PopoverMenu } from "@/refresh-components/Popover";
 import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
 import { Button, LineItemButton, Text } from "@opal/components";
@@ -41,6 +42,7 @@ export default function ModelListContent({
   isLoading,
   footer,
 }: ModelListContentProps) {
+  const tUi = useTranslations("ui.modelList");
   const [searchQuery, setSearchQuery] = useState("");
   const internalScrollRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = externalScrollRef ?? internalScrollRef;
@@ -144,20 +146,20 @@ export default function ModelListContent({
         variant="internal"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder="Search models..."
+        placeholder={tUi("searchPlaceholder")}
       />
 
       <PopoverMenu scrollContainerRef={scrollContainerRef}>
         {isLoading
           ? [
               <Text key="loading" font="secondary-body" color="text-03">
-                Loading models...
+                {tUi("loading")}
               </Text>,
             ]
           : groupedOptions.length === 0
             ? [
                 <Text key="empty" font="secondary-body" color="text-03">
-                  No models found
+                  {tUi("noModelsFound")}
                 </Text>,
               ]
             : groupedOptions.length === 1

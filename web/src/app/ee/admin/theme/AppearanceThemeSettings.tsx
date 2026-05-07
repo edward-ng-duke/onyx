@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { FormField } from "@/refresh-components/form/FormField";
 import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
 import Tabs from "@/refresh-components/Tabs";
@@ -47,6 +48,7 @@ export const AppearanceThemeSettings = forwardRef<
   { selectedLogo, setSelectedLogo, logoVersion, charLimits },
   ref
 ) {
+  const tAria = useTranslations("common.aria");
   const { values, errors, setFieldValue } = useFormikContext<any>();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const applicationNameInputRef = useRef<HTMLInputElement>(null);
@@ -449,7 +451,7 @@ export const AppearanceThemeSettings = forwardRef<
             <FormField.Label>Show First Visit Notice</FormField.Label>
             <FormField.Control>
               <Switch
-                aria-label="Show First Visit Notice"
+                aria-label={tAria("showFirstVisitNotice")}
                 data-label="first-visit-notice-toggle"
                 checked={values.show_first_visit_notice}
                 onCheckedChange={(checked) =>
@@ -529,7 +531,7 @@ export const AppearanceThemeSettings = forwardRef<
                 <FormField.Label>Require Consent to Notice</FormField.Label>
                 <FormField.Control>
                   <Switch
-                    aria-label="Require Consent to Notice"
+                    aria-label={tAria("requireConsentToNotice")}
                     data-label="require-consent-toggle"
                     checked={values.enable_consent_screen}
                     onCheckedChange={(checked) =>

@@ -110,6 +110,7 @@ export interface ChatPageProps {
 }
 
 export default function AppPage({ firstMessage }: ChatPageProps) {
+  const tAria = useTranslations("common.aria");
   const tToastFiles = useTranslations("toasts.files");
   const tToastChat = useTranslations("toasts.chat");
   // Performance tracking
@@ -923,7 +924,7 @@ export default function AppPage({ firstMessage }: ChatPageProps) {
                         <Button
                           icon={SvgChevronDown}
                           onClick={handleScrollToBottom}
-                          aria-label="Scroll to bottom"
+                          aria-label={tAria("scrollToBottom")}
                           prominence="secondary"
                         />
                       </div>

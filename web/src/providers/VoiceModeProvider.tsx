@@ -458,6 +458,7 @@ export function VoiceModeProvider({ children }: { children: React.ReactNode }) {
       credentials: "include",
     });
     if (!tokenResponse.ok) {
+      // internal: not user-visible — getWebSocketUrl is called only from connectWebSocket whose catch{} swallows errors
       throw new Error("Failed to get WebSocket authentication token");
     }
     const { token } = await tokenResponse.json();
