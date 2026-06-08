@@ -2,12 +2,11 @@
 
 import { useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { SvgPlayCircle, SvgStop } from "@opal/icons";
+import { SvgPlayCircle, SvgStop, SvgSimpleLoader } from "@opal/icons";
 import { Button } from "@opal/components";
 import { useVoicePlayback } from "@/hooks/useVoicePlayback";
 import { useVoiceMode } from "@/providers/VoiceModeProvider";
 import { toast } from "@/hooks/useToast";
-import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
 
 interface TTSButtonProps {
   text: string;
@@ -67,7 +66,7 @@ function TTSButton({ text, voice, speed }: TTSButtonProps) {
   }, [error]);
 
   const icon = isButtonLoading
-    ? SimpleLoader
+    ? SvgSimpleLoader
     : isButtonPlaying
       ? SvgStop
       : SvgPlayCircle;

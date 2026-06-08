@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback, useEffect, useState } from "react";
+import { useRef, useCallback, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Section, AttachmentItemLayout } from "@/layouts/general-layouts";
@@ -24,11 +24,11 @@ import {
 } from "@opal/icons";
 import { getSourceMetadata } from "@/lib/sources";
 import Card from "@/refresh-components/cards/Card";
-import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
+import { InputTypeIn } from "@opal/components";
 import PasswordInputTypeIn from "@/refresh-components/inputs/PasswordInputTypeIn";
 import InputSelect from "@/refresh-components/inputs/InputSelect";
 import InputTextArea from "@/refresh-components/inputs/InputTextArea";
-import Switch from "@/refresh-components/inputs/Switch";
+import { Switch } from "@opal/components";
 import { useUser } from "@/providers/UserProvider";
 import { useTheme } from "next-themes";
 import { MemoryItem, ThemePreference } from "@/lib/types";
@@ -42,15 +42,15 @@ import useSWR from "swr";
 import { SWR_KEYS } from "@/lib/swr-keys";
 import { errorHandlingFetcher } from "@/lib/fetcher";
 import useFilter from "@/hooks/useFilter";
-import { Button, Divider } from "@opal/components";
+import { Button, Divider, Checkbox, Text } from "@opal/components";
 import useFederatedOAuthStatus from "@/hooks/useFederatedOAuthStatus";
 import useCCPairs from "@/hooks/useCCPairs";
 import { ValidSources } from "@/lib/types";
 import { ConnectorCredentialPairStatus } from "@/app/admin/connector/[ccPairId]/types";
-import Text from "@/refresh-components/texts/Text";
 import ConfirmationModalLayout from "@/refresh-components/layouts/ConfirmationModalLayout";
 import { LanguageSelect } from "@/components/i18n/LanguageSelect";
-import Code from "@/refresh-components/Code";
+import Modal, { BasicModalFooter } from "@/refresh-components/Modal";
+import { Code, CopyButton } from "@opal/components";
 import CharacterCount from "@/refresh-components/CharacterCount";
 import { InputPrompt } from "@/app/app/interfaces";
 import usePromptShortcuts from "@/hooks/usePromptShortcuts";
@@ -65,7 +65,8 @@ import {
 import { SvgCheck } from "@opal/icons";
 import { cn } from "@opal/utils";
 import { Interactive } from "@opal/core";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
+import { useTierAtLeast } from "@/hooks/useTierAtLeast";
+import { Tier } from "@/interfaces/settings";
 import { useSettingsContext } from "@/providers/SettingsProvider";
 import { Tooltip } from "@opal/components";
 import { useCloudSubscription } from "@/hooks/useCloudSubscription";
@@ -78,12 +79,122 @@ interface PAT {
   created_at: string;
   expires_at: string | null;
   last_used_at: string | null;
+  scopes: string[] | null;
 }
+
+interface PatScopeOption {
+  scope: string;
+  group_label: string;
+  label: string;
+  description: string;
+  implies: string[];
+}
+
+type AccessMode = "full" | "limited";
 
 interface CreatedTokenState {
   id: number;
   token: string;
   name: string;
+}
+
+interface ScopeGroup {
+  label: string;
+  rows: PatScopeOption[];
+}
+
+interface ScopeSelectorProps {
+  scopeOptions: PatScopeOption[];
+  selectedScopes: string[];
+  toggleScope: (scope: string) => void;
+  scopesError: boolean;
+  disabled: boolean;
+}
+
+// Data-driven from the /scopes payload, so new scopes need no change here.
+function ScopeSelector({
+  scopeOptions,
+  selectedScopes,
+  toggleScope,
+  scopesError,
+  disabled,
+}: ScopeSelectorProps) {
+  const groups = useMemo(() => {
+    const byLabel = new Map<string, ScopeGroup>();
+    for (const option of scopeOptions) {
+      const group = byLabel.get(option.group_label);
+      if (group) {
+        group.rows.push(option);
+      } else {
+        byLabel.set(option.group_label, {
+          label: option.group_label,
+          rows: [option],
+        });
+      }
+    }
+    return Array.from(byLabel.values());
+  }, [scopeOptions]);
+
+  if (scopesError) {
+    return (
+      <Text font="secondary-body" color="text-03">
+        Couldn&apos;t load permissions.
+      </Text>
+    );
+  }
+  if (scopeOptions.length === 0) {
+    return (
+      <Text font="secondary-body" color="text-03">
+        Loading permissions...
+      </Text>
+    );
+  }
+
+  // scope -> label of a selected scope that implies it (so it's auto-included).
+  const lockedBy = new Map<string, string>();
+  for (const scope of selectedScopes) {
+    const option = scopeOptions.find((o) => o.scope === scope);
+    option?.implies.forEach((implied) => lockedBy.set(implied, option.label));
+  }
+
+  return (
+    <div className="grid grid-cols-2 items-start">
+      {groups.map((group) => (
+        <div key={group.label} className="flex flex-col items-start gap-1">
+          <Text font="main-ui-action" color="text-04">
+            {group.label}
+          </Text>
+          {group.rows.map((option) => {
+            const lockReason = lockedBy.get(option.scope);
+            const locked = lockReason !== undefined;
+            return (
+              <div key={option.scope} className="flex items-start gap-2 pl-2">
+                <Checkbox
+                  checked={selectedScopes.includes(option.scope) || locked}
+                  disabled={disabled || locked}
+                  onCheckedChange={() => toggleScope(option.scope)}
+                  aria-label={`${group.label} ${option.label}`}
+                />
+                <div className="flex flex-col">
+                  <Text font="main-ui-body" color="text-04">
+                    {locked
+                      ? `${option.label} (included with ${lockReason})`
+                      : option.label}
+                  </Text>
+                  {/* Fixed 2-line slot so every row is the same height. */}
+                  <div className="h-8 overflow-hidden">
+                    <Text font="secondary-body" color="text-03" maxLines={2}>
+                      {option.description}
+                    </Text>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 interface PATModalProps {
@@ -92,6 +203,12 @@ interface PATModalProps {
   setNewTokenName: (name: string) => void;
   expirationDays: string;
   setExpirationDays: (days: string) => void;
+  accessMode: AccessMode;
+  setAccessMode: (mode: AccessMode) => void;
+  scopeOptions: PatScopeOption[];
+  scopesError: boolean;
+  selectedScopes: string[];
+  toggleScope: (scope: string) => void;
   onClose: () => void;
   onCreate: () => void;
   createdToken: CreatedTokenState | null;
@@ -103,11 +220,48 @@ function PATModal({
   setNewTokenName,
   expirationDays,
   setExpirationDays,
+  accessMode,
+  setAccessMode,
+  scopeOptions,
+  scopesError,
+  selectedScopes,
+  toggleScope,
   onClose,
   onCreate,
   createdToken,
 }: PATModalProps) {
   const t = useTranslations("settings.accounts.tokens.createModal");
+
+  if (createdToken?.token) {
+    return (
+      <Modal open onOpenChange={(open) => !open && onClose()}>
+        <Modal.Content width="sm" height="sm">
+          <Modal.Header
+            title="Access Token"
+            icon={SvgKey}
+            onClose={onClose}
+            description="Save this token before continuing. It won't be shown again."
+          />
+          <Modal.Body>
+            <Code showCopyButton={false}>{createdToken.token}</Code>
+          </Modal.Body>
+          <Modal.Footer>
+            <BasicModalFooter
+              submit={
+                <CopyButton
+                  getCopyText={() => createdToken.token}
+                  prominence="primary"
+                >
+                  Copy Token
+                </CopyButton>
+              }
+            />
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
+    );
+  }
+
   return (
     <ConfirmationModalLayout
       icon={SvgKey}
@@ -115,79 +269,101 @@ function PATModal({
       description={t("description")}
       onClose={onClose}
       submit={
-        !!createdToken?.token ? (
-          <Button onClick={onClose}>{t("doneButton")}</Button>
-        ) : (
-          <Button
-            disabled={isCreating || !newTokenName.trim()}
-            onClick={onCreate}
-          >
-            {isCreating ? t("creatingButton") : t("createButton")}
-          </Button>
-        )
+        <Button
+          disabled={
+            isCreating ||
+            !newTokenName.trim() ||
+            (accessMode === "limited" && selectedScopes.length === 0)
+          }
+          onClick={onCreate}
+        >
+          {isCreating ? t("creatingButton") : t("createButton")}
+        </Button>
       }
-      hideCancel={!!createdToken}
     >
       <Section gap={1}>
-        {/* Token Creation*/}
-        {!!createdToken?.token ? (
-          <InputVertical title={t("tokenValueLabel")} withLabel>
-            <Code>{createdToken.token}</Code>
-          </InputVertical>
-        ) : (
-          <>
-            <InputVertical title={t("tokenNameLabel")} withLabel>
-              <InputTypeIn
-                placeholder={t("tokenNamePlaceholder")}
-                value={newTokenName}
-                onChange={(e) => setNewTokenName(e.target.value)}
-                variant={isCreating ? "disabled" : undefined}
-                autoComplete="new-password"
-              />
-            </InputVertical>
-            <InputVertical
-              title={t("expiresInLabel")}
-              subDescription={
-                expirationDays === "null"
-                  ? undefined
-                  : (() => {
-                      const expiryDate = new Date();
-                      expiryDate.setUTCDate(
-                        expiryDate.getUTCDate() + parseInt(expirationDays)
-                      );
-                      expiryDate.setUTCHours(23, 59, 59, 999);
-                      const dateStr = expiryDate
-                        .toISOString()
-                        .replace("T", " ")
-                        .replace(".999Z", " UTC");
-                      return t("expirationHint", { date: dateStr });
-                    })()
-              }
-              withLabel
-            >
-              <InputSelect
-                value={expirationDays}
-                onValueChange={setExpirationDays}
-                disabled={isCreating}
-              >
-                <InputSelect.Trigger placeholder={t("expirationPlaceholder")} />
-                <InputSelect.Content>
-                  <InputSelect.Item value="7">
-                    {t("expiration7Days")}
-                  </InputSelect.Item>
-                  <InputSelect.Item value="30">
-                    {t("expiration30Days")}
-                  </InputSelect.Item>
-                  <InputSelect.Item value="365">
-                    {t("expiration365Days")}
-                  </InputSelect.Item>
-                  <InputSelect.Item value="null">
-                    {t("expirationNone")}
-                  </InputSelect.Item>
-                </InputSelect.Content>
-              </InputSelect>
-            </InputVertical>
-          </>
+        <InputVertical title={t("tokenNameLabel")} withLabel>
+          <InputTypeIn
+            placeholder={t("tokenNamePlaceholder")}
+            value={newTokenName}
+            onChange={(e) => setNewTokenName(e.target.value)}
+            variant={isCreating ? "disabled" : undefined}
+            autoComplete="new-password"
+          />
+        </InputVertical>
+        <InputVertical
+          title={t("expiresInLabel")}
+          subDescription={
+            expirationDays === "null"
+              ? undefined
+              : (() => {
+                  const expiryDate = new Date();
+                  expiryDate.setUTCDate(
+                    expiryDate.getUTCDate() + parseInt(expirationDays)
+                  );
+                  expiryDate.setUTCHours(23, 59, 59, 999);
+                  const dateStr = expiryDate
+                    .toISOString()
+                    .replace("T", " ")
+                    .replace(".999Z", " UTC");
+                  return t("expirationHint", { date: dateStr });
+                })()
+          }
+          withLabel
+        >
+          <InputSelect
+            value={expirationDays}
+            onValueChange={setExpirationDays}
+            disabled={isCreating}
+          >
+            <InputSelect.Trigger placeholder={t("expirationPlaceholder")} />
+            <InputSelect.Content>
+              <InputSelect.Item value="7">
+                {t("expiration7Days")}
+              </InputSelect.Item>
+              <InputSelect.Item value="30">
+                {t("expiration30Days")}
+              </InputSelect.Item>
+              <InputSelect.Item value="365">
+                {t("expiration365Days")}
+              </InputSelect.Item>
+              <InputSelect.Item value="null">
+                {t("expirationNone")}
+              </InputSelect.Item>
+            </InputSelect.Content>
+          </InputSelect>
+        </InputVertical>
+        <InputVertical
+          title="Permissions"
+          subDescription={
+            accessMode === "full"
+              ? "Inherits all of your permissions."
+              : "Limit this token to specific capabilities."
+          }
+          withLabel
+        >
+          <InputSelect
+            value={accessMode}
+            onValueChange={(value) => setAccessMode(value as AccessMode)}
+            disabled={isCreating}
+          >
+            <InputSelect.Trigger placeholder="Select permissions" />
+            <InputSelect.Content>
+              <InputSelect.Item value="full">Full access</InputSelect.Item>
+              <InputSelect.Item value="limited">
+                Limited access
+              </InputSelect.Item>
+            </InputSelect.Content>
+          </InputSelect>
+        </InputVertical>
+        {accessMode === "limited" && (
+          <ScopeSelector
+            scopeOptions={scopeOptions}
+            selectedScopes={selectedScopes}
+            toggleScope={toggleScope}
+            scopesError={scopesError}
+            disabled={isCreating}
+          />
         )}
       </Section>
     </ConfirmationModalLayout>
@@ -287,8 +463,12 @@ function GeneralSettings() {
           }
         >
           <Section gap={0.5} alignItems="start">
-            <Text>{t("dangerZone.deleteAllChatsConfirmation")}</Text>
-            <Text>{t("dangerZone.deleteAllChatsConfirmationQuestion")}</Text>
+            <Text color="text-05">
+              {t("dangerZone.deleteAllChatsConfirmation")}
+            </Text>
+            <Text color="text-05">
+              {t("dangerZone.deleteAllChatsConfirmationQuestion")}
+            </Text>
           </Section>
         </ConfirmationModalLayout>
       )}
@@ -802,7 +982,7 @@ function ChatPreferencesSettings() {
     updateUserDefaultAppMode,
     updateUserVoiceSettings,
   } = useUser();
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
+  const businessTier = useTierAtLeast(Tier.BUSINESS);
   const settings = useSettingsContext();
   const { isSearchModeAvailable: searchUiEnabled } = settings;
   const llmManager = useLlmManager();
@@ -931,7 +1111,7 @@ function ChatPreferencesSettings() {
             />
           </InputHorizontal>
 
-          {isPaidEnterpriseFeaturesEnabled && (
+          {businessTier && (
             <Tooltip
               tooltip={
                 searchUiEnabled
@@ -1158,6 +1338,8 @@ function AccountsAccessSettings() {
   const [isCreating, setIsCreating] = useState(false);
   const [newTokenName, setNewTokenName] = useState("");
   const [expirationDays, setExpirationDays] = useState<string>("30");
+  const [accessMode, setAccessMode] = useState<AccessMode>("full");
+  const [selectedScopes, setSelectedScopes] = useState<string[]>([]);
   const [newlyCreatedToken, setNewlyCreatedToken] =
     useState<CreatedTokenState | null>(null);
   const [tokenToDelete, setTokenToDelete] = useState<PAT | null>(null);
@@ -1183,6 +1365,31 @@ function AccountsAccessSettings() {
     }
   );
 
+  const { data: scopeOptions = [], error: scopeOptionsError } = useSWR<
+    PatScopeOption[]
+  >(
+    showTokensSection && canCreateTokens ? SWR_KEYS.userPatScopes : null,
+    errorHandlingFetcher,
+    { fallbackData: [] }
+  );
+
+  const scopeLabels = useMemo(
+    () =>
+      new Map(
+        scopeOptions.map((o) => [
+          o.scope,
+          `${o.label} ${o.group_label.toLowerCase()}`,
+        ])
+      ),
+    [scopeOptions]
+  );
+
+  const toggleScope = useCallback((scope: string) => {
+    setSelectedScopes((prev) =>
+      prev.includes(scope) ? prev.filter((s) => s !== scope) : [...prev, scope]
+    );
+  }, []);
+
   // Use filter hook for searching tokens
   const {
     query,
@@ -1196,6 +1403,12 @@ function AccountsAccessSettings() {
       toast.error(tToast("tokensLoadFailed"));
     }
   }, [error, tToast]);
+
+  useEffect(() => {
+    if (scopeOptionsError) {
+      toast.error("Failed to load permission options");
+    }
+  }, [scopeOptionsError]);
 
   const createPAT = useCallback(async () => {
     if (!newTokenName.trim()) {
@@ -1212,6 +1425,7 @@ function AccountsAccessSettings() {
           name: newTokenName,
           expiration_days:
             expirationDays === "null" ? null : parseInt(expirationDays),
+          scopes: accessMode === "limited" ? selectedScopes : null,
         }),
       });
 
@@ -1235,7 +1449,14 @@ function AccountsAccessSettings() {
     } finally {
       setIsCreating(false);
     }
-  }, [newTokenName, expirationDays, mutate, tToast]);
+  }, [
+    newTokenName,
+    expirationDays,
+    accessMode,
+    selectedScopes,
+    mutate,
+    tToast,
+  ]);
 
   const deletePAT = useCallback(
     async (patId: number) => {
@@ -1303,10 +1524,18 @@ function AccountsAccessSettings() {
           setNewTokenName={setNewTokenName}
           expirationDays={expirationDays}
           setExpirationDays={setExpirationDays}
+          accessMode={accessMode}
+          setAccessMode={setAccessMode}
+          scopeOptions={scopeOptions}
+          scopesError={Boolean(scopeOptionsError)}
+          selectedScopes={selectedScopes}
+          toggleScope={toggleScope}
           onClose={() => {
             setShowCreateModal(false);
             setNewTokenName("");
             setExpirationDays("30");
+            setAccessMode("full");
+            setSelectedScopes([]);
             setNewlyCreatedToken(null);
           }}
           onCreate={createPAT}
@@ -1329,13 +1558,14 @@ function AccountsAccessSettings() {
           }
         >
           <Section gap={0.5} alignItems="start">
-            <Text>
-              {t("tokens.revokeModal.warningPrefix")}{" "}
-              <Text className="!font-bold">{tokenToDelete.name}</Text>{" "}
-              <Text secondaryMono>({tokenToDelete.token_display})</Text>{" "}
-              {t("tokens.revokeModal.warningSuffix")}
+            <Text color="text-05">
+              {markdown(
+                `${t("tokens.revokeModal.warningPrefix")} **${tokenToDelete.name}** (\`${tokenToDelete.token_display}\`) ${t("tokens.revokeModal.warningSuffix")}`
+              )}
             </Text>
-            <Text>{t("tokens.revokeModal.confirmationQuestion")}</Text>
+            <Text color="text-05">
+              {t("tokens.revokeModal.confirmationQuestion")}
+            </Text>
           </Section>
         </ConfirmationModalLayout>
       )}
@@ -1456,7 +1686,7 @@ function AccountsAccessSettings() {
               description={t("emailDescription")}
               center
             >
-              <Text>{user?.email ?? t("anonymous")}</Text>
+              <Text color="text-05">{user?.email ?? t("anonymous")}</Text>
             </InputHorizontal>
 
             {showPasswordSection && (
@@ -1492,7 +1722,7 @@ function AccountsAccessSettings() {
                   <Section flexDirection="row" padding={0.25} gap={0.5}>
                     {pats.length === 0 ? (
                       <Section padding={0.5} alignItems="start">
-                        <Text text03 secondaryBody>
+                        <Text font="secondary-body" color="text-03">
                           {isLoading
                             ? t("tokens.loadingTokens")
                             : t("tokens.noTokens")}
@@ -1503,7 +1733,7 @@ function AccountsAccessSettings() {
                         placeholder={t("tokens.searchPlaceholder")}
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        leftSearchIcon
+                        searchIcon
                         variant="internal"
                       />
                     )}
@@ -1543,16 +1773,21 @@ function AccountsAccessSettings() {
                               });
                       }
 
-                      const middleText =
-                        daysSinceCreation === 1
-                          ? t("tokens.createdAgo", {
-                              days: daysSinceCreation,
-                              expiry: expiryText,
-                            })
-                          : t("tokens.createdAgoPlural", {
-                              days: daysSinceCreation,
-                              expiry: expiryText,
-                            });
+                      const scopeText =
+                        pat.scopes === null
+                          ? "Full access"
+                          : pat.scopes
+                              .map((scope) => scopeLabels.get(scope) ?? scope)
+                              .join(", ");
+
+                      const createdText =
+                        daysSinceCreation === 0
+                          ? "Created today"
+                          : `Created ${daysSinceCreation} day${
+                              daysSinceCreation === 1 ? "" : "s"
+                            } ago`;
+
+                      const middleText = `${createdText} - ${expiryText} - ${scopeText}`;
 
                       return (
                         <Interactive.Container
@@ -1588,7 +1823,7 @@ function AccountsAccessSettings() {
             ) : (
               <Card>
                 <Section flexDirection="row" justifyContent="between">
-                  <Text text03 secondaryBody>
+                  <Text font="secondary-body" color="text-03">
                     {t("tokens.upgradeRequired")}
                   </Text>
                   <Button prominence="secondary" href="/admin/billing">
@@ -1686,12 +1921,12 @@ function FederatedConnectorCard({
           }
         >
           <Section gap={0.5} alignItems="start">
-            <Text>
-              {t("disconnectModal.warningPrefix")}{" "}
-              <Text className="!font-bold">{sourceMetadata.displayName}</Text>{" "}
-              {t("disconnectModal.warningSuffix")}
+            <Text color="text-05">
+              {markdown(
+                `${t("disconnectModal.warningPrefix")} **${sourceMetadata.displayName}** ${t("disconnectModal.warningSuffix")}`
+              )}
             </Text>
-            <Text>
+            <Text color="text-05">
               {t("disconnectModal.warningExisting", {
                 name: sourceMetadata.displayName,
               })}

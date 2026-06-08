@@ -4,7 +4,7 @@ import { Fragment, useState, useRef, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import Modal from "@/refresh-components/Modal";
 import { Section } from "@/layouts/general-layouts";
-import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
+import { InputTypeIn } from "@opal/components";
 import InputTextArea from "@/refresh-components/inputs/InputTextArea";
 import Text from "@/refresh-components/texts/Text";
 import { Button, Divider } from "@opal/components";
@@ -280,9 +280,7 @@ export default function MemoriesModal({
               placeholder={t("searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              leftSearchIcon
-              showClearButton={false}
-              className="w-full !bg-transparent !border-transparent [&:is(:hover,:active,:focus,:focus-within)]:!bg-background-neutral-00 [&:is(:hover)]:!border-border-01 [&:is(:focus,:focus-within)]:!shadow-none"
+              searchIcon
             />
             <Button
               disabled={!canAddMemory}

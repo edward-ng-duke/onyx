@@ -2,15 +2,13 @@
 
 import { useState, useMemo, useRef } from "react";
 import { useTranslations } from "next-intl";
-import Popover from "@/refresh-components/Popover";
 import { LlmManager } from "@/lib/hooks";
 import { getModelIcon } from "@/lib/languageModels";
-import { Button, SelectButton } from "@opal/components";
+import { Button, SelectButton, Popover, Divider } from "@opal/components";
 import { SvgPlusCircle, SvgX } from "@opal/icons";
 import { useSettingsContext } from "@/providers/SettingsProvider";
 import { LLMOption } from "@/refresh-components/popovers/interfaces";
 import ModelListContent from "@/refresh-components/popovers/ModelListContent";
-import Separator from "@/refresh-components/Separator";
 
 export const MAX_MODELS = 3;
 
@@ -155,10 +153,10 @@ export default function ModelSelector({
         {selectedModels.length > 0 && (
           <>
             {!atMax && (
-              <Separator
+              <Divider
                 orientation="vertical"
-                paddingXRem={0.5}
-                className="h-5"
+                paddingParallel="sm"
+                paddingPerpendicular="sm"
               />
             )}
             <div className="flex items-center shrink-0">
@@ -178,10 +176,10 @@ export default function ModelSelector({
                     className="flex items-center"
                   >
                     {index > 0 && (
-                      <Separator
+                      <Divider
                         orientation="vertical"
-                        paddingXRem={0.5}
-                        className="h-5"
+                        paddingParallel="sm"
+                        paddingPerpendicular="sm"
                       />
                     )}
                     <SelectButton

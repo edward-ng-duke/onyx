@@ -28,7 +28,6 @@ from urllib.parse import quote
 import bs4
 import requests
 from atlassian import Confluence
-from redis import Redis
 from requests import HTTPError
 
 from onyx.configs.app_configs import CONFLUENCE_CONNECTOR_USER_PROFILES_OVERRIDE
@@ -48,6 +47,7 @@ from onyx.connectors.exceptions import InsufficientPermissionsError
 from onyx.connectors.interfaces import CredentialsProviderInterface
 from onyx.file_processing.html_utils import format_document_soup
 from onyx.redis.redis_pool import get_redis_client
+from onyx.redis.tenant_redis_client import TenantRedisClient
 from onyx.utils.logger import setup_logger
 
 logger = setup_logger()
@@ -59,6 +59,15 @@ F = TypeVar("F", bound=Callable[..., Any])
 # https://jira.atlassian.com/browse/CONFCLOUD-76433
 _PROBLEMATIC_EXPANSIONS = "body.storage.value"
 _REPLACEMENT_EXPANSIONS = "body.view.value"
+
+# CONFCLOUD-77618 / CONFCLOUD-76424: ancestor-restrictions expand on
+# content/search 404s the whole batch when an ancestor is unreadable
+# (draft / outdated / trashed). We detect the body signature and raise.
+_ANCESTOR_RESTRICTIONS_EXPAND_PREFIX = "ancestors.restrictions.read.restrictions."
+_CONFCLOUD_77618_404_BODY_SIGNATURES = (
+    "No content with id",
+    "Cannot find content. Outdated version/old_draft/trashed",
+)
 
 _USER_NOT_FOUND = "Unknown Confluence User"
 _USER_ID_TO_DISPLAY_NAME_CACHE: dict[str, str | None] = {}
@@ -94,9 +103,31 @@ _JSONRPC_ERROR_BODY_SNIPPET_CHARS = 1000
 # and is branched on `is_cloud` upstream of any version check.
 _MIN_DC_VERSION_FOR_REST_SPACE_PERMISSIONS: tuple[int, int] = (9, 1)
 
+# Atlassian's documented Confluence DC endpoint for build information,
+# under the "Server Information" REST API group. Returns a JSON object
+# whose top-level `version` field is the upstream Confluence version
+# (e.g. "10.2.10"). Confirmed present in the v8.4, v9.3, and v10.x
+# DC REST API references; we previously probed the Jira-style
+# `/rest/api/serverInfo` slug, which 404s on Confluence DC 10.x.
+_DC_SERVER_INFORMATION_PATH = "rest/api/server-information"
+
 
 class ConfluenceRateLimitError(Exception):
     pass
+
+
+class Confcloud77618Error(Exception):
+    """Signal to the perm-sync caller that the ancestor-restrictions
+    expand 404'd on a draft / outdated / trashed ancestor and the run
+    must restart with per-page restriction lookups."""
+
+    def __init__(self, url: str, body: str) -> None:
+        super().__init__(
+            f"CONFCLOUD-77618: ancestor-restrictions expand 404 from "
+            f"{url}: {body[:500]}"
+        )
+        self.url = url
+        self.body = body
 
 
 class ConfluenceRestSpacePermissionsNotAvailableError(Exception):
@@ -105,6 +136,15 @@ class ConfluenceRestSpacePermissionsNotAvailableError(Exception):
 
     Callers use this as a signal to fall back to the legacy JSON-RPC path.
     """
+
+
+def _is_confcloud_77618_response(response: requests.Response) -> bool:
+    """Body-signature match for the CONFCLOUD-77618 / CONFCLOUD-76424 404
+    so unrelated 404s still propagate."""
+    if response.status_code != 404:
+        return False
+    body = response.text
+    return any(sig in body for sig in _CONFCLOUD_77618_404_BODY_SIGNATURES)
 
 
 class OnyxConfluence:
@@ -141,7 +181,7 @@ class OnyxConfluence:
         self._url = url.rstrip("/")
         self._credentials_provider = credentials_provider
         self.scoped_token = scoped_token
-        self.redis_client: Redis | None = None
+        self.redis_client: TenantRedisClient | None = None
         self.static_credentials: dict[str, Any] | None = None
         if self._credentials_provider.is_dynamic():
             self.redis_client = get_redis_client(
@@ -172,10 +212,10 @@ class OnyxConfluence:
             else None
         )
 
-        # Cached result of /rest/api/serverInfo, populated on first
-        # `get_server_version()` call. _server_version_probed=True with
-        # _server_version=None means "we tried and the probe failed", so
-        # we don't keep retrying every space-permissions sync.
+        # Cached result of the server-information probe, populated on
+        # first `get_server_version()` call. _server_version_probed=True
+        # with _server_version=None means "we tried and the probe
+        # failed", so we don't keep retrying every space-permissions sync.
         self._server_version: tuple[int, int] | None = None
         self._server_version_probed: bool = False
 
@@ -197,9 +237,8 @@ class OnyxConfluence:
 
         # dynamic credentials need locking
         # check redis first, then fallback to the DB
-        credential_raw = self.redis_client.get(self.credential_key)
-        if credential_raw is not None:
-            credential_bytes = cast(bytes, credential_raw)
+        credential_bytes = self.redis_client.get(self.credential_key)
+        if credential_bytes is not None:
             credential_str = credential_bytes.decode("utf-8")
             credential_json: dict[str, Any] = json.loads(credential_str)
         else:
@@ -285,7 +324,13 @@ class OnyxConfluence:
         limit: int,
         space_keys: list[str] | None,
     ) -> Iterator[dict[str, Any]]:
-        """Internal helper to paginate through spaces for a specific API endpoint."""
+        """Paginate spaces. Server stops on missing ``_links.next``
+        (and empty ``results``, defensively). Don't stop on
+        ``len(results) < limit``: ``/rest/api/space`` on DC caps at
+        ``DefaultRestSpaceManager.MAX_SIZE`` (#4129). ``start`` is
+        re-derived locally; Confluence under-counts it on capped pages
+        and CONFSERVER-95272/-95312 returns records past the true end.
+        """
         start = 0
         url = self._build_spaces_url(
             is_v2, base_url, limit, space_keys, start if not is_v2 else None
@@ -302,11 +347,13 @@ class OnyxConfluence:
 
             yield from results
 
+            next_link = data.get("_links", {}).get("next", "")
+            if not next_link:
+                return
+
             if is_v2:
-                url = data.get("_links", {}).get("next", "")
+                url = next_link
             else:
-                if len(results) < limit:
-                    return
                 start += len(results)
                 url = self._build_spaces_url(is_v2, base_url, limit, space_keys, start)
 
@@ -661,6 +708,16 @@ class OnyxConfluence:
                     )
                     continue
 
+                # CONFCLOUD-77618 / 76424: typed signal so the perm-sync
+                # caller can restart in per-page restriction-fetch mode.
+                if (
+                    _ANCESTOR_RESTRICTIONS_EXPAND_PREFIX in url_suffix
+                    and _is_confcloud_77618_response(raw_response)
+                ):
+                    raise Confcloud77618Error(
+                        url=url_suffix, body=raw_response.text
+                    ) from e
+
                 if raw_response.status_code in _SERVER_ERROR_CODES:
                     # Try reducing the page size -- Confluence often times out
                     # on large result sets (especially Cloud 504s).
@@ -687,12 +744,10 @@ class OnyxConfluence:
                     if not self._is_cloud:
                         initial_start = get_start_param_from_url(url_suffix)
                         # this will just yield the successful items from the batch
-                        new_url_suffix = (
-                            yield from self._try_one_by_one_for_paginated_url(
-                                url_suffix,
-                                initial_start=initial_start,
-                                limit=current_limit,
-                            )
+                        new_url_suffix = yield from self._try_one_by_one_for_paginated_url(
+                            url_suffix,
+                            initial_start=initial_start,
+                            limit=current_limit,
                         )
                         # this means we ran into an empty page
                         if new_url_suffix is None:
@@ -739,53 +794,29 @@ class OnyxConfluence:
             # Yield the results individually.
             results = cast(list[dict[str, Any]], next_response.get("results", []))
 
-            # Note 1:
-            # Make sure we don't update the start by more than the amount
-            # of results we were able to retrieve. The Confluence API has a
-            # weird behavior where if you pass in a limit that is too large for
-            # the configured server, it will artificially limit the amount of
-            # results returned BUT will not apply this to the start parameter.
-            # This will cause us to miss results.
-            #
-            # Note 2:
-            # We specifically perform manual yielding (i.e., `for x in xs: yield x`) as opposed to using a `yield from xs`
-            # because we *have to call the `next_page_callback`* prior to yielding the last element!
-            #
-            # If we did:
-            #
-            # ```py
-            # yield from results
-            # if next_page_callback:
-            #   next_page_callback(url_suffix)
-            # ```
-            #
-            # then the logic would fail since the iterator would finish (and the calling scope would exit out of its driving
-            # loop) prior to the callback being called.
-
+            # #4129: DC silently caps page size and under-counts the
+            # ``start`` it embeds in ``_links.next``; re-derive it
+            # ourselves. Manual yielding (not ``yield from``) so we can
+            # fire ``next_page_callback`` before the last yield --
+            # otherwise the iterator may never resume.
             old_url_suffix = url_suffix
-            updated_start = get_start_param_from_url(old_url_suffix)
+            next_start = get_start_param_from_url(old_url_suffix) + len(results)
             url_suffix = cast(str, next_response.get("_links", {}).get("next", ""))
             if url_suffix and current_limit != limit:
                 url_suffix = update_param_in_path(
                     url_suffix, "limit", str(current_limit)
                 )
-            for i, result in enumerate(results):
-                updated_start += 1
-                if url_suffix and next_page_callback and i == len(results) - 1:
-                    # update the url if we're on the last result in the page
-                    if not self._is_cloud:
-                        # If confluence claims there are more results, we update the start param
-                        # based on how many results were returned and try again.
-                        url_suffix = update_param_in_path(
-                            url_suffix, "start", str(updated_start)
-                        )
-                    # notify the caller of the new url
-                    next_page_callback(url_suffix)
+            if url_suffix and not self._is_cloud and results:
+                url_suffix = update_param_in_path(url_suffix, "start", str(next_start))
 
-                elif force_offset_pagination and i == len(results) - 1:
-                    url_suffix = update_param_in_path(
-                        old_url_suffix, "start", str(updated_start)
-                    )
+            for i, result in enumerate(results):
+                if i == len(results) - 1:
+                    if url_suffix and next_page_callback:
+                        next_page_callback(url_suffix)
+                    elif force_offset_pagination:
+                        url_suffix = update_param_in_path(
+                            old_url_suffix, "start", str(next_start)
+                        )
 
                 yield result
 
@@ -802,6 +833,24 @@ class OnyxConfluence:
     def build_cql_url(self, cql: str, expand: str | None = None) -> str:
         expand_string = f"&expand={expand}" if expand else ""
         return f"rest/api/content/search?cql={cql}{expand_string}"
+
+    def fetch_content_read_restrictions(
+        self,
+        content_id: str,
+    ) -> dict[str, Any] | None:
+        """Fetch a single page's restrictions via the dedicated
+        ``content/{id}/restriction/byOperation`` endpoint. Returns
+        ``None`` on 403/404 so unreadable ancestors (drafts owned by
+        another user) resolve as "no inheritable restriction here".
+        ``advanced_mode=True`` bypasses the rate-limit wrapper's 7x
+        403-retry loop which would otherwise burn ~70s per draft."""
+        path = f"rest/api/content/{quote(content_id, safe='')}/restriction/byOperation"
+        response: requests.Response = self.get(path, advanced_mode=True)
+        if response.status_code in (403, 404):
+            return None
+        response.raise_for_status()
+        body = response.json()
+        return cast(dict[str, Any], body or {})
 
     def paginated_cql_retrieval(
         self,
@@ -841,10 +890,8 @@ class OnyxConfluence:
         expand: str | None = None,
         limit: int | None = None,
     ) -> Iterator[dict[str, Any]]:
-        """
-        This function will paginate through the top level query first, then
-        paginate through all of the expansions.
-        """
+        """Paginate the top-level query, then each `_links.next` discovered
+        in the expansions."""
 
         def _traverse_and_update(data: dict | list) -> None:
             if isinstance(data, dict):
@@ -1067,15 +1114,21 @@ class OnyxConfluence:
         """Returns the (major, minor) version of the upstream Confluence
         Data Center instance, or None for Cloud or when the probe fails.
 
-        Probed once per OnyxConfluence instance via /rest/api/serverInfo
-        (the result is cached on the instance, including the negative
-        result, so a one-off network blip doesn't cause us to re-probe on
-        every space-permissions sync).
+        Probed once per OnyxConfluence instance via Atlassian's
+        documented "Server Information" endpoint
+        (/rest/api/server-information). The result is cached on the
+        instance, including the negative result, so a one-off network
+        blip doesn't cause us to re-probe on every space-permissions
+        sync.
 
         Used to gate features that only exist on newer DC versions, such
         as the REST space-permissions API introduced in DC 9.1.0
-        (CONFSERVER-78176). Most callers should prefer the higher-level
-        feature predicates (e.g. supports_rest_space_permissions) over
+        (CONFSERVER-78176). When the probe fails (returns None), callers
+        intentionally fall back to the legacy JSON-RPC path, on the
+        assumption that probe failure most often correlates with older
+        DC builds where the REST permissions API isn't available
+        anyway. Most callers should prefer the higher-level feature
+        predicates (e.g. supports_rest_space_permissions) over
         comparing the version tuple directly.
         """
         if self._is_cloud:
@@ -1095,7 +1148,7 @@ class OnyxConfluence:
 
     def _probe_server_version(self) -> tuple[int, int] | None:
         try:
-            info = self.get("rest/api/serverInfo")
+            info = self.get(_DC_SERVER_INFORMATION_PATH)
         except Exception as e:
             logger.warning("Failed to probe Confluence server version: %s", e)
             return None

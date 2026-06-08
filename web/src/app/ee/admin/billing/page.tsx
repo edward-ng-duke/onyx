@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import * as SettingsLayouts from "@/layouts/settings-layouts";
+import { SettingsLayouts } from "@opal/layouts";
 import BillingInformationPage from "./BillingInformationPage";
 import { SvgCreditCard } from "@opal/icons";
 

@@ -102,7 +102,7 @@ jobs:
     env:
       REGISTRY_IMAGE: onyxdotapp/sandbox
     steps:
-      - uses: runs-on/action@742bf56072eb4845a0f94b3394673e4903c90ff0
+      - uses: runs-on/action@d141ef83eb66d096ce8afc767e09115a65c63b60
 
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -125,7 +125,7 @@ jobs:
 
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # ratchet:docker/metadata-action@v6.0.0
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9
         with:
           images: ${{ env.REGISTRY_IMAGE }}
           flavor: |
@@ -142,10 +142,10 @@ jobs:
 
       - name: Build and push AMD64
         id: build
-        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # ratchet:docker/build-push-action@v7
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf
         with:
-          context: ./backend/onyx/server/features/build/sandbox/kubernetes/docker
-          file: ./backend/onyx/server/features/build/sandbox/kubernetes/docker/Dockerfile
+          context: ./backend/onyx/server/features/build/sandbox/image
+          file: ./backend/onyx/server/features/build/sandbox/image/Dockerfile
           platforms: linux/amd64
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: |
@@ -172,7 +172,7 @@ jobs:
     env:
       REGISTRY_IMAGE: onyxdotapp/sandbox
     steps:
-      - uses: runs-on/action@742bf56072eb4845a0f94b3394673e4903c90ff0
+      - uses: runs-on/action@d141ef83eb66d096ce8afc767e09115a65c63b60
 
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
@@ -195,7 +195,7 @@ jobs:
 
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # ratchet:docker/metadata-action@v6.0.0
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9
         with:
           images: ${{ env.REGISTRY_IMAGE }}
           flavor: |
@@ -212,10 +212,10 @@ jobs:
 
       - name: Build and push ARM64
         id: build
-        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # ratchet:docker/build-push-action@v7
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf
         with:
-          context: ./backend/onyx/server/features/build/sandbox/kubernetes/docker
-          file: ./backend/onyx/server/features/build/sandbox/kubernetes/docker/Dockerfile
+          context: ./backend/onyx/server/features/build/sandbox/image
+          file: ./backend/onyx/server/features/build/sandbox/image/Dockerfile
           platforms: linux/arm64
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: |
@@ -241,7 +241,7 @@ jobs:
     env:
       REGISTRY_IMAGE: onyxdotapp/sandbox
     steps:
-      - uses: runs-on/action@742bf56072eb4845a0f94b3394673e4903c90ff0
+      - uses: runs-on/action@d141ef83eb66d096ce8afc767e09115a65c63b60
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37
@@ -268,7 +268,7 @@ jobs:
 
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # ratchet:docker/metadata-action@v6.0.0
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9
         with:
           images: ${{ env.REGISTRY_IMAGE }}
           flavor: |

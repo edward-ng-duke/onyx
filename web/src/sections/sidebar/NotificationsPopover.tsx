@@ -7,16 +7,16 @@ import { track, AnalyticsEvent } from "@/lib/analytics";
 import type { Notification as NotificationData } from "@/lib/notifications/interfaces";
 import { NotificationType } from "@/lib/notifications/interfaces";
 import { getNotificationIcon } from "@/lib/notifications";
-import { timeAgo } from "@/lib/time";
+import { timeAgo } from "@opal/time";
 import useNotifications from "@/hooks/useNotifications";
 import {
   SvgCheckAll,
   SvgNotificationBubble,
   SvgCheckSquare,
   SvgChevronLeft,
+  SvgSimpleLoader,
 } from "@opal/icons";
 import { Button, Divider, LineItemButton, Text } from "@opal/components";
-import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
 import { Section } from "@/layouts/general-layouts";
 import { IllustrationContent } from "@opal/layouts";
 import { SvgEmpty } from "@opal/illustrations";
@@ -171,6 +171,9 @@ export default function NotificationsPopover({
         return;
       }
 
+      if (!notification.dismissed) {
+        handleDismiss(notification.id);
+      }
       onNavigate();
       router.push(link as Route);
     },
@@ -232,13 +235,13 @@ export default function NotificationsPopover({
       </Section>
 
       {isLoading ? (
-        <div className="h-[var(--notifications-popover)]">
+        <div className="h-(--notifications-popover)">
           <Section>
-            <SimpleLoader />
+            <SvgSimpleLoader />
           </Section>
         </div>
       ) : !notifications || notifications.length === 0 ? (
-        <div className="h-[var(--notifications-popover)]">
+        <div className="h-(--notifications-popover)">
           <Section>
             <IllustrationContent
               title={t("empty")}
@@ -247,7 +250,7 @@ export default function NotificationsPopover({
           </Section>
         </div>
       ) : (
-        <div className="max-h-[var(--notifications-popover)] overflow-y-auto flex flex-col gap-1">
+        <div className="max-h-(--notifications-popover) overflow-y-auto flex flex-col gap-1">
           {newNotifications.length > 0 && (
             <>
               <Divider title={t("dividerNew")} />

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { CCPairStatus } from "@/components/Status";
-import { timeAgo } from "@/lib/time";
+import { timeAgo } from "@opal/time";
 import {
   ValidSources,
   ConnectorIndexingStatusLiteResponse,
@@ -30,7 +30,8 @@ import {
 import { Tooltip } from "@opal/components";
 import { SourceIcon } from "@/components/SourceIcon";
 import { getSourceDisplayName } from "@/lib/sources";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
+import { useTierAtLeast } from "@/hooks/useTierAtLeast";
+import { Tier } from "@/interfaces/settings";
 import { ConnectorCredentialPairStatus } from "../../connector/[ccPairId]/types";
 import { PageSelector } from "@/components/PageSelector";
 import { ConnectorStaggeredSkeleton } from "./ConnectorRowSkeleton";
@@ -75,13 +76,13 @@ function SummaryRow({
   isOpen: boolean;
   onToggle: () => void;
 }) {
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
+  const businessTier = useTierAtLeast(Tier.BUSINESS);
   const t = useTranslations("admin.indexing.status.table");
 
   return (
     <TableRow
       onClick={onToggle}
-      className="border-border dark:hover:bg-neutral-800 dark:border-neutral-700 group hover:bg-background-settings-hover/20 bg-background-sidebar py-4 rounded-sm !border cursor-pointer"
+      className="border-border dark:hover:bg-neutral-800 dark:border-neutral-700 group hover:bg-background-settings-hover/20 bg-background-sidebar py-4 rounded-xs border! cursor-pointer"
     >
       <TableCell>
         <div className="text-xl flex items-center truncate ellipsis gap-x-2 font-semibold">
@@ -113,7 +114,7 @@ function SummaryRow({
         </p>
       </TableCell>
 
-      {isPaidEnterpriseFeaturesEnabled && (
+      {businessTier && (
         <TableCell>
           <div className="text-sm text-neutral-500 dark:text-neutral-300">
             {t("publicConnectors")}
@@ -148,7 +149,7 @@ function ConnectorRow({
   isEditable: boolean;
 }) {
   const router = useRouter();
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
+  const businessTier = useTierAtLeast(Tier.BUSINESS);
   const t = useTranslations("admin.indexing.status.table");
 
   const connectorUrl = `/admin/connector/${ccPairsIndexingStatus.cc_pair_id}`;
@@ -163,8 +164,8 @@ function ConnectorRow({
   border border-border dark:border-neutral-700
           hover:bg-accent-background ${
             invisible
-              ? "invisible !h-0 !-mb-10 !border-none"
-              : "!border border-border dark:border-neutral-700"
+              ? "invisible h-0! -mb-10! border-none!"
+              : "border! border-border dark:border-neutral-700"
           }  w-full cursor-pointer relative `}
       onClick={handleRowClick}
     >
@@ -187,7 +188,7 @@ function ConnectorRow({
           lastIndexAttemptStatus={ccPairsIndexingStatus.last_status}
         />
       </TableCell>
-      {isPaidEnterpriseFeaturesEnabled && (
+      {businessTier && (
         <TableCell>
           {ccPairsIndexingStatus.access_type === "public" ? (
             <Badge variant={isEditable ? "success" : "default"} icon={FiUnlock}>
@@ -230,7 +231,7 @@ function FederatedConnectorRow({
   invisible?: boolean;
 }) {
   const router = useRouter();
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
+  const businessTier = useTierAtLeast(Tier.BUSINESS);
   const t = useTranslations("admin.indexing.status.table");
 
   const federatedUrl = `/admin/federated/${federatedConnector.id}`;
@@ -245,8 +246,8 @@ function FederatedConnectorRow({
   border border-border dark:border-neutral-700
           hover:bg-accent-background ${
             invisible
-              ? "invisible !h-0 !-mb-10 !border-none"
-              : "!border border-border dark:border-neutral-700"
+              ? "invisible h-0! -mb-10! border-none!"
+              : "border! border-border dark:border-neutral-700"
           }  w-full cursor-pointer relative `}
       onClick={handleRowClick}
     >
@@ -257,7 +258,7 @@ function FederatedConnectorRow({
       <TableCell>
         <Badge variant="success">{t("indexed")}</Badge>
       </TableCell>
-      {isPaidEnterpriseFeaturesEnabled && (
+      {businessTier && (
         <TableCell>
           <Badge variant="secondary" icon={FiRefreshCw}>
             {t("federatedAccess")}
@@ -293,7 +294,7 @@ export function CCPairIndexingStatusTable({
   onPageChange: (source: ValidSources, newPage: number) => void;
   sourceLoadingStates?: Record<ValidSources, boolean>;
 }) {
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
+  const businessTier = useTierAtLeast(Tier.BUSINESS);
   const t = useTranslations("admin.indexing.status.table");
 
   return (
@@ -325,9 +326,7 @@ export function CCPairIndexingStatusTable({
             <TableRow className="border-none">
               <TableCell
                 colSpan={
-                  isPaidEnterpriseFeaturesEnabled
-                    ? NUMBER_OF_COLUMNS
-                    : NUMBER_OF_COLUMNS - 1
+                  businessTier ? NUMBER_OF_COLUMNS : NUMBER_OF_COLUMNS - 1
                 }
                 className="h-4 p-0"
               />
@@ -349,7 +348,7 @@ export function CCPairIndexingStatusTable({
                       <TableHead>{t("columnName")}</TableHead>
                       <TableHead>{t("columnLastIndexed")}</TableHead>
                       <TableHead>{t("columnStatus")}</TableHead>
-                      {isPaidEnterpriseFeaturesEnabled && (
+                      {businessTier && (
                         <TableHead>{t("columnPermissionsAccess")}</TableHead>
                       )}
                       <TableHead>{t("columnTotalDocs")}</TableHead>
@@ -412,7 +411,7 @@ export function CCPairIndexingStatusTable({
                             {isLastDummyRow ? (
                               <TableCell
                                 colSpan={
-                                  isPaidEnterpriseFeaturesEnabled
+                                  businessTier
                                     ? NUMBER_OF_COLUMNS
                                     : NUMBER_OF_COLUMNS - 1
                                 }
@@ -427,9 +426,7 @@ export function CCPairIndexingStatusTable({
                                 <TableCell className="h-[56px]"></TableCell>
                                 <TableCell></TableCell>
                                 <TableCell></TableCell>
-                                {isPaidEnterpriseFeaturesEnabled && (
-                                  <TableCell></TableCell>
-                                )}
+                                {businessTier && <TableCell></TableCell>}
                                 <TableCell></TableCell>
                                 <TableCell></TableCell>
                               </>
@@ -443,9 +440,7 @@ export function CCPairIndexingStatusTable({
                   <TableRow className="border-l border-r border-b border-border dark:border-neutral-700">
                     <TableCell
                       colSpan={
-                        isPaidEnterpriseFeaturesEnabled
-                          ? NUMBER_OF_COLUMNS
-                          : NUMBER_OF_COLUMNS - 1
+                        businessTier ? NUMBER_OF_COLUMNS : NUMBER_OF_COLUMNS - 1
                       }
                     >
                       <div className="flex justify-center">

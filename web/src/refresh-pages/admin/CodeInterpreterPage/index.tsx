@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import * as SettingsLayouts from "@/layouts/settings-layouts";
+import { SettingsLayouts } from "@opal/layouts";
 import {
   SvgArrowExchange,
   SvgCheckCircle,
@@ -10,6 +10,7 @@ import {
   SvgTerminal,
   SvgUnplug,
   SvgXOctagon,
+  SvgSimpleLoader,
 } from "@opal/icons";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
 import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
@@ -18,7 +19,6 @@ import { Button, SelectCard } from "@opal/components";
 import { Card, Content, ContentAction } from "@opal/layouts";
 import { Disabled, Hoverable } from "@opal/core";
 import Text from "@/refresh-components/texts/Text";
-import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
 import ConfirmationModalLayout from "@/refresh-components/layouts/ConfirmationModalLayout";
 import useCodeInterpreter from "@/hooks/useCodeInterpreter";
 import { updateCodeInterpreter } from "@/refresh-pages/admin/CodeInterpreterPage/svc";
@@ -44,7 +44,7 @@ function CheckingStatus() {
       <Text mainUiAction text03>
         {t("checking")}
       </Text>
-      <SimpleLoader />
+      <SvgSimpleLoader />
     </Section>
   );
 }
@@ -63,8 +63,8 @@ function ConnectionStatus({ healthy, isLoading }: ConnectionStatusProps) {
   const label = healthy ? t("connected") : t("connectionLost");
   const Icon = healthy ? SvgCheckCircle : SvgXOctagon;
   const iconColor = healthy
-    ? "!text-status-success-05"
-    : "!text-status-error-05";
+    ? "text-status-success-05!"
+    : "text-status-error-05!";
 
   return (
     <div className="p-2">

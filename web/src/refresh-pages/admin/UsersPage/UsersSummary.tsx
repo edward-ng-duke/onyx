@@ -9,6 +9,9 @@ import Text from "@/refresh-components/texts/Text";
 import Link from "next/link";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
 import { useTranslations } from "next-intl";
+import { useAuthTypeMetadata } from "@/hooks/useAuthTypeMetadata";
+import { AuthType } from "@/lib/constants";
+import InviteOnlyCard from "./InviteOnlyCard";
 
 // ---------------------------------------------------------------------------
 // Stats cell — number + label + hover filter icon
@@ -87,7 +90,7 @@ function ScimCard() {
 }
 
 // ---------------------------------------------------------------------------
-// Stats bar — layout varies by SCIM status
+// Stats bar — layout varies by SCIM / invite-only status
 // ---------------------------------------------------------------------------
 
 type UsersSummaryProps = {
@@ -110,6 +113,11 @@ export default function UsersSummary({
   onFilterRequests,
 }: UsersSummaryProps) {
   const t = useTranslations("admin.users");
+  const { authTypeMetadata } = useAuthTypeMetadata();
+  const showInviteOnly =
+    !showScim &&
+    (authTypeMetadata.authType === AuthType.BASIC ||
+      authTypeMetadata.authType === AuthType.GOOGLE_OAUTH);
   const showRequests = requests !== null && requests > 0;
 
   const statsCard = (
@@ -136,7 +144,13 @@ export default function UsersSummary({
     </Card>
   );
 
-  if (showScim) {
+  const rightCard = showScim ? (
+    <ScimCard />
+  ) : showInviteOnly ? (
+    <InviteOnlyCard />
+  ) : null;
+
+  if (rightCard) {
     return (
       <Section
         flexDirection="row"
@@ -145,37 +159,10 @@ export default function UsersSummary({
         gap={0.5}
       >
         {statsCard}
-        <ScimCard />
+        {rightCard}
       </Section>
     );
   }
 
-  // No SCIM — each stat gets its own card
-  return (
-    <Section flexDirection="row" gap={0.5}>
-      <Card padding={0.5}>
-        <StatCell
-          value={activeUsers}
-          label={t("activeUsers")}
-          onFilter={onFilterActive}
-        />
-      </Card>
-      <Card padding={0.5}>
-        <StatCell
-          value={pendingInvites}
-          label={t("pendingInvites")}
-          onFilter={onFilterInvites}
-        />
-      </Card>
-      {showRequests && (
-        <Card padding={0.5}>
-          <StatCell
-            value={requests}
-            label={t("requestsToJoin")}
-            onFilter={onFilterRequests}
-          />
-        </Card>
-      )}
-    </Section>
-  );
+  return statsCard;
 }

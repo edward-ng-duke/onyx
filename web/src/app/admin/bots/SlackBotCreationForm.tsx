@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { SlackTokensForm } from "./SlackTokensForm";
-import * as SettingsLayouts from "@/layouts/settings-layouts";
+import { SettingsLayouts } from "@opal/layouts";
 import { SvgSlack } from "@opal/logos";
 
 export function NewSlackBotForm() {

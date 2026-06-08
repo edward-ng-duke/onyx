@@ -59,6 +59,7 @@ from onyx.configs.app_configs import WEB_DOMAIN
 from onyx.configs.constants import AuthType
 from onyx.configs.constants import POSTGRES_WEB_APP_NAME
 from onyx.db.engine.async_sql_engine import get_sqlalchemy_async_engine
+from onyx.db.engine.async_sql_engine import reset_sqlalchemy_async_engine
 from onyx.db.engine.connection_warmup import warm_up_connections
 from onyx.db.engine.sql_engine import get_session_with_current_tenant
 from onyx.db.engine.sql_engine import SqlEngine
@@ -100,6 +101,9 @@ from onyx.server.features.persona.api import admin_router as admin_persona_route
 from onyx.server.features.persona.api import agents_router
 from onyx.server.features.persona.api import basic_router as persona_router
 from onyx.server.features.projects.api import router as projects_router
+from onyx.server.features.search.api import router as search_api_router
+from onyx.server.features.skill.api import admin_router as skill_admin_router
+from onyx.server.features.skill.api import user_router as skill_router
 from onyx.server.features.tool.api import admin_router as admin_tool_router
 from onyx.server.features.tool.api import router as tool_router
 from onyx.server.features.user_oauth_token.api import router as user_oauth_token_router
@@ -158,6 +162,7 @@ from onyx.utils.middleware import add_onyx_request_id_middleware
 from onyx.utils.telemetry import get_or_generate_uuid
 from onyx.utils.telemetry import optional_telemetry
 from onyx.utils.telemetry import RecordType
+from onyx.utils.variable_functionality import fetch_ee_implementation_or_noop
 from onyx.utils.variable_functionality import fetch_versioned_implementation
 from onyx.utils.variable_functionality import global_version
 from onyx.utils.variable_functionality import set_is_ee_based_on_env_variable
@@ -340,6 +345,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
         },
     )
 
+    # Self-hosted license seat + expiry gauges on /metrics (EE-only, no-op on CE)
+    fetch_ee_implementation_or_noop(
+        "onyx.server.metrics.license_metrics", "register_license_metrics"
+    )()
+
     verify_auth = fetch_versioned_implementation(
         "onyx.auth.users", "verify_auth_setting"
     )
@@ -393,7 +403,23 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
 
         stop_periodic_poller()
 
-    SqlEngine.reset_engine()
+    # Dispose every Postgres connection pool we opened in startup. Order:
+    # async first (its disposal is awaitable and can block), then the two
+    # sync engines. Each dispose() is wrapped so one failure cannot leak the
+    # remaining pools — this path runs on every uvicorn ``--reload`` worker
+    # shutdown, and any leaked pool accumulates until PG hits max_connections.
+    try:
+        await reset_sqlalchemy_async_engine()
+    except Exception:
+        logger.exception("Failed to dispose async SQLAlchemy engine on shutdown")
+    try:
+        SqlEngine.reset_engine()
+    except Exception:
+        logger.exception("Failed to dispose sync SQLAlchemy engine on shutdown")
+    try:
+        SqlEngine.reset_readonly_engine()
+    except Exception:
+        logger.exception("Failed to dispose readonly SQLAlchemy engine on shutdown")
 
     if AUTH_RATE_LIMITING_ENABLED:
         await close_auth_limiter()
@@ -475,6 +501,7 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     include_router_with_global_prefix_prepended(application, build_router)
     include_router_with_global_prefix_prepended(application, document_set_router)
     include_router_with_global_prefix_prepended(application, hierarchy_router)
+    include_router_with_global_prefix_prepended(application, search_api_router)
     include_router_with_global_prefix_prepended(application, search_settings_router)
     include_router_with_global_prefix_prepended(
         application, slack_bot_management_router
@@ -522,6 +549,8 @@ def get_application(lifespan_override: Lifespan | None = None) -> FastAPI:
     include_router_with_global_prefix_prepended(application, federated_router)
     include_router_with_global_prefix_prepended(application, mcp_router)
     include_router_with_global_prefix_prepended(application, mcp_admin_router)
+    include_router_with_global_prefix_prepended(application, skill_router)
+    include_router_with_global_prefix_prepended(application, skill_admin_router)
 
     include_router_with_global_prefix_prepended(application, pat_router)
     include_router_with_global_prefix_prepended(application, captcha_router)

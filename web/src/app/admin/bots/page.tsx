@@ -5,7 +5,7 @@ import { ThreeDotsLoader } from "@/components/Loading";
 import { InstantSSRAutoRefresh } from "@/components/SSRAutoRefresh";
 import { SlackBotTable } from "./SlackBotTable";
 import { useSlackBots } from "./[bot-id]/hooks";
-import * as SettingsLayouts from "@/layouts/settings-layouts";
+import { SettingsLayouts } from "@opal/layouts";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
 import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
 import { Button } from "@opal/components";

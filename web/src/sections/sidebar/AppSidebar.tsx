@@ -4,7 +4,7 @@ import { useCallback, memo, useMemo, useState, useEffect, useRef } from "react";
 import useNotifications from "@/hooks/useNotifications";
 import { useRouter } from "next/navigation";
 import { useSettingsContext } from "@/providers/SettingsProvider";
-import { MinimalPersonaSnapshot } from "@/app/admin/agents/interfaces";
+import { MinimalAgent } from "@/lib/agents/types";
 import Text from "@/refresh-components/texts/Text";
 import ChatButton from "@/sections/sidebar/ChatButton";
 import AgentButton from "@/sections/sidebar/AgentButton";
@@ -32,15 +32,21 @@ import {
 import SidebarSection from "@/sections/sidebar/SidebarSection";
 import useChatSessions from "@/hooks/useChatSessions";
 import { useProjects } from "@/lib/hooks/useProjects";
-import { useAgents, useCurrentAgent, usePinnedAgents } from "@/hooks/useAgents";
+import {
+  useAgents,
+  useCurrentAgent,
+  usePinnedAgents,
+} from "@/lib/agents/hooks";
 import ProjectFolderButton from "@/sections/sidebar/ProjectFolderButton";
-import CreateProjectModal from "@/components/modals/CreateProjectModal";
-import MoveCustomAgentChatModal from "@/components/modals/MoveCustomAgentChatModal";
+import CreateProjectModal from "@/sections/modals/CreateProjectModal";
+import MoveCustomAgentChatModal from "@/sections/modals/MoveCustomAgentChatModal";
 import { useProjectsContext } from "@/providers/ProjectsContext";
 import { removeChatSessionFromProject } from "@/app/app/projects/projectsService";
 import type { Project } from "@/app/app/projects/projectsService";
 import * as SidebarLayouts from "@/layouts/sidebar-layouts";
-import { useSidebarFolded } from "@/layouts/sidebar-layouts";
+import { useSidebarFolded, useSidebarState } from "@/layouts/sidebar-layouts";
+import { RootLayout } from "@opal/layouts";
+import SidebarWrapper from "@/sections/sidebar/SidebarWrapper";
 import { Button as OpalButton } from "@opal/components";
 import { cn } from "@opal/utils";
 import {
@@ -81,9 +87,9 @@ import { useTranslations } from "next-intl";
 // Visible-agents = pinned-agents + current-agent (if current-agent not in pinned-agents)
 // OR Visible-agents = pinned-agents (if current-agent in pinned-agents)
 function buildVisibleAgents(
-  pinnedAgents: MinimalPersonaSnapshot[],
-  currentAgent: MinimalPersonaSnapshot | null
-): [MinimalPersonaSnapshot[], boolean] {
+  pinnedAgents: MinimalAgent[],
+  currentAgent: MinimalAgent | null
+): [MinimalAgent[], boolean] {
   /* NOTE: The unified agent (id = 0) is not visible in the sidebar,
   so we filter it out. */
   if (!currentAgent)
@@ -340,7 +346,7 @@ const MemoizedAppSidebarInner = memo(function AppSidebarInner() {
         (agentId) => agentId === over.id
       );
 
-      let newPinnedAgents: MinimalPersonaSnapshot[];
+      let newPinnedAgents: MinimalAgent[];
 
       if (currentAgent && !currentAgentIsPinned) {
         // This is the case in which the user is dragging the UNPINNED agent and moving it to somewhere else in the list.
@@ -647,7 +653,7 @@ const MemoizedAppSidebarInner = memo(function AppSidebarInner() {
       <AnimatePresence>
         {showIntroAnimation && (
           <motion.div
-            className="fixed inset-0 z-[9999]"
+            className="fixed inset-0 z-9999"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -747,10 +753,25 @@ const MemoizedAppSidebarInner = memo(function AppSidebarInner() {
   );
 });
 
-export default function AppSidebar() {
+function AppSidebarShell() {
+  const contentFolded = useSidebarFolded();
+  const { setFolded } = useSidebarState();
+  const toggle = useCallback(() => setFolded((prev) => !prev), [setFolded]);
+
   return (
-    <SidebarLayouts.Root foldable>
+    <SidebarWrapper folded={contentFolded} onFoldClick={toggle}>
       <MemoizedAppSidebarInner />
-    </SidebarLayouts.Root>
+    </SidebarWrapper>
+  );
+}
+
+export default function AppSidebar() {
+  const { folded, setFolded } = useSidebarState();
+  const toggle = useCallback(() => setFolded((prev) => !prev), [setFolded]);
+
+  return (
+    <RootLayout.Sidebar folded={folded} onFoldToggle={toggle}>
+      <AppSidebarShell />
+    </RootLayout.Sidebar>
   );
 }

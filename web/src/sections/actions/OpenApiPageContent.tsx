@@ -350,7 +350,7 @@ export default function OpenApiPageContent() {
         />
       )}
 
-      <div className="flex-shrink-0 mb-4">
+      <div className="shrink-0 mb-4">
         <AdminListHeader
           hasItems={isOpenApiLoading || (openApiTools?.length ?? 0) > 0}
           searchQuery={searchQuery}

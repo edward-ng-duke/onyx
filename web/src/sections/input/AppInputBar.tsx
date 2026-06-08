@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import { useTranslations } from "next-intl";
 import LineItem from "@/refresh-components/buttons/LineItem";
-import { MinimalPersonaSnapshot } from "@/app/admin/agents/interfaces";
+import { MinimalAgent } from "@/lib/agents/types";
 import { InputPrompt } from "@/app/app/interfaces";
 import { FilterManager, LlmManager, useFederatedConnectors } from "@/lib/hooks";
 import usePromptShortcuts from "@/hooks/usePromptShortcuts";
@@ -18,7 +18,8 @@ import { useContentEditable } from "@/hooks/useContentEditable";
 import useFilter from "@/hooks/useFilter";
 import useCCPairs from "@/hooks/useCCPairs";
 import { MinimalOnyxDocument } from "@/lib/search/interfaces";
-import { ChatState } from "@/app/app/interfaces";
+import { ChatState, MAX_QUEUED_MESSAGES } from "@/app/app/interfaces";
+import { useQueuedMessageNavigation } from "@/hooks/useQueuedMessageNavigation";
 import { useForcedTools } from "@/lib/hooks/useForcedTools";
 import useAppFocus from "@/hooks/useAppFocus";
 import { getPastedFilesIfNoText } from "@/lib/clipboard";
@@ -52,22 +53,24 @@ import {
   SvgSearch,
   SvgStop,
   SvgX,
+  SvgSimpleLoader,
 } from "@opal/icons";
 import { Button, SelectButton } from "@opal/components";
-import Popover from "@/refresh-components/Popover";
-import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
+import { Popover } from "@opal/components";
 import { useQueryController } from "@/providers/QueryControllerProvider";
 import { Section } from "@/layouts/general-layouts";
-import Spacer from "@/refresh-components/Spacer";
+import { Spacer } from "@opal/components";
 import MicrophoneButton from "@/sections/input/MicrophoneButton";
 import Waveform from "@/components/voice/Waveform";
 import { useVoiceMode } from "@/providers/VoiceModeProvider";
 import { useVoiceStatus } from "@/hooks/useVoiceStatus";
 import {
   useCurrentQueuedMessages,
+  useCurrentLatestMessageRenderComplete,
   useChatSessionStore,
 } from "@/app/app/stores/useChatSessionStore";
 import QueuedMessageBar from "@/sections/input/QueuedMessageBar";
+import { handleInputNavKeys } from "@/sections/input/inputBarKeys";
 
 export interface AppInputBarHandle {
   reset: () => void;
@@ -84,7 +87,7 @@ export interface AppInputBarProps {
   availableContextTokens: number;
 
   // agents
-  selectedAgent: MinimalPersonaSnapshot | undefined;
+  selectedAgent: MinimalAgent | undefined;
 
   handleFileUpload: (files: File[]) => void;
   filterManager: FilterManager;
@@ -135,15 +138,13 @@ const AppInputBar = React.memo(
     );
     const setMutedRef = useRef<((muted: boolean) => void) | null>(null);
     const queuedMessages = useCurrentQueuedMessages();
+    const latestMessageRenderComplete = useCurrentLatestMessageRenderComplete();
     const enqueueCurrentMessage = useChatSessionStore(
       (state) => state.enqueueCurrentMessage
     );
     const removeCurrentQueuedMessage = useChatSessionStore(
       (state) => state.removeCurrentQueuedMessage
     );
-    const [highlightedQueueIndex, setHighlightedQueueIndex] = useState<
-      number | null
-    >(null);
     const { user, isAdmin } = useUser();
     const isAutoSending = useRef(false);
     const inputWrapperRef = useRef<HTMLDivElement>(null);
@@ -165,10 +166,20 @@ const AppInputBar = React.memo(
       tilePopover,
       dismissTilePopover,
       updateTileText,
+      expandTile,
     } = useContentEditable({
       initialContent: initialMessage,
       wrapperRef: inputWrapperRef,
       pasteTilesEnabled: user?.preferences?.paste_as_tile ?? false,
+    });
+
+    // Keyboard navigation + highlight state for the queued-message bar
+    // (shared with the Craft input bar).
+    const queueNav = useQueuedMessageNavigation({
+      messages: queuedMessages,
+      inputIsEmpty: !message,
+      onRemove: removeCurrentQueuedMessage,
+      onEdit: setMessage,
     });
 
     const filesWrapperRef = useRef<HTMLDivElement>(null);
@@ -304,14 +315,25 @@ const AppInputBar = React.memo(
 
     const prevChatStateRef = useRef(chatState);
     const prevAwaitingRef = useRef(awaitingPreferredSelection);
+    const prevRenderCompleteRef = useRef(latestMessageRenderComplete);
 
     useEffect(() => {
+      // "Ready" requires the backend to be idle AND the previous answer
+      // to have finished drawing on screen. Without the render-complete
+      // gate, a queued follow-up fires while the smooth-streaming
+      // typewriter is still flushing the prior answer.
       const wasReady =
-        prevChatStateRef.current === "input" && !prevAwaitingRef.current;
-      const isReady = chatState === "input" && !awaitingPreferredSelection;
+        prevChatStateRef.current === "input" &&
+        !prevAwaitingRef.current &&
+        prevRenderCompleteRef.current;
+      const isReady =
+        chatState === "input" &&
+        !awaitingPreferredSelection &&
+        latestMessageRenderComplete;
 
       prevChatStateRef.current = chatState;
       prevAwaitingRef.current = awaitingPreferredSelection;
+      prevRenderCompleteRef.current = latestMessageRenderComplete;
 
       if (!wasReady && isReady && queuedMessages.length > 0) {
         const nextMessage = queuedMessages[0]!.text;
@@ -324,19 +346,12 @@ const AppInputBar = React.memo(
     }, [
       chatState,
       awaitingPreferredSelection,
+      latestMessageRenderComplete,
       queuedMessages,
       removeCurrentQueuedMessage,
       stopTTS,
       onSubmit,
     ]);
-
-    useEffect(() => {
-      setHighlightedQueueIndex((prev) => {
-        if (prev === null) return null;
-        if (queuedMessages.length === 0) return null;
-        return Math.min(prev, queuedMessages.length - 1);
-      });
-    }, [queuedMessages]);
 
     // Animate attached files wrapper to its content height so CSS transitions
     // can interpolate between concrete pixel values (0px ↔ Npx).
@@ -532,7 +547,7 @@ const AppInputBar = React.memo(
           "flex justify-between items-center w-full",
           isSearchMode
             ? "opacity-0 p-0 h-0 overflow-hidden pointer-events-none"
-            : "opacity-100 p-1 h-[2.75rem] pointer-events-auto",
+            : "opacity-100 p-1 h-11 pointer-events-auto",
           "transition-all duration-150"
         )}
       >
@@ -698,7 +713,7 @@ const AppInputBar = React.memo(
             id="onyx-chat-input-send-button"
             icon={
               isClassifying
-                ? SimpleLoader
+                ? SvgSimpleLoader
                 : (chatState !== "input" || awaitingPreferredSelection) &&
                     message.trim()
                   ? SvgArrowUp
@@ -710,7 +725,7 @@ const AppInputBar = React.memo(
               const canSubmitNormally =
                 chatState === "input" && !awaitingPreferredSelection;
               if (!canSubmitNormally && message.trim()) {
-                if (queuedMessages.length < 5) {
+                if (queuedMessages.length < MAX_QUEUED_MESSAGES) {
                   enqueueCurrentMessage(message.trim());
                   clearMessage();
                 }
@@ -732,10 +747,10 @@ const AppInputBar = React.memo(
       <>
         <QueuedMessageBar
           messages={queuedMessages}
-          highlightedIndex={highlightedQueueIndex}
+          highlightedIndex={queueNav.highlightedIndex}
           awaitingPreferredSelection={awaitingPreferredSelection}
           onDiscard={removeCurrentQueuedMessage}
-          onHighlight={setHighlightedQueueIndex}
+          onHighlight={queueNav.setHighlightedIndex}
         />
         <Disabled disabled={disabled} allowClick>
           <div
@@ -814,7 +829,7 @@ const AppInputBar = React.memo(
                 <Popover.Anchor asChild>
                   <div
                     ref={inputWrapperRef}
-                    className="px-3 py-2 flex-1 flex h-[2.75rem] overflow-hidden"
+                    className="px-3 py-2 flex-1 flex h-11 overflow-hidden"
                   >
                     <div
                       ref={inputRef}
@@ -828,12 +843,12 @@ const AppInputBar = React.memo(
                       onCut={handleCut}
                       onMouseDown={handleTileMouseDown}
                       onClick={handleTileClick}
-                      onBlur={() => setHighlightedQueueIndex(null)}
+                      onBlur={() => queueNav.setHighlightedIndex(null)}
                       onKeyDownCapture={handleKeyDownForPromptShortcuts}
                       onInput={handleContentEditableInput}
                       onCompositionStart={handleCompositionStart}
                       onCompositionEnd={handleCompositionEnd}
-                      className="p-[2px] w-full h-full outline-none bg-transparent whitespace-pre-wrap break-words overflow-y-auto"
+                      className="p-[2px] w-full h-full outline-hidden bg-transparent whitespace-pre-wrap wrap-break-word overflow-y-auto"
                       tabIndex={disabled ? -1 : 0}
                       style={{
                         scrollbarWidth: "thin",
@@ -855,73 +870,10 @@ const AppInputBar = React.memo(
                       }
                       data-empty={!message ? "" : undefined}
                       onKeyDown={(event) => {
-                        if (handleTileKeyDown(event)) return;
-
-                        // Queue navigation mode
-                        if (highlightedQueueIndex !== null) {
-                          if (event.key === "Enter") {
-                            event.preventDefault();
-                            const text =
-                              queuedMessages[highlightedQueueIndex]!.text;
-                            removeCurrentQueuedMessage(highlightedQueueIndex);
-                            setMessage(text);
-                            setHighlightedQueueIndex(null);
-                            return;
-                          }
-                          if (event.key === "ArrowUp") {
-                            event.preventDefault();
-                            setHighlightedQueueIndex((prev) =>
-                              Math.max((prev ?? 0) - 1, 0)
-                            );
-                            return;
-                          }
-                          if (event.key === "ArrowDown") {
-                            event.preventDefault();
-                            setHighlightedQueueIndex((prev) => {
-                              const next = (prev ?? 0) + 1;
-                              if (next >= queuedMessages.length) {
-                                return null; // exit navigation mode
-                              }
-                              return next;
-                            });
-                            return;
-                          }
-                          if (
-                            event.key === "Delete" ||
-                            event.key === "Backspace"
-                          ) {
-                            event.preventDefault();
-                            removeCurrentQueuedMessage(highlightedQueueIndex);
-                            return;
-                          }
-                          if (event.key === "Escape") {
-                            event.preventDefault();
-                            setHighlightedQueueIndex(null);
-                            return;
-                          }
-                          if (
-                            event.key === "Shift" ||
-                            event.key === "Alt" ||
-                            event.key === "Control" ||
-                            event.key === "Meta" ||
-                            event.key === "Tab"
-                          ) {
-                            return;
-                          }
-                          // Any other key: exit navigation mode, let keypress proceed
-                          setHighlightedQueueIndex(null);
-                        }
-
-                        // Up arrow to enter navigation mode
                         if (
-                          event.key === "ArrowUp" &&
-                          !message &&
-                          queuedMessages.length > 0
-                        ) {
-                          event.preventDefault();
-                          setHighlightedQueueIndex(queuedMessages.length - 1);
+                          handleInputNavKeys(event, queueNav, handleTileKeyDown)
+                        )
                           return;
-                        }
 
                         // Enter to submit or queue (Shift+Enter falls through to browser default: inserts <br>)
                         if (
@@ -948,7 +900,7 @@ const AppInputBar = React.memo(
                             !disabled &&
                             !isClassifying &&
                             !hasUploadingFiles &&
-                            queuedMessages.length < 5
+                            queuedMessages.length < MAX_QUEUED_MESSAGES
                           ) {
                             enqueueCurrentMessage(message.trim());
                             clearMessage();
@@ -1008,7 +960,7 @@ const AppInputBar = React.memo(
                   <Button
                     disabled={!message || isClassifying || hasUploadingFiles}
                     id="onyx-chat-input-send-button"
-                    icon={isClassifying ? SimpleLoader : SvgSearch}
+                    icon={isClassifying ? SvgSimpleLoader : SvgSearch}
                     onClick={() => {
                       if (chatState == "streaming") {
                         stopGenerating();
@@ -1018,7 +970,7 @@ const AppInputBar = React.memo(
                     }}
                     prominence="tertiary"
                   />
-                  <Spacer horizontal rem={0.25} />
+                  <Spacer orientation="horizontal" rem={0.25} />
                 </Section>
               )}
             </div>
@@ -1045,6 +997,7 @@ const AppInputBar = React.memo(
                 tileElement={tilePopover.tile}
                 onDismiss={dismissTilePopover}
                 onTextChange={updateTileText}
+                onExpand={() => expandTile(tilePopover.tile)}
               />
             )}
           </div>

@@ -6,11 +6,10 @@ import type { ProjectFile } from "@/app/app/projects/projectsService";
 import { UserFileStatus } from "@/app/app/projects/projectsService";
 import { isImageFile } from "@/lib/utils";
 import { cn } from "@opal/utils";
-import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
-import { SvgFileText, SvgX } from "@opal/icons";
+import { SvgFileText, SvgX, SvgSimpleLoader } from "@opal/icons";
 import { Interactive, Hoverable } from "@opal/core";
 import { AttachmentItemLayout } from "@/layouts/general-layouts";
-import Spacer from "@/refresh-components/Spacer";
+import { Spacer } from "@opal/components";
 
 interface RemovableProps {
   onRemove?: () => void;
@@ -45,7 +44,7 @@ function Removable({ onRemove, children }: RemovableProps) {
                 "h-4 w-4",
                 "flex items-center justify-center",
                 "rounded-04 border border-border text-[11px]",
-                "bg-background-neutral-inverted-01 text-text-inverted-05 shadow-sm",
+                "bg-background-neutral-inverted-01 text-text-inverted-05 shadow-xs",
                 "pointer-events-auto",
                 "hover:opacity-90"
               )}
@@ -104,7 +103,7 @@ function ImageFileCard({
       >
         {!doneUploading || !imageUrl ? (
           <div className="h-full w-full flex items-center justify-center">
-            <SimpleLoader className={loaderSize} />
+            <SvgSimpleLoader className={loaderSize} />
           </div>
         ) : imgError ? (
           <div className="h-full w-full flex items-center justify-center">
@@ -187,10 +186,10 @@ export function FileCard({
         removeFile && doneUploading ? () => removeFile(file.id) : undefined
       }
     >
-      <div className="min-w-0 max-w-[12rem]">
+      <div className="min-w-0 max-w-48">
         <Interactive.Container border size="fit" width="full">
           <AttachmentItemLayout
-            icon={isProcessing ? SimpleLoader : SvgFileText}
+            icon={isProcessing ? SvgSimpleLoader : SvgFileText}
             title={file.name}
             description={
               isProcessing
@@ -200,7 +199,7 @@ export function FileCard({
                 : typeLabel
             }
           />
-          <Spacer horizontal rem={0.5} />
+          <Spacer orientation="horizontal" rem={0.5} />
         </Interactive.Container>
       </div>
     </Removable>

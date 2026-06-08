@@ -122,14 +122,13 @@ function TimeoutField({ spec }: TimeoutFieldProps) {
         max: MAX_TIMEOUT_SECONDS,
       })}
     >
-      <div className="[&_input]:!font-main-ui-mono [&_input::placeholder]:!font-main-ui-mono [&_input]:![appearance:textfield] [&_input::-webkit-outer-spin-button]:!appearance-none [&_input::-webkit-inner-spin-button]:!appearance-none w-full">
+      <div className="[&_input]:!font-main-ui-mono [&_input::placeholder]:!font-main-ui-mono [&_input]:[appearance:textfield]! [&_input::-webkit-outer-spin-button]:appearance-none! [&_input::-webkit-inner-spin-button]:appearance-none! w-full">
         <InputTypeInField
           name="timeout_seconds"
           type="number"
           placeholder={spec ? String(spec.default_timeout_seconds) : undefined}
           variant={isSubmitting ? "disabled" : undefined}
-          showClearButton={false}
-          rightSection={
+          rightChildren={
             spec?.default_timeout_seconds !== undefined &&
             values.timeout_seconds !== String(spec.default_timeout_seconds) ? (
               <Button
@@ -393,8 +392,8 @@ export default function HookFormModal({
                       name="api_key"
                       placeholder={
                         isEdit
-                          ? hook?.api_key_masked ??
-                            tForm("apiKeyEditPlaceholder")
+                          ? (hook?.api_key_masked ??
+                            tForm("apiKeyEditPlaceholder"))
                           : undefined
                       }
                       disabled={isSubmitting}

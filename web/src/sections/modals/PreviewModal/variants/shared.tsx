@@ -2,7 +2,6 @@ import { useTranslations } from "next-intl";
 import { Button } from "@opal/components";
 import { SvgDownload, SvgZoomIn, SvgZoomOut } from "@opal/icons";
 import Text from "@/refresh-components/texts/Text";
-import CopyIconButton from "@/refresh-components/buttons/CopyIconButton";
 import { Section } from "@/layouts/general-layouts";
 
 interface DownloadButtonProps {
@@ -21,17 +20,6 @@ export function DownloadButton({ fileUrl, fileName }: DownloadButtonProps) {
         tooltip={t("download")}
       />
     </a>
-  );
-}
-
-interface CopyButtonProps {
-  getText: () => string;
-}
-
-export function CopyButton({ getText }: CopyButtonProps) {
-  const t = useTranslations("modals.preview");
-  return (
-    <CopyIconButton getCopyText={getText} tooltip={t("copyContent")} size="sm" />
   );
 }
 

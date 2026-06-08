@@ -7,17 +7,21 @@ import type { FormikConfig } from "formik";
 import { cn } from "@opal/utils";
 import { markdown } from "@opal/utils";
 import { Interactive } from "@opal/core";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
-import { useAgents } from "@/hooks/useAgents";
+import { useTierAtLeast } from "@/hooks/useTierAtLeast";
+import { Tier } from "@/interfaces/settings";
+import { useAgents } from "@/lib/agents/hooks";
 import { useUserGroups } from "@/lib/hooks";
-import { LLMProviderView, ModelConfiguration } from "@/interfaces/llm";
+import type {
+  LLMProviderView,
+  ModelConfiguration,
+} from "@/lib/languageModels/types";
 import { Checkbox } from "@opal/components";
 import InputTypeInField from "@/refresh-components/form/InputTypeInField";
-import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
+import { InputTypeIn } from "@opal/components";
 import InputComboBox from "@/refresh-components/inputs/InputComboBox";
 import InputSelect from "@/refresh-components/inputs/InputSelect";
 import PasswordInputTypeInField from "@/refresh-components/form/PasswordInputTypeInField";
-import Switch from "@/refresh-components/inputs/Switch";
+import { Switch } from "@opal/components";
 import Text from "@/refresh-components/texts/Text";
 import { Button, LineItemButton } from "@opal/components";
 import { BaseLLMFormValues } from "@/sections/modals/languageModels/utils";
@@ -41,12 +45,12 @@ import {
   SvgUserManage,
   SvgUsers,
   SvgX,
+  SvgSimpleLoader,
 } from "@opal/icons";
 import SvgOnyxLogo from "@opal/logos/onyx-logo";
 import { Card, EmptyMessageCard } from "@opal/components";
 import { ContentAction } from "@opal/layouts";
 import AgentAvatar from "@/refresh-components/avatars/AgentAvatar";
-import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
 import useUsers from "@/hooks/useUsers";
 import { toast } from "@/hooks/useToast";
 import { UserRole } from "@/lib/types";
@@ -58,7 +62,7 @@ import { getProvider } from "@/lib/languageModels";
 export interface DisplayNameFieldProps {
   disabled?: boolean;
 }
-export function DisplayNameField({ disabled = false }: DisplayNameFieldProps) {
+export function DisplayNameField({ disabled }: DisplayNameFieldProps = {}) {
   const t = useTranslations("modals.llmConfig.shared");
   return (
     <InputPadder>
@@ -115,6 +119,14 @@ export function APIKeyField({
 
 // ─── APIBaseField ───────────────────────────────────────────────────────────
 
+/**
+ * Sentence appended to an API Base URL `subDescription` when Onyx is detected
+ * to be running inside a container — explains why the default uses
+ * `host.docker.internal`.
+ */
+export const CONTAINERIZED_HOST_NOTE =
+  "With Onyx running in a container, `host.docker.internal` acts like `localhost` inside the container.";
+
 export interface APIBaseFieldProps {
   optional?: boolean;
   subDescription?: string | RichStr;
@@ -152,7 +164,7 @@ export function ModelAccessField() {
   const { agents } = useAgents();
   const { data: userGroups, isLoading: userGroupsIsLoading } = useUserGroups();
   const { data: usersData } = useUsers({ includeApiKeys: false });
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
+  const businessTier = useTierAtLeast(Tier.BUSINESS);
 
   const adminCount =
     usersData?.accepted.filter((u) => u.role === UserRole.ADMIN).length ?? 0;
@@ -163,7 +175,7 @@ export function ModelAccessField() {
 
   // Build a flat list of combobox options from groups + agents
   const groupOptions =
-    isPaidEnterpriseFeaturesEnabled && !userGroupsIsLoading && userGroups
+    businessTier && !userGroupsIsLoading && userGroups
       ? userGroups.map((g) => ({
           value: `${GROUP_PREFIX}${g.id}`,
           label: g.name,
@@ -264,7 +276,7 @@ export function ModelAccessField() {
               onValueChange={handleSelect}
               options={availableOptions}
               strict
-              leftSearchIcon
+              searchIcon
             />
 
             <Card background="heavy" border="none" padding="sm">
@@ -390,7 +402,7 @@ function RefetchButton({ onRefetch }: RefetchButtonProps) {
   return (
     <Button
       prominence="tertiary"
-      icon={isFetching ? SimpleLoader : SvgRefreshCw}
+      icon={isFetching ? SvgSimpleLoader : SvgRefreshCw}
       onClick={async () => {
         abortRef.current?.abort();
         const controller = new AbortController();
@@ -464,6 +476,15 @@ export function ModelSelectionField({
     formikProps.setFieldValue("model_configurations", updated);
   }
 
+  function setCustomDisplayName(modelName: string, value: string | undefined) {
+    const updated = models.map((m) =>
+      m.name === modelName
+        ? { ...m, custom_display_name: value || undefined }
+        : m
+    );
+    formikProps.setFieldValue("model_configurations", updated);
+  }
+
   function handleToggleAutoMode(nextIsAutoMode: boolean) {
     formikProps.setFieldValue("is_auto_mode", nextIsAutoMode);
     if (nextIsAutoMode) {
@@ -511,7 +532,7 @@ export function ModelSelectionField({
         {models.length === 0 ? (
           <EmptyMessageCard title={t("noModelsAvailable")} padding="sm" />
         ) : (
-          <Section gap={0.25}>
+          <Section gap={0.25} alignItems="stretch">
             {(() => {
               const displayModels = isAutoMode ? visibleModels : models;
               const isFoldable = displayModels.length > FOLD_THRESHOLD;
@@ -524,28 +545,52 @@ export function ModelSelectionField({
                 <>
                   {shownModels.map((model) =>
                     isAutoMode ? (
-                      <LineItemButton
-                        key={model.name}
-                        variant="section"
-                        sizePreset="main-ui"
-                        selectVariant="select-heavy"
-                        state="selected"
-                        icon={() => <Checkbox checked />}
-                        title={model.display_name || model.name}
-                      />
+                      <div key={model.name} data-model-name={model.name}>
+                        <LineItemButton
+                          variant="section"
+                          sizePreset="main-ui"
+                          selectVariant="select-heavy"
+                          state="selected"
+                          icon={() => <Checkbox checked />}
+                          title={
+                            model.custom_display_name ||
+                            model.display_name ||
+                            model.name
+                          }
+                          editable
+                          onTitleChange={(newTitle) =>
+                            setCustomDisplayName(
+                              model.name,
+                              newTitle || undefined
+                            )
+                          }
+                        />
+                      </div>
                     ) : (
-                      <LineItemButton
-                        key={model.name}
-                        variant="section"
-                        sizePreset="main-ui"
-                        selectVariant="select-heavy"
-                        state={model.is_visible ? "selected" : "empty"}
-                        icon={() => <Checkbox checked={model.is_visible} />}
-                        title={model.name}
-                        onClick={() =>
-                          setVisibility(model.name, !model.is_visible)
-                        }
-                      />
+                      <div key={model.name} data-model-name={model.name}>
+                        <LineItemButton
+                          variant="section"
+                          sizePreset="main-ui"
+                          selectVariant="select-heavy"
+                          state={model.is_visible ? "selected" : "empty"}
+                          icon={() => <Checkbox checked={model.is_visible} />}
+                          title={
+                            model.custom_display_name ||
+                            model.display_name ||
+                            model.name
+                          }
+                          onClick={() =>
+                            setVisibility(model.name, !model.is_visible)
+                          }
+                          editable
+                          onTitleChange={(newTitle) =>
+                            setCustomDisplayName(
+                              model.name,
+                              newTitle || undefined
+                            )
+                          }
+                        />
+                      </div>
                     )
                   )}
                   {isFoldable && (
@@ -594,7 +639,6 @@ export function ModelSelectionField({
                     }
                   }
                 }}
-                showClearButton={false}
               />
             </div>
             <Button
@@ -763,7 +807,7 @@ function ModalWrapperInner({
             <Button
               disabled={!isValid || !dirty || busy}
               type="submit"
-              icon={busy ? SimpleLoader : undefined}
+              icon={busy ? SvgSimpleLoader : undefined}
               tooltip={disabledTooltip}
             >
               {llmProvider?.name

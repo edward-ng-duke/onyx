@@ -9,14 +9,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { IndexAttemptError } from "./types";
-import { localizeAndPrettify } from "@/lib/time";
+import { localizeAndPrettify } from "@opal/time";
 import Button from "@/refresh-components/buttons/Button";
 import Text from "@/refresh-components/texts/Text";
 import { PageSelector } from "@/components/PageSelector";
-import { useCallback, useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { SvgAlertTriangle } from "@opal/icons";
-
-const ROW_HEIGHT = 65; // 4rem + 1px for border
 
 export interface IndexAttemptErrorsModalProps {
   errors: {
@@ -25,10 +23,10 @@ export interface IndexAttemptErrorsModalProps {
   totalPages: number;
   currentPage: number;
   onPageChange: (page: number) => void;
-  onPageSizeChange: (size: number) => void;
   onClose: () => void;
   onResolveAll: () => void;
-  isResolvingErrors?: boolean;
+  // True if the connector implements targeted reindex; controls description copy.
+  supportsTargetedReindex: boolean;
 }
 
 export default function IndexAttemptErrorsModal({
@@ -36,43 +34,11 @@ export default function IndexAttemptErrorsModal({
   totalPages,
   currentPage,
   onPageChange,
-  onPageSizeChange,
   onClose,
   onResolveAll,
-  isResolvingErrors = false,
+  supportsTargetedReindex,
 }: IndexAttemptErrorsModalProps) {
   const t = useTranslations("admin.connectorDetail.errorsModal");
-  const observerRef = useRef<ResizeObserver | null>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const tableContainerRef = useCallback(
-    (container: HTMLDivElement | null) => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-        observerRef.current = null;
-      }
-      if (!container) return;
-
-      const observer = new ResizeObserver(() => {
-        if (debounceRef.current) clearTimeout(debounceRef.current);
-        debounceRef.current = setTimeout(() => {
-          const thead = container.querySelector("thead");
-          const theadHeight = thead?.getBoundingClientRect().height ?? 0;
-          const availableHeight = container.clientHeight - theadHeight;
-          const newPageSize = Math.max(
-            3,
-            Math.floor(availableHeight / ROW_HEIGHT)
-          );
-          onPageSizeChange(newPageSize);
-        }, 150);
-      });
-
-      observer.observe(container);
-      observerRef.current = observer;
-    },
-    [onPageSizeChange]
-  );
-
   const hasUnresolvedErrors = useMemo(
     () => errors.items.some((error) => !error.is_resolved),
     [errors.items]
@@ -90,24 +56,20 @@ export default function IndexAttemptErrorsModal({
         <Modal.Header
           icon={SvgAlertTriangle}
           title={t("title")}
-          description={
-            isResolvingErrors ? t("resolvingDescription") : undefined
-          }
           onClose={onClose}
           height="fit"
         />
         <Modal.Body height="full">
-          {!isResolvingErrors && (
-            <div className="flex flex-col gap-2 flex-shrink-0">
-              <Text as="p">{t("intro")}</Text>
-              <Text as="p">{t("ctaHint")}</Text>
-            </div>
-          )}
+          <div className="flex flex-col gap-2 shrink-0">
+            <Text as="p">{t("intro")}</Text>
+            <Text as="p">
+              {supportsTargetedReindex
+                ? "Click the button below to re-fetch only the failing documents. Much faster than a full re-index."
+                : t("ctaHint")}
+            </Text>
+          </div>
 
-          <div
-            ref={tableContainerRef}
-            className="flex-1 w-full overflow-hidden min-h-0"
-          >
+          <div className="flex-1 w-full overflow-y-auto min-h-0">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -122,7 +84,7 @@ export default function IndexAttemptErrorsModal({
               <TableBody>
                 {errors.items.length > 0 ? (
                   errors.items.map((error) => (
-                    <TableRow key={error.id} className="h-[4rem]">
+                    <TableRow key={error.id} className="h-16">
                       <TableCell>
                         {localizeAndPrettify(error.time_created)}
                       </TableCell>
@@ -145,7 +107,7 @@ export default function IndexAttemptErrorsModal({
                         )}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center h-[2rem] overflow-y-auto whitespace-normal">
+                        <div className="flex items-center h-8 overflow-y-auto whitespace-normal">
                           {error.failure_message}
                         </div>
                       </TableCell>
@@ -163,7 +125,7 @@ export default function IndexAttemptErrorsModal({
                     </TableRow>
                   ))
                 ) : (
-                  <TableRow className="h-[4rem]">
+                  <TableRow className="h-16">
                     <TableCell
                       colSpan={4}
                       className="text-center py-8 text-text-03"
@@ -187,7 +149,7 @@ export default function IndexAttemptErrorsModal({
           )}
         </Modal.Body>
         <Modal.Footer>
-          {hasUnresolvedErrors && !isResolvingErrors && (
+          {hasUnresolvedErrors && (
             // TODO(@raunakab): migrate to opal Button once className/iconClassName is resolved
             <Button onClick={onResolveAll} className="ml-4 whitespace-nowrap">
               {t("resolveAll")}

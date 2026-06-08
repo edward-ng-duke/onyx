@@ -42,6 +42,7 @@ from onyx.db.models import User
 from onyx.db.persona import user_can_access_persona
 from onyx.error_handling.error_codes import OnyxErrorCode
 from onyx.error_handling.exceptions import OnyxError
+from onyx.llm.constants import LlmProviderNames
 from onyx.llm.constants import PROVIDER_DISPLAY_NAMES
 from onyx.llm.constants import WELL_KNOWN_PROVIDER_NAMES
 from onyx.llm.factory import get_default_llm
@@ -55,6 +56,11 @@ from onyx.llm.well_known_providers.auto_update_service import (
     fetch_llm_recommendations_from_github,
 )
 from onyx.llm.well_known_providers.constants import LM_STUDIO_API_KEY_CONFIG_KEY
+from onyx.llm.well_known_providers.constants import VERTEX_AUTH_METHOD_KWARG
+from onyx.llm.well_known_providers.constants import VERTEX_AUTH_METHOD_SERVICE_ACCOUNT
+from onyx.llm.well_known_providers.constants import VERTEX_AUTH_METHOD_WORKLOAD_IDENTITY
+from onyx.llm.well_known_providers.constants import VERTEX_CREDENTIALS_FILE_KWARG
+from onyx.llm.well_known_providers.constants import VERTEX_PROJECT_KWARG
 from onyx.llm.well_known_providers.llm_provider_options import (
     fetch_available_well_known_llms,
 )
@@ -271,6 +277,56 @@ def _validate_llm_provider_change(
         )
 
 
+def _validate_and_normalize_vertex_auth(
+    provider: str,
+    custom_config: dict[str, str] | None,
+) -> dict[str, str] | None:
+    """Enforce vertex_ai auth-method invariants and strip incompatible fields.
+
+    - Workload Identity (ADC) requires an explicit vertex_project and must not
+      carry a vertex_credentials blob (LiteLLM would otherwise try to use it).
+    - Service account JSON mode requires vertex_credentials.
+    - Missing vertex_auth_method is treated as service_account_json for
+      backwards compatibility with providers created before this field existed.
+    """
+    if provider != LlmProviderNames.VERTEX_AI or custom_config is None:
+        return custom_config
+
+    auth_method = custom_config.get(
+        VERTEX_AUTH_METHOD_KWARG, VERTEX_AUTH_METHOD_SERVICE_ACCOUNT
+    )
+
+    if auth_method == VERTEX_AUTH_METHOD_WORKLOAD_IDENTITY:
+        if MULTI_TENANT:
+            raise OnyxError(
+                OnyxErrorCode.VALIDATION_ERROR,
+                "Workload Identity is not supported in multi-tenant deployments; "
+                "use Service Account JSON instead.",
+            )
+        if not (custom_config.get(VERTEX_PROJECT_KWARG) or "").strip():
+            raise OnyxError(
+                OnyxErrorCode.VALIDATION_ERROR,
+                "vertex_project is required when using Workload Identity authentication",
+            )
+        # Don't persist a stale credentials blob alongside a WIF config.
+        return {
+            k: v for k, v in custom_config.items() if k != VERTEX_CREDENTIALS_FILE_KWARG
+        }
+
+    if auth_method == VERTEX_AUTH_METHOD_SERVICE_ACCOUNT:
+        if not (custom_config.get(VERTEX_CREDENTIALS_FILE_KWARG) or "").strip():
+            raise OnyxError(
+                OnyxErrorCode.VALIDATION_ERROR,
+                "vertex_credentials is required when using Service Account JSON authentication",
+            )
+        return custom_config
+
+    raise OnyxError(
+        OnyxErrorCode.VALIDATION_ERROR,
+        f"Unsupported vertex_auth_method: {auth_method}",
+    )
+
+
 @admin_router.get("/custom-provider-names")
 def fetch_custom_provider_names(
     _: User = Depends(require_permission(Permission.FULL_ADMIN_PANEL_ACCESS)),
@@ -350,6 +406,11 @@ def test_llm_configuration(
             )
         if existing_provider and not test_llm_request.custom_config_changed:
             test_custom_config = existing_provider.custom_config
+
+    test_custom_config = _validate_and_normalize_vertex_auth(
+        provider=test_llm_request.provider,
+        custom_config=test_custom_config,
+    )
 
     # For this "testing" workflow, we do *not* need the actual `max_input_tokens`.
     # Therefore, instead of performing additional, more complex logic, we just use a dummy value
@@ -506,6 +567,11 @@ def put_llm_provider(
         )
     if existing_provider and not llm_provider_upsert_request.custom_config_changed:
         llm_provider_upsert_request.custom_config = existing_provider.custom_config
+
+    llm_provider_upsert_request.custom_config = _validate_and_normalize_vertex_auth(
+        provider=llm_provider_upsert_request.provider,
+        custom_config=llm_provider_upsert_request.custom_config,
+    )
 
     # Check if we're transitioning to Auto mode
     transitioning_to_auto_mode = llm_provider_upsert_request.is_auto_mode and (
@@ -1139,8 +1205,9 @@ def get_ollama_available_models(
             architecture = ollama_model_details.model_info.get(
                 "general.architecture", ""
             )
-            context_limit = ollama_model_details.model_info.get(
-                architecture + ".context_length", None
+            context_limit = (
+                ollama_model_details.num_ctx
+                or ollama_model_details.model_info.get(architecture + ".context_length")
             )
             supports_image_input = ollama_model_details.supports_image_input()
         except ValidationError as e:
@@ -1400,6 +1467,7 @@ def get_lm_studio_available_models(
                     display_name=r.display_name,
                     max_input_tokens=r.max_input_tokens,
                     supports_image_input=r.supports_image_input,
+                    supports_reasoning=r.supports_reasoning,
                 )
                 for r in sorted_results
             ],
@@ -1415,7 +1483,7 @@ def get_litellm_available_models(
     _: User = Depends(require_permission(Permission.FULL_ADMIN_PANEL_ACCESS)),
     db_session: Session = Depends(get_session),
 ) -> list[LitellmFinalModelResponse]:
-    """Fetch available models from Litellm proxy /v1/models endpoint."""
+    """Fetch available models from LiteLLM proxy /v1/model/info endpoint."""
     api_key = _resolve_api_key(
         request.api_key, request.provider_name, request.api_base, db_session
     )
@@ -1436,14 +1504,22 @@ def get_litellm_available_models(
         try:
             model_details = LitellmModelDetails.model_validate(model)
 
+            litellm_params_model = model_details.get_litellm_params_model()
+
             # Skip embedding models
-            if is_embedding_model(model_details.id):
+            if is_embedding_model(litellm_params_model) or is_embedding_model(
+                model_details.model_name
+            ):
                 continue
 
             results.append(
                 LitellmFinalModelResponse(
-                    provider_name=model_details.owned_by,
-                    model_name=model_details.id,
+                    provider_name=model_details.get_custom_llm_provider(),
+                    model_name=model_details.model_name,
+                    litellm_params_model=litellm_params_model,
+                    max_input_tokens=model_details.get_max_input_tokens(),
+                    supports_image_input=model_details.supports_image_input(),
+                    supports_reasoning=model_details.supports_reasoning(),
                 )
             )
         except Exception as e:
@@ -1469,6 +1545,9 @@ def get_litellm_available_models(
                 SyncModelEntry(
                     name=r.model_name,
                     display_name=r.model_name,
+                    max_input_tokens=r.max_input_tokens,
+                    supports_image_input=r.supports_image_input,
+                    supports_reasoning=r.supports_reasoning,
                 )
                 for r in sorted_results
             ],
@@ -1479,9 +1558,9 @@ def get_litellm_available_models(
 
 
 def _get_litellm_models_response(api_key: str | None, api_base: str) -> dict:
-    """Perform GET to Litellm proxy /api/v1/models and return parsed JSON."""
+    """Perform GET to LiteLLM proxy /v1/model/info and return parsed JSON."""
     cleaned_api_base = api_base.strip().rstrip("/")
-    url = f"{cleaned_api_base}/v1/models"
+    url = f"{cleaned_api_base}/v1/model/info"
 
     return _get_openai_compatible_models_response(
         url=url,
@@ -1572,7 +1651,10 @@ def get_bifrost_available_models(
     for model in models:
         try:
             model_id = model.get("id", "")
-            model_name = model.get("name", model_id)
+            # Prefer Bifrost's `normalized_name` (e.g. "Claude Sonnet 4.5"),
+            # which is only populated for models in its pricing catalog;
+            # fall back to the OpenAI-compatible `name`, then the raw id.
+            model_name = model.get("normalized_name") or model.get("name") or model_id
 
             if not model_id:
                 continue
@@ -1615,6 +1697,7 @@ def get_bifrost_available_models(
                     display_name=r.display_name,
                     max_input_tokens=r.max_input_tokens,
                     supports_image_input=r.supports_image_input,
+                    supports_reasoning=r.supports_reasoning,
                 )
                 for r in sorted_results
             ],
@@ -1709,6 +1792,7 @@ def get_openai_compatible_server_available_models(
                     display_name=r.display_name,
                     max_input_tokens=r.max_input_tokens,
                     supports_image_input=r.supports_image_input,
+                    supports_reasoning=r.supports_reasoning,
                 )
                 for r in sorted_results
             ],

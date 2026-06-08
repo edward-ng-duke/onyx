@@ -64,7 +64,7 @@ function ConfigItem({ label, value, onEdit }: ConfigItemProps) {
           alignItems="center"
           height="fit"
         >
-          <Text secondaryBody text03 className="break-words">
+          <Text secondaryBody text03 className="wrap-break-word">
             {displayedItems
               .map((item) => convertObjectToString(item))
               .join(", ")}
@@ -75,7 +75,7 @@ function ConfigItem({ label, value, onEdit }: ConfigItemProps) {
       return (
         <Section gap={0.25} alignItems="end" height="fit">
           {Object.entries(value).map(([key, val]) => (
-            <Text key={key} secondaryBody text03 className="break-words">
+            <Text key={key} secondaryBody text03 className="wrap-break-word">
               <Text mainContentEmphasis text03>
                 {key}:
               </Text>{" "}

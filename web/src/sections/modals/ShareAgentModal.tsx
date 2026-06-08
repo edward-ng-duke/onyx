@@ -13,24 +13,26 @@ import {
   SvgX,
 } from "@opal/icons";
 import InputChipField from "@/refresh-components/inputs/InputChipField";
-import Tabs from "@/refresh-components/Tabs";
-import { Card } from "@/refresh-components/cards";
 import InputComboBox from "@/refresh-components/inputs/InputComboBox/InputComboBox";
-import { InputHorizontal } from "@opal/layouts";
+import { ContentAction, InputHorizontal } from "@opal/layouts";
 import SwitchField from "@/refresh-components/form/SwitchField";
-import LineItem from "@/refresh-components/buttons/LineItem";
 import { Section } from "@/layouts/general-layouts";
-import Text from "@/refresh-components/texts/Text";
 import useShareableUsers from "@/hooks/useShareableUsers";
 import useShareableGroups from "@/hooks/useShareableGroups";
 import { useModal } from "@/refresh-components/contexts/ModalContext";
 import { useUser } from "@/providers/UserProvider";
 import { Formik, useFormikContext } from "formik";
-import { useAgent } from "@/hooks/useAgents";
-import { Button, MessageCard } from "@opal/components";
+import { useAgent, useLabels } from "@/lib/agents/hooks";
+import {
+  Button,
+  Card,
+  Divider,
+  MessageCard,
+  Tabs,
+  Text,
+} from "@opal/components";
 import { Disabled } from "@opal/core";
-import { useLabels } from "@/lib/hooks";
-import { PersonaLabel } from "@/app/admin/agents/interfaces";
+import { AgentLabel } from "@/lib/agents/types";
 import { FetchError } from "@/lib/fetcher";
 
 const YOUR_ORGANIZATION_TAB = "your-organization";
@@ -159,7 +161,7 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
     );
   }
 
-  const selectedLabels: PersonaLabel[] = useMemo(() => {
+  const selectedLabels: AgentLabel[] = useMemo(() => {
     if (!allLabels) return [];
     return allLabels.filter((label) => values.labelIds.includes(label.id));
   }, [allLabels, values.labelIds]);
@@ -212,7 +214,7 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
       />
 
       <Modal.Body padding={0.5}>
-        <Card variant="borderless" padding={0.5}>
+        <Card padding="sm">
           <Tabs
             defaultValue={
               values.isPublic ? YOUR_ORGANIZATION_TAB : USERS_AND_GROUPS_TAB
@@ -264,43 +266,52 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
                       const isCurrentUser = currentUser?.id === user.id;
 
                       return (
-                        <LineItem
-                          key={`user-${user.id}`}
-                          icon={SvgUser}
-                          description={isCurrentUser ? t("youSuffix") : undefined}
-                          rightChildren={
-                            isOwner || (isCurrentUser && !agentId) ? (
-                              // Owner will always have the agent "shared" with it.
-                              // Therefore, we never render any `IconButton SvgX` to remove it.
-                              //
-                              // Note:
-                              // This user, during creation, is assumed to be the "owner".
-                              // That is why the `(isCurrentUser && !agent)` condition exists.
-                              <Text secondaryBody text03>
-                                {t("owner")}
-                              </Text>
-                            ) : (
-                              // For all other cases (including for "self-unsharing"),
-                              // we render an `IconButton SvgX` to remove a person from the list.
-                              <Button
-                                prominence="tertiary"
-                                size="sm"
-                                icon={SvgX}
-                                onClick={() => handleRemoveUser(user.id)}
-                              />
-                            )
-                          }
-                        >
-                          {user.email}
-                        </LineItem>
+                        <div key={`user-${user.id}`} className="p-1">
+                          <ContentAction
+                            sizePreset="main-ui"
+                            variant="section"
+                            icon={SvgUser}
+                            title={user.email}
+                            description={
+                              isCurrentUser ? t("youSuffix") : undefined
+                            }
+                            padding="fit"
+                            rightChildren={
+                              isOwner || (isCurrentUser && !agentId) ? (
+                                // Owner will always have the agent "shared" with it.
+                                // Therefore, we never render any SvgX button to remove it.
+                                //
+                                // Note:
+                                // This user, during creation, is assumed to be the "owner".
+                                // That is why the `(isCurrentUser && !agentId)` condition exists.
+                                <Text font="secondary-body" color="text-03">
+                                  {t("owner")}
+                                </Text>
+                              ) : (
+                                // For all other cases (including for "self-unsharing"),
+                                // we render a Button with SvgX to remove a person from the list.
+                                <Button
+                                  prominence="tertiary"
+                                  size="sm"
+                                  icon={SvgX}
+                                  onClick={() => handleRemoveUser(user.id)}
+                                />
+                              )
+                            }
+                          />
+                        </div>
                       );
                     })}
 
                     {/* Shared Groups */}
                     {displayedGroups.map((group) => (
-                      <LineItem
+                      <ContentAction
                         key={`group-${group.id}`}
+                        sizePreset="main-ui"
+                        variant="section"
                         icon={SvgUsers}
+                        title={group.name}
+                        padding="sm"
                         rightChildren={
                           <Button
                             prominence="tertiary"
@@ -309,9 +320,7 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
                             onClick={() => handleRemoveGroup(group.id)}
                           />
                         }
-                      >
-                        {group.name}
-                      </LineItem>
+                      />
                     ))}
                   </Section>
                 )}
@@ -327,8 +336,8 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
               )}
             </Tabs.Content>
 
-            <Tabs.Content value={YOUR_ORGANIZATION_TAB} padding={0.5}>
-              <Section gap={1} alignItems="stretch">
+            <Tabs.Content value={YOUR_ORGANIZATION_TAB}>
+              <Section gap={1} alignItems="stretch" padding={0.5}>
                 <InputHorizontal
                   title={t("publishTitle")}
                   description={t("publishDescription")}
@@ -339,7 +348,7 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
 
                 {canUpdateFeaturedStatus && (
                   <>
-                    <div className="border-t border-border-02" />
+                    <Divider paddingParallel="fit" paddingPerpendicular="fit" />
 
                     <InputHorizontal
                       title={t("featureTitle")}
@@ -351,18 +360,20 @@ function ShareAgentFormContent({ agentId }: ShareAgentFormContentProps) {
                   </>
                 )}
 
-                <InputChipField
-                  chips={chipItems}
-                  onRemoveChip={(id) => handleRemoveLabel(Number(id))}
-                  onAdd={addLabel}
-                  value={labelInputValue}
-                  onChange={setLabelInputValue}
-                  placeholder={t("addLabelsPlaceholder")}
-                  icon={SvgTag}
-                />
-                <Text secondaryBody text04>
-                  {t("labelsHelp")}
-                </Text>
+                <Section gap={0.25} alignItems="stretch">
+                  <InputChipField
+                    chips={chipItems}
+                    onRemoveChip={(id) => handleRemoveLabel(Number(id))}
+                    onAdd={addLabel}
+                    value={labelInputValue}
+                    onChange={setLabelInputValue}
+                    placeholder={t("addLabelsPlaceholder")}
+                    icon={SvgTag}
+                  />
+                  <Text font="secondary-body" color="text-03">
+                    {t("labelsHelp")}
+                  </Text>
+                </Section>
               </Section>
             </Tabs.Content>
           </Tabs>

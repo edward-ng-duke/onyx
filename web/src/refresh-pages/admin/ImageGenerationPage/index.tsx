@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import * as SettingsLayouts from "@/layouts/settings-layouts";
+import { SettingsLayouts } from "@opal/layouts";
 import ImageGenerationContent from "@/refresh-pages/admin/ImageGenerationPage/ImageGenerationContent";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
 import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";

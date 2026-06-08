@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { mutate } from "swr";
-import * as SettingsLayouts from "@/layouts/settings-layouts";
+import { SettingsLayouts } from "@opal/layouts";
 import { Section } from "@/layouts/general-layouts";
 import Text from "@/refresh-components/texts/Text";
 import { SvgArrowUpCircle, SvgWallet } from "@opal/icons";
@@ -504,8 +504,7 @@ export default function BillingPage() {
       <SettingsLayouts.Header
         icon={viewConfig.icon}
         title={viewConfig.title}
-        backButton={viewConfig.showBackButton}
-        onBack={handleBack}
+        backButton={viewConfig.showBackButton && handleBack}
         divider
       />
       <SettingsLayouts.Body>

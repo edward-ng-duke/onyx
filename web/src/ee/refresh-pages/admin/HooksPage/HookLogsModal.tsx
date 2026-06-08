@@ -2,10 +2,9 @@
 
 import { useTranslations } from "next-intl";
 import { Button, Text } from "@opal/components";
-import { SvgDownload, SvgTextLines } from "@opal/icons";
+import { SvgDownload, SvgTextLines, SvgSimpleLoader } from "@opal/icons";
 import Modal from "@/refresh-components/Modal";
-import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
-import CopyIconButton from "@/refresh-components/buttons/CopyIconButton";
+import { CopyButton } from "@opal/components";
 import { Hoverable } from "@opal/core";
 import { useHookExecutionLogs } from "@/ee/hooks/useHookExecutionLogs";
 import { formatDateTimeLog } from "@/lib/dateUtils";
@@ -76,10 +75,7 @@ function LogRow({
         {/* 3. Copy button */}
         <Section width="fit" height="fit" alignItems="center">
           <Hoverable.Item group={group} variant="appear-on-hover">
-            <CopyIconButton
-              size="xs"
-              getCopyText={() => log.error_message ?? ""}
-            />
+            <CopyButton size="xs" getCopyText={() => log.error_message ?? ""} />
           </Hoverable.Item>
         </Section>
       </Section>
@@ -129,7 +125,7 @@ export default function HookLogsModal({ hook, spec }: HookLogsModalProps) {
         <Modal.Body>
           {isLoading ? (
             <Section justifyContent="center" height="fit" className="py-6">
-              <SimpleLoader />
+              <SvgSimpleLoader />
             </Section>
           ) : error ? (
             <Text font="main-ui-body" color="text-03">
@@ -188,11 +184,7 @@ export default function HookLogsModal({ hook, spec }: HookLogsModalProps) {
             padding={0.25}
             className="rounded-xl bg-background-tint-00"
           >
-            <CopyIconButton
-              size="sm"
-              tooltip="Copy"
-              getCopyText={getLogsText}
-            />
+            <CopyButton size="sm" tooltip="Copy" getCopyText={getLogsText} />
             <Button
               prominence="tertiary"
               size="sm"

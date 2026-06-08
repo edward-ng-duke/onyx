@@ -7,11 +7,11 @@ import * as Yup from "yup";
 import Modal from "@/refresh-components/Modal";
 import { Button, Divider, MessageCard } from "@opal/components";
 import InputSelect from "@/refresh-components/inputs/InputSelect";
-import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
+import { InputTypeIn } from "@opal/components";
 import PasswordInputTypeIn from "@/refresh-components/inputs/PasswordInputTypeIn";
 import { FormField } from "@/refresh-components/form/FormField";
 import Text from "@/refresh-components/texts/Text";
-import CopyIconButton from "@/refresh-components/buttons/CopyIconButton";
+import { CopyButton } from "@opal/components";
 import KeyValueInput, {
   KeyValue,
 } from "@/refresh-components/inputs/InputKeyValue";
@@ -447,7 +447,6 @@ export default function OpenAPIAuthenticationModal({
                               value={values.authorizationUrl}
                               onChange={handleChange}
                               placeholder="https://example.com/oauth/authorize"
-                              showClearButton={false}
                             />
                           </FormField.Control>
                           <FormField.Message
@@ -474,7 +473,6 @@ export default function OpenAPIAuthenticationModal({
                               value={values.tokenUrl}
                               onChange={handleChange}
                               placeholder="https://example.com/oauth/access_token"
-                              showClearButton={false}
                             />
                           </FormField.Control>
                           <FormField.Message
@@ -501,7 +499,6 @@ export default function OpenAPIAuthenticationModal({
                               value={values.clientId}
                               onChange={handleChange}
                               placeholder=" "
-                              showClearButton={false}
                             />
                           </FormField.Control>
                           {isEditingOAuthConfig && (
@@ -535,7 +532,6 @@ export default function OpenAPIAuthenticationModal({
                               value={values.clientSecret}
                               onChange={handleChange}
                               placeholder=" "
-                              showClearButton={false}
                             />
                           </FormField.Control>
                           {isEditingOAuthConfig && (
@@ -572,7 +568,6 @@ export default function OpenAPIAuthenticationModal({
                               value={values.scopes}
                               onChange={handleChange}
                               placeholder={t("scopesPlaceholder")}
-                              showClearButton={false}
                             />
                           </FormField.Control>
                           <FormField.Description>
@@ -610,7 +605,7 @@ export default function OpenAPIAuthenticationModal({
                               >
                                 {redirectUri}
                               </Text>
-                              <CopyIconButton
+                              <CopyButton
                                 getCopyText={() => redirectUri}
                                 tooltip={t("copyRedirectUriTooltip")}
                                 prominence="tertiary"

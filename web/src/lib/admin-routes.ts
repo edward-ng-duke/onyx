@@ -2,7 +2,6 @@ import { IconFunctionComponent } from "@opal/types";
 import {
   SvgActions,
   SvgActivity,
-  SvgArrowExchange,
   SvgAudio,
   SvgShareWebhook,
   SvgBarChart,
@@ -22,6 +21,7 @@ import {
   SvgPaintBrush,
   SvgProgressBars,
   SvgSearchMenu,
+  SvgShield,
   SvgTerminal,
   SvgThumbsUp,
   SvgUploadCloud,
@@ -283,14 +283,6 @@ export const ADMIN_ROUTES = {
     sidebarLabelKey: "billing",
     titleKey: "billing",
   },
-  INDEX_MIGRATION: {
-    path: "/admin/document-index-migration",
-    icon: SvgArrowExchange,
-    title: "Document Index Migration",
-    sidebarLabel: "Document Index Migration",
-    sidebarLabelKey: "documentIndexMigration",
-    titleKey: "documentIndexMigration",
-  },
   HOOKS: {
     path: "/admin/hooks",
     icon: SvgShareWebhook,
@@ -315,6 +307,12 @@ export const ADMIN_ROUTES = {
     sidebarLabelKey: "debug",
     titleKey: "debug",
   },
+  SECURITY_HARDENING: {
+    path: "/admin/security",
+    icon: SvgShield,
+    title: "Security and Hardening",
+    sidebarLabel: "Security and Hardening",
+  },
   // Prefix-only entries used for layout matching — not rendered as sidebar
   // items or page headers.
   DOCUMENTS: {
@@ -337,4 +335,24 @@ export const ADMIN_ROUTES = {
  */
 export function sidebarItem(route: AdminRouteEntry) {
   return { name: route.sidebarLabel, icon: route.icon, link: route.path };
+}
+
+/**
+ * Connector/indexing admin route prefixes that need a vector DB. In Lite mode
+ * these render an informational notice instead of their normal content.
+ */
+export const VECTOR_DB_REQUIRED_ROUTE_PREFIXES: readonly string[] = [
+  ADMIN_ROUTES.INDEXING_STATUS.path,
+  ADMIN_ROUTES.ADD_CONNECTOR.path,
+  // Covers /sets, /explorer, and /feedback — all require a vector DB.
+  ADMIN_ROUTES.DOCUMENTS.path,
+  ADMIN_ROUTES.INDEX_SETTINGS.path,
+  "/admin/connector",
+  "/admin/federated",
+];
+
+export function isVectorDbRequiredRoute(pathname: string): boolean {
+  return VECTOR_DB_REQUIRED_ROUTE_PREFIXES.some((prefix) =>
+    pathname.startsWith(prefix)
+  );
 }

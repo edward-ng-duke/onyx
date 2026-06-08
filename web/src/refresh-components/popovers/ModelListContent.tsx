@@ -2,14 +2,14 @@
 
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { PopoverMenu } from "@/refresh-components/Popover";
-import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
+import { PopoverMenu } from "@opal/components";
+import { InputTypeIn } from "@opal/components";
 import { Button, LineItemButton, Text } from "@opal/components";
 import { SvgCheck, SvgChevronRight } from "@opal/icons";
 import { Section } from "@/layouts/general-layouts";
 import { LLMOption } from "./interfaces";
 import { buildLlmOptions, groupLlmOptions } from "./LLMPopover";
-import { LLMProviderDescriptor } from "@/interfaces/llm";
+import { LLMProviderDescriptor } from "@/lib/languageModels/types";
 import {
   Collapsible,
   CollapsibleContent,
@@ -142,7 +142,7 @@ export default function ModelListContent({
   return (
     <Section gap={0.5}>
       <InputTypeIn
-        leftSearchIcon
+        searchIcon
         variant="internal"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}

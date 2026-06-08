@@ -35,6 +35,7 @@ from fastapi import status
 from fastapi import WebSocket
 from fastapi.responses import JSONResponse
 from fastapi.responses import RedirectResponse
+from fastapi.routing import APIRoute
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_users import BaseUserManager
 from fastapi_users import exceptions
@@ -70,6 +71,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
+from starlette.routing import BaseRoute
 
 from onyx.auth.api_key import get_hashed_api_key_from_request
 from onyx.auth.disposable_email_validator import is_disposable_email
@@ -123,11 +125,12 @@ from onyx.db.engine.async_sql_engine import get_async_session_context_manager
 from onyx.db.engine.sql_engine import get_session_with_current_tenant
 from onyx.db.engine.sql_engine import get_session_with_tenant
 from onyx.db.enums import AccountType
+from onyx.db.enums import Permission
 from onyx.db.models import AccessToken
 from onyx.db.models import OAuthAccount
 from onyx.db.models import Persona
 from onyx.db.models import User
-from onyx.db.pat import fetch_user_for_pat
+from onyx.db.pat import resolve_pat
 from onyx.db.users import assign_user_to_default_groups__no_commit
 from onyx.db.users import get_user_by_email
 from onyx.db.users import is_limited_user
@@ -335,12 +338,28 @@ def verify_email_domain(email: str, *, is_registration: bool = False) -> None:
             raise OnyxError(OnyxErrorCode.INVALID_INPUT, "Email domain is not valid")
 
 
-def enforce_seat_limit(db_session: Session, seats_needed: int = 1) -> None:
-    """Raise HTTPException(402) if adding users would exceed the seat limit.
+def enforce_seat_limit(
+    db_session: Session,
+    seats_needed: int = 1,
+    lock_session: Session | None = None,
+) -> None:
+    """Raise ``OnyxError(SEAT_LIMIT_EXCEEDED)`` if seats would be exceeded.
 
-    No-op for multi-tenant or CE deployments.
+    Self-hosted runs ``check_seat_availability``; cloud delegates to
+    ``enforce_cloud_seat_limit`` which auto-bills via Stripe. Use
+    ``enforce_seat_limit_locked`` when followed by a write in the same
+    transaction.
     """
     if MULTI_TENANT:
+        fetch_ee_implementation_or_noop(
+            "onyx.server.tenants.billing",
+            "enforce_cloud_seat_limit",
+            lambda **_kw: None,
+        )(
+            seats_needed=seats_needed,
+            tenant_id=get_current_tenant_id(),
+            db_session=lock_session,
+        )
         return
 
     result = fetch_ee_implementation_or_noop(
@@ -349,6 +368,52 @@ def enforce_seat_limit(db_session: Session, seats_needed: int = 1) -> None:
 
     if result is not None and not result.available:
         raise OnyxError(OnyxErrorCode.SEAT_LIMIT_EXCEEDED, result.error_message)
+
+
+def enforce_seat_limit_locked(db_session: Session, seats_needed: int = 1) -> None:
+    """Acquire the tenant advisory lock on ``db_session``, then enforce.
+
+    Self-hosted: lock + ``check_seat_availability`` on the caller's
+    session — held until caller commits.
+
+    Cloud: lock + ``get_tenant_count`` + Stripe modify also held on the
+    caller's session — released on caller commit so the seat-consuming
+    write (e.g. ``activate_user``) is covered.
+    """
+    fetch_ee_implementation_or_noop("onyx.db.license", "acquire_seat_lock", None)(
+        db_session, get_current_tenant_id()
+    )
+
+    enforce_seat_limit(db_session, seats_needed=seats_needed, lock_session=db_session)
+
+
+def _user_currently_counts_toward_seats(user: User) -> bool:
+    """Delegate to canonical ``ee/onyx/db/license.py:user_counts_toward_seats``."""
+    return bool(
+        fetch_ee_implementation_or_noop(
+            "onyx.db.license", "user_counts_toward_seats", False
+        )(user)
+    )
+
+
+def _upgrade_will_add_seat(user_before: User, will_become_active: bool) -> bool:
+    """Whether promoting to STANDARD will consume a seat.
+
+    Cloud counts ``UserTenantMapping`` rows, not user attributes — an
+    upgrade leaves the mapping count unchanged, so always seat-neutral
+    in MT. Self-hosted compares the per-user predicate before vs after.
+    """
+    if MULTI_TENANT:
+        return False
+    will_be_counted = will_become_active and user_before.email != ANONYMOUS_USER_EMAIL
+    return will_be_counted and not _user_currently_counts_toward_seats(user_before)
+
+
+def _invalidate_license_cache_after_seat_change() -> None:
+    """Invalidate license cache so middleware re-reads ``used_seats``."""
+    fetch_ee_implementation_or_noop(
+        "onyx.db.license", "invalidate_license_cache", None
+    )()
 
 
 class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
@@ -374,6 +439,69 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
             raise exceptions.UserNotExists()
 
         return user
+
+    async def verify(self, token: str, request: Optional[Request] = None) -> User:
+        # Single-tenant: inherit fastapi-users default; the injected
+        # self.user_db is already bound to the correct schema.
+        if not MULTI_TENANT:
+            return await super().verify(token, request)
+
+        # Multi-tenant: the verify request has no auth cookie yet, so the
+        # tenant middleware fell back to the default schema. Re-resolve the
+        # tenant from the JWT email and run the update against a tenant-bound
+        # session, mirroring oauth_callback / get_by_email.
+        try:
+            data = decode_jwt(
+                token,
+                self.verification_token_secret,
+                [self.verification_token_audience],
+            )
+        except jwt.PyJWTError:
+            raise exceptions.InvalidVerifyToken()
+
+        try:
+            user_id = data["sub"]
+            email = data["email"]
+        except KeyError:
+            raise exceptions.InvalidVerifyToken()
+
+        try:
+            tenant_id = fetch_ee_implementation_or_noop(
+                "onyx.server.tenants.user_mapping",
+                "get_tenant_id_for_email",
+                None,
+            )(email)
+        except exceptions.UserNotExists:
+            raise exceptions.InvalidVerifyToken()
+
+        contextvar_token = CURRENT_TENANT_ID_CONTEXTVAR.set(tenant_id)
+        try:
+            async with get_async_session_context_manager(tenant_id) as db_session:
+                tenant_user_db = SQLAlchemyUserAdminDB[User, uuid.UUID](
+                    db_session, User, OAuthAccount
+                )
+
+                user = await tenant_user_db.get_by_email(email)
+                if user is None:
+                    raise exceptions.InvalidVerifyToken()
+
+                try:
+                    parsed_id = self.parse_id(user_id)
+                except exceptions.InvalidID:
+                    raise exceptions.InvalidVerifyToken()
+
+                if parsed_id != user.id:
+                    raise exceptions.InvalidVerifyToken()
+
+                if user.is_verified:
+                    raise exceptions.UserAlreadyVerified()
+
+                verified_user = await tenant_user_db.update(user, {"is_verified": True})
+
+                await self.on_after_verify(verified_user, request)
+                return verified_user
+        finally:
+            CURRENT_TENANT_ID_CONTEXTVAR.reset(contextvar_token)
 
     async def create(
         self,
@@ -479,11 +607,14 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
                             UserRole.ADMIN
                         )
 
-                # Check seat availability for new users (single-tenant only)
-                with get_session_with_current_tenant() as sync_db:
-                    existing = get_user_by_email(user_create.email, sync_db)
-                    if existing is None:
-                        enforce_seat_limit(sync_db)
+                # Lock + check on the same session that does the insert.
+                existing = await self.user_db.session.run_sync(
+                    lambda s: get_user_by_email(user_create.email, s)
+                )
+                if existing is None:
+                    await self.user_db.session.run_sync(
+                        lambda s: enforce_seat_limit_locked(s, seats_needed=1)
+                    )
 
                 user_created = False
                 try:
@@ -598,11 +729,13 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
         user_id: uuid.UUID,
         user_create: UserCreate,
     ) -> None:
-        """Upgrade a non-web user to STANDARD and assign default groups atomically.
+        """Upgrade a non-web user to STANDARD + assign groups in one tx.
 
-        All writes happen in a single sync transaction so neither the field
-        update nor the group assignment is visible without the other.
+        Enforces the seat limit inside the same transaction when the
+        upgrade flips an uncounted user (EXT_PERM_USER, SERVICE_ACCOUNT)
+        into a counted one.
         """
+        seat_added = False
         with get_session_with_current_tenant() as sync_db:
             sync_user = (
                 sync_db.query(User)
@@ -610,6 +743,11 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
                 .first()
             )
             if sync_user:
+                if _upgrade_will_add_seat(
+                    sync_user, will_become_active=bool(sync_user.is_active)
+                ):
+                    enforce_seat_limit_locked(sync_db, seats_needed=1)
+                    seat_added = True
                 sync_user.hashed_password = self.password_helper.hash(
                     user_create.password
                 )
@@ -627,6 +765,8 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
                     "User %s not found in sync session during upgrade to standard; skipping upgrade",
                     user_id,
                 )
+        if seat_added:
+            _invalidate_license_cache_after_seat_change()
 
     async def validate_password(  # ty: ignore[invalid-method-override]
         self, password: str, _: schemas.UC | models.UP
@@ -740,11 +880,15 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
                         raise exceptions.UserNotExists()
 
                 except exceptions.UserNotExists:
-                    verify_email_domain(account_email, is_registration=True)
+                    # OAuth-created accounts are not subject to the dotted-Gmail
+                    # signup block: the provider vouches for one canonical email
+                    # per account, so dot-alias abuse isn't possible here.
+                    verify_email_domain(account_email)
 
-                    # Check seat availability before creating (single-tenant only)
-                    with get_session_with_current_tenant() as sync_db:
-                        enforce_seat_limit(sync_db)
+                    # Lock + check on the same session that does the insert.
+                    await self.user_db.session.run_sync(
+                        lambda s: enforce_seat_limit_locked(s, seats_needed=1)
+                    )
 
                     password = self.password_helper.generate()
                     user_dict = {
@@ -794,16 +938,9 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
                         if user_by_session:
                             user = user_by_session
 
-                # If the user is inactive, check seat availability before
-                # upgrading role — otherwise they'd become an inactive BASIC
-                # user who still can't log in.
-                if not user.is_active:
-                    with get_session_with_current_tenant() as sync_db:
-                        enforce_seat_limit(sync_db)
-
-                # Upgrade the user and assign default groups in a single
-                # transaction so neither change is visible without the other.
+                # Lock + check + upgrade in one transaction.
                 was_inactive = not user.is_active
+                seat_added = False
                 with get_session_with_current_tenant() as sync_db:
                     sync_user = (
                         sync_db.query(User)
@@ -811,6 +948,14 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
                         .first()
                     )
                     if sync_user:
+                        will_become_active = (
+                            True if was_inactive else bool(sync_user.is_active)
+                        )
+                        if _upgrade_will_add_seat(
+                            sync_user, will_become_active=will_become_active
+                        ):
+                            enforce_seat_limit_locked(sync_db, seats_needed=1)
+                            seat_added = True
                         sync_user.is_verified = is_verified_by_default
                         sync_user.role = UserRole.BASIC
                         sync_user.account_type = AccountType.STANDARD
@@ -818,6 +963,8 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
                             sync_user.is_active = True
                         assign_user_to_default_groups__no_commit(sync_db, sync_user)
                         sync_db.commit()
+                if seat_added:
+                    _invalidate_license_cache_after_seat_change()
 
                 # Refresh the async user object so downstream code
                 # (e.g. oidc_expiry check) sees the updated fields.
@@ -946,11 +1093,9 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
             and (marketing_cookie_value := request.cookies.get(marketing_cookie_name))
             and (parsed_cookie := parse_posthog_cookie(marketing_cookie_value))
         ):
-            marketing_anonymous_id = (
-                parsed_cookie[  # ty: ignore[possibly-unresolved-reference]
-                    "distinct_id"
-                ]
-            )
+            marketing_anonymous_id = parsed_cookie[  # ty: ignore[possibly-unresolved-reference]
+                "distinct_id"
+            ]
 
             # Technically, USER_SIGNED_UP is only fired from the cloud site when
             # it is the first user in a tenant. However, it is semantically correct
@@ -1652,6 +1797,28 @@ async def _maybe_refresh_oauth_tokens(
         )
 
 
+def scope_exempt() -> None:
+    """Marker dependency: tags a route reachable by any scoped PAT."""
+
+
+scope_exempt._is_scope_exempt = True  # ty: ignore[unresolved-attribute]
+
+
+def _scoped_pat_permitted_on_route(
+    token_scopes: list[Permission] | None, route: BaseRoute | None
+) -> bool:
+    """Whether a scoped PAT may proceed on this route (fail-closed)."""
+    if token_scopes is None:
+        return True
+    if not isinstance(route, APIRoute):
+        return False
+    return any(
+        getattr(dependency.call, "_is_require_permission", False)
+        or getattr(dependency.call, "_is_scope_exempt", False)
+        for dependency in route.dependant.dependencies
+    )
+
+
 async def optional_user(
     request: Request,
     async_db_session: AsyncSession = Depends(get_async_session),
@@ -1665,12 +1832,28 @@ async def optional_user(
 
     try:
         if hashed_pat := get_hashed_pat_from_request(request):
-            user = await fetch_user_for_pat(hashed_pat, async_db_session)
+            pat = await resolve_pat(hashed_pat, async_db_session)
+            if pat is not None:
+                user = pat.user
+                # Expose the token's scopes so require_permission can cap the
+                # request to them.
+                request.state.token_scopes = pat.scopes
         elif hashed_api_key := get_hashed_api_key_from_request(request):
             user = await fetch_user_for_api_key(hashed_api_key, async_db_session)
     except ValueError:
         logger.warning("Issue with validating authentication token")
         return None
+
+    # Fail-closed: a scoped PAT may only reach routes guarded by a
+    # require_permission its scopes can satisfy (see require_permission).
+    if not _scoped_pat_permitted_on_route(
+        getattr(request.state, "token_scopes", None),
+        request.scope.get("route"),
+    ):
+        raise OnyxError(
+            OnyxErrorCode.INSUFFICIENT_PERMISSIONS,
+            "This token's scopes do not permit this endpoint.",
+        )
 
     if user is not None:
         await _maybe_refresh_oauth_tokens(user, async_db_session, user_manager)
@@ -1688,6 +1871,7 @@ def get_anonymous_user() -> User:
         is_superuser=False,
         role=UserRole.LIMITED,
         account_type=AccountType.ANONYMOUS,
+        effective_permissions=[Permission.BASIC_ACCESS.value],
         use_memories=False,
         enable_memory_tool=False,
     )

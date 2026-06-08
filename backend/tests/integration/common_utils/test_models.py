@@ -39,6 +39,7 @@ class DATestPAT(BaseModel):
     created_at: str
     expires_at: str | None = None
     last_used_at: str | None = None
+    scopes: list[str] | None = None
 
 
 class DATestScimToken(BaseModel):
@@ -248,7 +249,6 @@ class DATestSettings(BaseModel):
     product_gating: DATestGatingType = DATestGatingType.NONE
     anonymous_user_enabled: bool | None = None
     image_extraction_and_analysis_enabled: bool | None = True
-    search_time_image_analysis_enabled: bool | None = False
 
 
 @dataclass
@@ -288,6 +288,7 @@ class DATestTool(BaseModel):
     description: str
     display_name: str
     in_code_tool_id: str | None
+    enabled: bool
 
 
 # Discord Bot Models
@@ -315,3 +316,13 @@ class DATestDiscordChannelConfig(BaseModel):
     thread_only_mode: bool = False
     require_bot_invocation: bool = True
     persona_override_id: int | None = None
+
+
+class DATestSkill(BaseModel):
+    id: UUID | None = None
+    slug: str
+    name: str
+    description: str
+    is_public: bool = False
+    enabled: bool = True
+    granted_group_ids: list[int] = Field(default_factory=list)

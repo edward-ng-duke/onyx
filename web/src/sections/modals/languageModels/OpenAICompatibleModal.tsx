@@ -9,7 +9,7 @@ import {
   LLMProviderFormProps,
   LLMProviderName,
   LLMProviderView,
-} from "@/interfaces/llm";
+} from "@/lib/languageModels/types";
 import { fetchOpenAICompatibleModels } from "@/lib/languageModels/svc";
 import {
   useInitialValues,

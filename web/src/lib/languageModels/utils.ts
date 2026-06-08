@@ -1,14 +1,14 @@
-import { MinimalPersonaSnapshot } from "@/app/admin/agents/interfaces";
-import {
+import { MinimalAgent } from "@/lib/agents/types";
+import type {
   DefaultModel,
   LLMProviderDescriptor,
   ModelConfiguration,
-} from "@/interfaces/llm";
+} from "@/lib/languageModels/types";
 import { LlmDescriptor } from "@/lib/hooks";
 
 export function getFinalLLM(
   llmProviders: LLMProviderDescriptor[],
-  persona: MinimalPersonaSnapshot | null,
+  persona: MinimalAgent | null,
   currentLlm: LlmDescriptor | null,
   defaultText?: DefaultModel | null
 ): [string, string] {
@@ -49,7 +49,7 @@ export function getFinalLLM(
 }
 
 export function getProviderOverrideForPersona(
-  liveAgent: MinimalPersonaSnapshot,
+  liveAgent: MinimalAgent,
   llmProviders: LLMProviderDescriptor[]
 ): LlmDescriptor | null {
   // Canonical path: resolve from model configuration ID.
@@ -138,7 +138,7 @@ export const modelSupportsImageInput = (
 };
 
 export function getDisplayName(
-  agent: MinimalPersonaSnapshot,
+  agent: MinimalAgent,
   llmProviders: LLMProviderDescriptor[]
 ): string | undefined {
   if (agent.default_model_configuration_id == null) return undefined;

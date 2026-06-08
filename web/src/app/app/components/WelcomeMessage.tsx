@@ -7,7 +7,7 @@ import {
 } from "@/lib/chat/greetingMessages";
 import AgentAvatar from "@/refresh-components/avatars/AgentAvatar";
 import Text from "@/refresh-components/texts/Text";
-import { MinimalPersonaSnapshot } from "@/app/admin/agents/interfaces";
+import { MinimalAgent } from "@/lib/agents/types";
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useSettingsContext } from "@/providers/SettingsProvider";
@@ -15,7 +15,7 @@ import FrostedDiv from "@/refresh-components/FrostedDiv";
 import { Section } from "@/layouts/general-layouts";
 
 export interface WelcomeMessageProps {
-  agent?: MinimalPersonaSnapshot;
+  agent?: MinimalAgent;
   isDefaultAgent: boolean;
 }
 
@@ -79,7 +79,7 @@ export default function WelcomeMessage({
   return (
     <FrostedDiv
       data-testid="chat-intro"
-      className="flex flex-col items-center justify-center gap-3 w-full max-w-[var(--app-page-main-content-width)]"
+      className="flex flex-col items-center justify-center gap-3 w-full max-w-(--app-page-main-content-width)"
     >
       {content}
     </FrostedDiv>

@@ -4,19 +4,20 @@ import { use, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { SlackChannelConfigCreationForm } from "@/app/admin/bots/[bot-id]/channels/SlackChannelConfigCreationForm";
 import { ErrorCallout } from "@/components/ErrorCallout";
-import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
-import * as SettingsLayouts from "@/layouts/settings-layouts";
+import { SvgSimpleLoader } from "@opal/icons";
+import { SettingsLayouts } from "@opal/layouts";
 import { SvgSlack } from "@opal/logos";
 import { useDocumentSets } from "@/app/admin/documents/sets/hooks";
-import { useAgents } from "@/hooks/useAgents";
+import { useAgents } from "@/lib/agents/hooks";
 import { useStandardAnswerCategories } from "@/app/ee/admin/standard-answer/hooks";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
+import { useTierAtLeast } from "@/hooks/useTierAtLeast";
+import { Tier } from "@/interfaces/settings";
 import type { StandardAnswerCategoryResponse } from "@/components/standardAnswers/getStandardAnswerCategoriesIfEE";
 import { useRouter } from "next/navigation";
 
 function NewChannelConfigContent({ slackBotId }: { slackBotId: number }) {
   const t = useTranslations("admin.bots.channels");
-  const isPaidEnterprise = usePaidEnterpriseFeaturesEnabled();
+  const enterpriseTier = useTierAtLeast(Tier.ENTERPRISE);
 
   const {
     data: documentSets,
@@ -39,9 +40,9 @@ function NewChannelConfigContent({ slackBotId }: { slackBotId: number }) {
   if (
     isDocSetsLoading ||
     isAgentsLoading ||
-    (isPaidEnterprise && isStdAnswerLoading)
+    (enterpriseTier && isStdAnswerLoading)
   ) {
-    return <SimpleLoader />;
+    return <SvgSimpleLoader />;
   }
 
   if (docSetsError || !documentSets) {
@@ -67,7 +68,7 @@ function NewChannelConfigContent({ slackBotId }: { slackBotId: number }) {
   }
 
   const standardAnswerCategoryResponse: StandardAnswerCategoryResponse =
-    isPaidEnterprise
+    enterpriseTier
       ? {
           paidEnterpriseFeaturesEnabled: true,
           categories: standardAnswerCategories ?? [],

@@ -2,8 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import * as AppLayouts from "@/layouts/app-layouts";
-import * as SettingsLayouts from "@/layouts/settings-layouts";
+import { SettingsLayouts } from "@opal/layouts";
 import { SidebarTab } from "@opal/components";
 import { SvgSliders } from "@opal/icons";
 import { useUser } from "@/providers/UserProvider";
@@ -25,55 +24,53 @@ export default function Layout({ children }: LayoutProps) {
   const showAccountsAccessTab = showPasswordSection || showTokensSection;
 
   return (
-    <AppLayouts.Root>
-      <SettingsLayouts.Root width="lg">
-        <SettingsLayouts.Header icon={SvgSliders} title={t("title")} divider />
+    <SettingsLayouts.Root width="lg">
+      <SettingsLayouts.Header icon={SvgSliders} title={t("title")} divider />
 
-        <SettingsLayouts.Body>
-          <Section
-            flexDirection="row"
-            justifyContent="start"
-            alignItems="start"
-            gap={1.5}
+      <SettingsLayouts.Body>
+        <Section
+          flexDirection="row"
+          justifyContent="start"
+          alignItems="start"
+          gap={1.5}
+        >
+          {/* Left: Tab Navigation */}
+          <div
+            data-testid="settings-left-tab-navigation"
+            className="flex flex-col px-2 min-w-50"
           >
-            {/* Left: Tab Navigation */}
-            <div
-              data-testid="settings-left-tab-navigation"
-              className="flex flex-col px-2 min-w-[12.5rem]"
+            <SidebarTab
+              href="/app/settings/general"
+              selected={pathname === "/app/settings/general"}
             >
+              {t("tabs.general")}
+            </SidebarTab>
+            <SidebarTab
+              href="/app/settings/chat-preferences"
+              selected={pathname === "/app/settings/chat-preferences"}
+            >
+              {t("tabs.chatPreferences")}
+            </SidebarTab>
+            {showAccountsAccessTab && (
               <SidebarTab
-                href="/app/settings/general"
-                selected={pathname === "/app/settings/general"}
+                href="/app/settings/accounts-access"
+                selected={pathname === "/app/settings/accounts-access"}
               >
-                {t("tabs.general")}
+                {t("tabs.accountsAccess")}
               </SidebarTab>
-              <SidebarTab
-                href="/app/settings/chat-preferences"
-                selected={pathname === "/app/settings/chat-preferences"}
-              >
-                {t("tabs.chatPreferences")}
-              </SidebarTab>
-              {showAccountsAccessTab && (
-                <SidebarTab
-                  href="/app/settings/accounts-access"
-                  selected={pathname === "/app/settings/accounts-access"}
-                >
-                  {t("tabs.accountsAccess")}
-                </SidebarTab>
-              )}
-              <SidebarTab
-                href="/app/settings/connectors"
-                selected={pathname === "/app/settings/connectors"}
-              >
-                {t("tabs.connectors")}
-              </SidebarTab>
-            </div>
+            )}
+            <SidebarTab
+              href="/app/settings/connectors"
+              selected={pathname === "/app/settings/connectors"}
+            >
+              {t("tabs.connectors")}
+            </SidebarTab>
+          </div>
 
-            {/* Right: Tab Content */}
-            {children}
-          </Section>
-        </SettingsLayouts.Body>
-      </SettingsLayouts.Root>
-    </AppLayouts.Root>
+          {/* Right: Tab Content */}
+          {children}
+        </Section>
+      </SettingsLayouts.Body>
+    </SettingsLayouts.Root>
   );
 }

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Button, Divider, Text } from "@opal/components";
 import { markdown } from "@opal/utils";
-import Spacer from "@/refresh-components/Spacer";
+import { Spacer } from "@opal/components";
 import Title from "@/components/ui/title";
 import { DocumentSetSummary } from "@/lib/types";
 import { useState } from "react";
@@ -20,7 +20,7 @@ import { useDocumentSets } from "./hooks";
 import { ConnectorTitle } from "@/components/admin/connectors/ConnectorTitle";
 import { deleteDocumentSet } from "./lib";
 import { toast } from "@/hooks/useToast";
-import * as SettingsLayouts from "@/layouts/settings-layouts";
+import { SettingsLayouts } from "@opal/layouts";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
 import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
 import {
@@ -138,7 +138,7 @@ const EditRow = ({
             }
           }}
         >
-          <FiEdit2 className="mr-2 flex-shrink-0" />
+          <FiEdit2 className="mr-2 shrink-0" />
           <span className="font-medium">{documentSet.name}</span>
         </div>
       </Tooltip>

@@ -27,11 +27,11 @@ import { parseLlmDescriptor } from "@/lib/languageModels/utils";
 import { ChatSession } from "@/app/app/interfaces";
 import { Credential } from "./connectors/credentials";
 import { SettingsContext } from "@/providers/SettingsProvider";
+import { MinimalAgent } from "@/lib/agents/types";
 import {
-  MinimalPersonaSnapshot,
-  PersonaLabel,
-} from "@/app/admin/agents/interfaces";
-import { DefaultModel, LLMProviderDescriptor } from "@/interfaces/llm";
+  DefaultModel,
+  LLMProviderDescriptor,
+} from "@/lib/languageModels/types";
 import { isAnthropic } from "@/lib/languageModels/svc";
 import { getSourceMetadataForSources } from "./sources";
 import { AuthType, NEXT_PUBLIC_CLOUD_ENABLED } from "./constants";
@@ -250,85 +250,6 @@ export const useFederatedConnectors = () => {
   };
 };
 
-export const useLabels = () => {
-  const { mutate } = useSWRConfig();
-  const { data: labels, error } = useSWR<PersonaLabel[]>(
-    SWR_KEYS.personaLabels,
-    errorHandlingFetcher
-  );
-
-  const refreshLabels = async () => {
-    return mutate(SWR_KEYS.personaLabels);
-  };
-
-  const createLabel = async (name: string): Promise<PersonaLabel | null> => {
-    const response = await fetch(SWR_KEYS.personaLabels, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name }),
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const newLabel: PersonaLabel = await response.json();
-    mutate(
-      SWR_KEYS.personaLabels,
-      (currentLabels: PersonaLabel[] | undefined) => [
-        ...(currentLabels || []),
-        newLabel,
-      ],
-      false
-    );
-    return newLabel;
-  };
-
-  const updateLabel = async (id: number, name: string) => {
-    const response = await fetch(`/api/admin/persona/label/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ label_name: name }),
-    });
-
-    if (response.ok) {
-      mutate(
-        SWR_KEYS.personaLabels,
-        labels?.map((label) => (label.id === id ? { ...label, name } : label)),
-        false
-      );
-    }
-
-    return response;
-  };
-
-  const deleteLabel = async (id: number) => {
-    const response = await fetch(`/api/admin/persona/label/${id}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (response.ok) {
-      mutate(
-        SWR_KEYS.personaLabels,
-        labels?.filter((label) => label.id !== id),
-        false
-      );
-    }
-
-    return response;
-  };
-
-  return {
-    labels,
-    error,
-    refreshLabels,
-    createLabel,
-    updateLabel,
-    deleteLabel,
-  };
-};
-
 export const useTimeRange = (initialValue?: DateRangePickerValue) => {
   return useState<DateRangePickerValue | null>(null);
 };
@@ -488,7 +409,7 @@ export interface LlmManager {
   updateModelOverrideBasedOnChatSession: (chatSession?: ChatSession) => void;
   imageFilesPresent: boolean;
   updateImageFilesPresent: (present: boolean) => void;
-  liveAgent: MinimalPersonaSnapshot | null;
+  liveAgent: MinimalAgent | null;
   maxTemperature: number;
   llmProviders: LLMProviderDescriptor[] | undefined;
   isLoadingProviders: boolean;
@@ -647,7 +568,7 @@ export function getValidLlmDescriptorForProviders(
 
 export function useLlmManager(
   currentChatSession?: ChatSession,
-  liveAgent?: MinimalPersonaSnapshot
+  liveAgent?: MinimalAgent
 ): LlmManager {
   const { user } = useUser();
 
@@ -817,7 +738,9 @@ export function useLlmManager(
         currentChatSession.current_temperature_override,
         isAnthropicModel ? 1.0 : 2.0
       );
-    } else if (liveAgent?.tools.some((tool) => tool.name === SEARCH_TOOL_ID)) {
+    } else if (
+      liveAgent?.tools.some((tool) => tool.in_code_tool_id === SEARCH_TOOL_ID)
+    ) {
       return 0;
     }
     return 0.5;
@@ -862,7 +785,9 @@ export function useLlmManager(
 
     if (currentChatSession?.current_temperature_override) {
       setTemperature(currentChatSession.current_temperature_override);
-    } else if (liveAgent?.tools.some((tool) => tool.name === SEARCH_TOOL_ID)) {
+    } else if (
+      liveAgent?.tools.some((tool) => tool.in_code_tool_id === SEARCH_TOOL_ID)
+    ) {
       setTemperature(0);
     } else {
       setTemperature(0.5);

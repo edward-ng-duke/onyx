@@ -1020,6 +1020,195 @@ def test_paginate_url_504_halves_multiple_times(
     assert "limit=5" in mock_get_call_paths[3]
 
 
+def test_retrieve_confluence_spaces_server_paginates_past_capped_page(
+    confluence_server_client: OnyxConfluence,
+) -> None:
+    """
+    Regression test for #4129: Confluence Server/DC silently caps
+    ``rest/api/space`` page size at the admin-configured maximum when the
+    requested ``limit`` is larger. The pagination loop must NOT terminate
+    just because ``len(results) < requested_limit`` -- doing so causes
+    spaces beyond the cap to be invisible to permission sync, which in
+    turn breaks ``get_all_space_permissions`` and crashes
+    ``generic_doc_sync`` with "No external access found for document ID".
+
+    Here we request limit=5000 but the server caps responses at 3 per
+    page. The real end-of-data is signaled by ``_links.next`` being
+    absent on the last data-bearing page (the canonical Atlassian
+    contract).
+    """
+    requested_limit = 5000
+    server_cap = 3
+    all_keys = ["AAA", "BBB", "CCC", "DDD", "EEE", "FFF", "GGG", "HHH"]
+
+    mock_get_call_paths: list[str] = []
+
+    def get_side_effect(
+        path: str,
+        params: dict[str, Any] | None = None,  # noqa: ARG001
+        advanced_mode: bool = False,  # noqa: ARG001
+    ) -> requests.Response:
+        path = path.strip("/")
+        mock_get_call_paths.append(path)
+
+        # Honor whatever ``start`` the loop asks for; default 0 on the
+        # initial call (no start param).
+        start_token = "start="
+        start = 0
+        if start_token in path:
+            start = int(path.split(start_token, 1)[1].split("&", 1)[0])
+
+        keys_on_page = all_keys[start : start + server_cap]
+        has_more = (start + server_cap) < len(all_keys)
+        # Atlassian's canonical end-of-pagination signal: emit
+        # ``_links.next`` only when more data follows. The loop must
+        # terminate when this is absent -- NOT when
+        # ``len(results) < limit``.
+        links: dict[str, str] = {}
+        if has_more:
+            links["next"] = (
+                f"/rest/api/space?limit={requested_limit}&start={start + server_cap}"
+            )
+        return _create_mock_response(
+            200,
+            {
+                "results": [{"key": k} for k in keys_on_page],
+                "size": len(keys_on_page),
+                "_links": links,
+            },
+            url=path,
+        )
+
+    confluence_server_client._confluence.get.side_effect = (  # ty: ignore[unresolved-attribute]
+        get_side_effect
+    )
+
+    returned = list(
+        confluence_server_client.retrieve_confluence_spaces(limit=requested_limit)
+    )
+
+    assert [s["key"] for s in returned] == all_keys
+    # 8 keys / 3 per page = 3 data pages. The third response carries no
+    # ``_links.next``, so we must NOT make a fourth probe call.
+    assert len(mock_get_call_paths) == 3
+    assert all(f"limit={requested_limit}" in p for p in mock_get_call_paths)
+
+
+def test_paginate_url_server_re_derives_start_when_dc_under_counts(
+    confluence_server_client: OnyxConfluence,
+) -> None:
+    """#4129: no-callback Server callers (paginated_cql_retrieval, slim
+    docs, etc.) must re-derive ``start`` when DC under-counts
+    ``_links.next.start``.
+    """
+    requested_limit = 10
+    server_cap = 3
+    all_ids = list(range(1, 9))
+    mock_get_call_paths: list[str] = []
+
+    def get_side_effect(
+        path: str,
+        params: dict[str, Any] | None = None,  # noqa: ARG001
+        advanced_mode: bool = False,  # noqa: ARG001
+    ) -> requests.Response:
+        path = path.strip("/")
+        mock_get_call_paths.append(path)
+
+        start = 0
+        if "start=" in path:
+            start = int(path.split("start=", 1)[1].split("&", 1)[0])
+
+        ids_on_page = all_ids[start : start + server_cap]
+        has_more = (start + server_cap) < len(all_ids)
+        # Simulate the bug: _links.next.start advances by requested_limit
+        # (10) rather than server_cap (3).
+        links: dict[str, str] = {}
+        if has_more:
+            links["next"] = (
+                f"/rest/api/content/search?cql=type=page"
+                f"&limit={requested_limit}&start={start + requested_limit}"
+            )
+        return _create_mock_response(
+            200,
+            {
+                "results": [{"id": i} for i in ids_on_page],
+                "_links": links,
+                "size": len(ids_on_page),
+            },
+            url=path,
+        )
+
+    confluence_server_client._confluence.get.side_effect = (  # ty: ignore[unresolved-attribute]
+        get_side_effect
+    )
+
+    returned = list(
+        confluence_server_client.paginated_cql_retrieval(
+            cql="type=page", limit=requested_limit
+        )
+    )
+
+    assert [r["id"] for r in returned] == all_ids
+    starts_seen = []
+    for path in mock_get_call_paths:
+        if "start=" in path:
+            starts_seen.append(int(path.split("start=", 1)[1].split("&", 1)[0]))
+        else:
+            starts_seen.append(0)
+    assert starts_seen == [0, 3, 6]
+
+
+def test_retrieve_confluence_spaces_server_stops_when_next_link_absent(
+    confluence_server_client: OnyxConfluence,
+) -> None:
+    """
+    Regression test for CONFSERVER-95272 / CONFSERVER-95312 (DC 8.5.8,
+    7.19.21, 8.9.0): when ``start`` exceeds the true total,
+    ``rest/api/space`` keeps returning records instead of an empty page.
+    A loop that terminated only on empty ``results`` would run unbounded
+    on these versions.
+
+    We must honor ``_links.next`` absence as the canonical end signal.
+    This test simulates the bug -- every call returns a record -- and
+    confirms that absence of ``_links.next`` is enough to stop the
+    loop after a finite number of calls.
+    """
+    mock_get_call_paths: list[str] = []
+    page_counter = {"n": 0}
+
+    def get_side_effect(
+        path: str,
+        params: dict[str, Any] | None = None,  # noqa: ARG001
+        advanced_mode: bool = False,  # noqa: ARG001
+    ) -> requests.Response:
+        path = path.strip("/")
+        mock_get_call_paths.append(path)
+        page_counter["n"] += 1
+        is_first_page = page_counter["n"] == 1
+        return _create_mock_response(
+            200,
+            {
+                "results": [{"key": f"SPACE{page_counter['n']}"}],
+                "size": 1,
+                "_links": (
+                    {"next": "/rest/api/space?limit=5000&start=1"}
+                    if is_first_page
+                    else {}
+                ),
+            },
+            url=path,
+        )
+
+    confluence_server_client._confluence.get.side_effect = (  # ty: ignore[unresolved-attribute]
+        get_side_effect
+    )
+
+    returned = list(confluence_server_client.retrieve_confluence_spaces(limit=5000))
+
+    assert [s["key"] for s in returned] == ["SPACE1", "SPACE2"]
+    assert len(mock_get_call_paths) == 2
+
+
 def test_jsonrpc_websudo_html_response_raises_validation_error(
     confluence_server_client: OnyxConfluence,
 ) -> None:
@@ -1089,9 +1278,12 @@ def test_jsonrpc_websudo_html_response_raises_validation_error(
 # ---------------------------------------------------------------------------
 
 
-def _serverinfo_payload(version: str) -> dict[str, Any]:
-    """Minimal /rest/api/serverInfo payload; we only consume `version`."""
-    return {"version": version, "buildNumber": "0"}
+def _server_information_payload(version: str) -> dict[str, Any]:
+    """Minimal /rest/api/server-information payload; we only consume
+    `version`. Schema documented in the Confluence DC REST API reference
+    under the "Server Information" group.
+    """
+    return {"version": version, "buildNumber": 0}
 
 
 def test_supports_rest_space_permissions_true_for_dc_91_plus(
@@ -1099,25 +1291,30 @@ def test_supports_rest_space_permissions_true_for_dc_91_plus(
 ) -> None:
     """DC 10.2.10 (the customer's actual deployed version) should report
     support for the REST API. Cached after first probe, so a subsequent
-    call must not hit /rest/api/serverInfo a second time.
+    call must not hit /rest/api/server-information a second time.
     """
-    serverinfo_mock = mock.Mock(return_value=_serverinfo_payload("10.2.10"))
+    server_info_mock = mock.Mock(return_value=_server_information_payload("10.2.10"))
     confluence_server_client._confluence.get = (  # ty: ignore[invalid-assignment]
-        serverinfo_mock
+        server_info_mock
     )
 
     assert confluence_server_client.supports_rest_space_permissions() is True
     assert confluence_server_client.get_server_version() == (10, 2)
     assert confluence_server_client.supports_rest_space_permissions() is True
-    assert serverinfo_mock.call_count == 1
+    assert server_info_mock.call_count == 1
+    # Regression-guard the path itself: the Jira-style /rest/api/serverInfo
+    # 404s on Confluence DC 10.x; the documented Confluence path is the
+    # hyphenated /rest/api/server-information.
+    (called_path, *_), _ = server_info_mock.call_args
+    assert called_path == "rest/api/server-information"
 
 
 def test_supports_rest_space_permissions_false_for_dc_pre_91(
     confluence_server_client: OnyxConfluence,
 ) -> None:
-    serverinfo_mock = mock.Mock(return_value=_serverinfo_payload("8.9.1"))
+    server_info_mock = mock.Mock(return_value=_server_information_payload("8.9.1"))
     confluence_server_client._confluence.get = (  # ty: ignore[invalid-assignment]
-        serverinfo_mock
+        server_info_mock
     )
 
     assert confluence_server_client.supports_rest_space_permissions() is False
@@ -1127,18 +1324,20 @@ def test_supports_rest_space_permissions_false_for_dc_pre_91(
 def test_supports_rest_space_permissions_false_when_probe_fails(
     confluence_server_client: OnyxConfluence,
 ) -> None:
-    """Negative probe is cached: a flaky serverInfo call doesn't make us
-    re-probe on every space-permissions sync.
+    """Negative probe is cached: a flaky server-information call doesn't
+    make us re-probe on every space-permissions sync. Also pins the
+    "version=None -> JSON-RPC fallback" contract that downstream
+    dispatchers rely on.
     """
-    serverinfo_mock = mock.Mock(side_effect=requests.ConnectionError("boom"))
+    server_info_mock = mock.Mock(side_effect=requests.ConnectionError("boom"))
     confluence_server_client._confluence.get = (  # ty: ignore[invalid-assignment]
-        serverinfo_mock
+        server_info_mock
     )
 
     assert confluence_server_client.supports_rest_space_permissions() is False
     assert confluence_server_client.get_server_version() is None
     confluence_server_client.supports_rest_space_permissions()
-    assert serverinfo_mock.call_count == 1
+    assert server_info_mock.call_count == 1
 
 
 def test_get_all_space_permissions_server_rest_404_raises_unavailable(

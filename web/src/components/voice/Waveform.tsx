@@ -43,8 +43,8 @@ function Waveform({
   const t = useTranslations("components.waveform");
   // ─── Recording variant state ───────────────────────────────────────────────
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [barHeights, setBarHeights] = useState<number[]>(
-    () => new Array(RECORDING_BAR_COUNT).fill(MIN_BAR_HEIGHT) as number[]
+  const [barHeights, setBarHeights] = useState<number[]>(() =>
+    Array.from({ length: RECORDING_BAR_COUNT }, () => MIN_BAR_HEIGHT)
   );
   const animationRef = useRef<number | null>(null);
   const lastPushTimeRef = useRef(0);
@@ -83,7 +83,7 @@ function Waveform({
 
     if (!isActive) {
       setBarHeights(
-        new Array(RECORDING_BAR_COUNT).fill(MIN_BAR_HEIGHT) as number[]
+        Array.from({ length: RECORDING_BAR_COUNT }, () => MIN_BAR_HEIGHT)
       );
       lastPushTimeRef.current = 0;
       return;

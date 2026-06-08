@@ -13,7 +13,7 @@ import {
   TextFormField,
 } from "@/components/Field";
 import { Button, Divider } from "@opal/components";
-import { MinimalPersonaSnapshot } from "@/app/admin/agents/interfaces";
+import { MinimalAgent } from "@/lib/agents/types";
 import DocumentSetCard from "@/sections/cards/DocumentSetCard";
 import CollapsibleSection from "@/app/admin/agents/CollapsibleSection";
 import { StandardAnswerCategoryResponse } from "@/components/standardAnswers/getStandardAnswerCategoriesIfEE";
@@ -41,8 +41,8 @@ export interface SlackChannelConfigFormFieldsProps {
   isUpdate: boolean;
   isDefault: boolean;
   documentSets: DocumentSetSummary[];
-  searchEnabledAgents: MinimalPersonaSnapshot[];
-  nonSearchAgents: MinimalPersonaSnapshot[];
+  searchEnabledAgents: MinimalAgent[];
+  nonSearchAgents: MinimalAgent[];
   standardAnswerCategoryResponse: StandardAnswerCategoryResponse;
   slack_bot_id: number;
   formikProps: any;
@@ -86,8 +86,8 @@ export function SlackChannelConfigFormFields({
   };
 
   const [syncEnabledAgents, availableAgents] = useMemo(() => {
-    const sync: MinimalPersonaSnapshot[] = [];
-    const available: MinimalPersonaSnapshot[] = [];
+    const sync: MinimalAgent[] = [];
+    const available: MinimalAgent[] = [];
 
     searchEnabledAgents.forEach((persona) => {
       const hasSyncSet = persona.document_sets.some(documentSetContainsSync);
@@ -374,7 +374,7 @@ export function SlackChannelConfigFormFields({
                   {t("unselectableAgents")}
                 </p>
                 <div className="mb-3 mt-2 flex gap-2 flex-wrap text-sm">
-                  {syncEnabledAgents.map((persona: MinimalPersonaSnapshot) => (
+                  {syncEnabledAgents.map((persona: MinimalAgent) => (
                     <button
                       type="button"
                       onClick={() =>
@@ -523,6 +523,12 @@ export function SlackChannelConfigFormFields({
                 subtext={t("respondMemberGroupSubtext")}
                 values={values}
                 placeholder={t("userOrGroupPlaceholder")}
+                disabled={values.is_ephemeral}
+                tooltip={
+                  values.is_ephemeral
+                    ? "Disabled while 'Respond to user in a private (ephemeral) message' is on — ephemeral responses target a single user only."
+                    : undefined
+                }
               />
 
               <StandardAnswerCategoryDropdownField

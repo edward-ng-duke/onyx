@@ -305,10 +305,11 @@ def upsert_llm_provider(
         db_session.flush()
 
     for model_config in llm_provider_upsert_request.model_configurations:
-
         supported_flows = [LLMModelFlowType.CHAT]
         if model_config.supports_image_input:
             supported_flows.append(LLMModelFlowType.VISION)
+        if model_config.supports_reasoning:
+            supported_flows.append(LLMModelFlowType.REASONING)
 
         existing = existing_by_name.get(model_config.name)
         if existing:
@@ -319,6 +320,7 @@ def upsert_llm_provider(
                 is_visible=model_config.is_visible,
                 max_input_tokens=model_config.max_input_tokens,
                 display_name=model_config.display_name,
+                custom_display_name=model_config.custom_display_name,
             )
         else:
             insert_new_model_configuration__no_commit(
@@ -329,6 +331,7 @@ def upsert_llm_provider(
                 is_visible=model_config.is_visible,
                 max_input_tokens=model_config.max_input_tokens,
                 display_name=model_config.display_name,
+                custom_display_name=model_config.custom_display_name,
             )
 
     # Make sure the relationship table stays up to date
@@ -388,6 +391,8 @@ def sync_model_configurations(
             supported_flows = [LLMModelFlowType.CHAT]
             if model.supports_image_input:
                 supported_flows.append(LLMModelFlowType.VISION)
+            if model.supports_reasoning:
+                supported_flows.append(LLMModelFlowType.REASONING)
 
             insert_new_model_configuration__no_commit(
                 db_session=db_session,
@@ -743,40 +748,20 @@ def update_no_default_contextual_rag_provider(
 def update_default_contextual_model(
     db_session: Session,
     enable_contextual_rag: bool,
-    contextual_rag_llm_provider: str | None,
-    contextual_rag_llm_name: str | None,
+    model_configuration_id: int | None,
 ) -> None:
     """Sets or clears the default contextual RAG model.
 
     Should be called whenever the PRESENT search settings change
     (e.g. inline update or FUTURE → PRESENT swap).
     """
-    if (
-        not enable_contextual_rag
-        or not contextual_rag_llm_name
-        or not contextual_rag_llm_provider
-    ):
+    if not enable_contextual_rag or model_configuration_id is None:
         update_no_default_contextual_rag_provider(db_session=db_session)
         return
 
-    provider = fetch_existing_llm_provider(
-        name=contextual_rag_llm_provider, db_session=db_session
-    )
-    if not provider:
-        raise ValueError(f"Provider '{contextual_rag_llm_provider}' not found")
-
-    model_config = next(
-        (
-            mc
-            for mc in provider.model_configurations
-            if mc.name == contextual_rag_llm_name
-        ),
-        None,
-    )
+    model_config = db_session.get(ModelConfiguration, model_configuration_id)
     if not model_config:
-        raise ValueError(
-            f"Model '{contextual_rag_llm_name}' not found for provider '{contextual_rag_llm_provider}'"
-        )
+        raise ValueError(f"model_configuration id={model_configuration_id} not found")
 
     add_model_to_flow(
         db_session=db_session,
@@ -785,8 +770,8 @@ def update_default_contextual_model(
     )
     _update_default_model(
         db_session=db_session,
-        provider_id=provider.id,
-        model=contextual_rag_llm_name,
+        provider_id=model_config.llm_provider_id,
+        model=model_config.name,
         flow_type=LLMModelFlowType.CONTEXTUAL_RAG,
     )
 
@@ -950,6 +935,7 @@ def insert_new_model_configuration__no_commit(
     is_visible: bool,
     max_input_tokens: int | None,
     display_name: str | None,
+    custom_display_name: str | None = None,
 ) -> int | None:
     result = db_session.execute(
         insert(ModelConfiguration)
@@ -959,6 +945,7 @@ def insert_new_model_configuration__no_commit(
             is_visible=is_visible,
             max_input_tokens=max_input_tokens,
             display_name=display_name,
+            custom_display_name=custom_display_name,
             supports_image_input=LLMModelFlowType.VISION in supported_flows,
         )
         .on_conflict_do_nothing()
@@ -987,6 +974,7 @@ def update_model_configuration__no_commit(
     is_visible: bool,
     max_input_tokens: int | None,
     display_name: str | None,
+    custom_display_name: str | None = None,
 ) -> None:
     result = db_session.execute(
         update(ModelConfiguration)
@@ -994,6 +982,7 @@ def update_model_configuration__no_commit(
             is_visible=is_visible,
             max_input_tokens=max_input_tokens,
             display_name=display_name,
+            custom_display_name=custom_display_name,
             supports_image_input=LLMModelFlowType.VISION in supported_flows,
         )
         .where(ModelConfiguration.id == model_configuration_id)

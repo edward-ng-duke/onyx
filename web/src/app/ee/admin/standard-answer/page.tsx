@@ -1,6 +1,6 @@
 "use client";
 
-import * as SettingsLayouts from "@/layouts/settings-layouts";
+import { SettingsLayouts } from "@opal/layouts";
 import { toast } from "@/hooks/useToast";
 import { useStandardAnswers, useStandardAnswerCategories } from "./hooks";
 import { ThreeDotsLoader } from "@/components/Loading";
@@ -27,7 +27,7 @@ import { FiTag } from "react-icons/fi";
 import { PageSelector } from "@/components/PageSelector";
 import { Text } from "@opal/components";
 import { markdown } from "@opal/utils";
-import Spacer from "@/refresh-components/Spacer";
+import { Spacer } from "@opal/components";
 import { TableHeader } from "@/components/ui/table";
 import { SvgEdit, SvgPlusCircle, SvgTrash } from "@opal/icons";
 import { Button } from "@opal/components";
@@ -248,7 +248,7 @@ const StandardAnswersTable = ({
         <MagnifyingGlass />
         <textarea
           autoFocus
-          className="flex-grow ml-2 h-6 bg-transparent outline-none placeholder-subtle overflow-hidden whitespace-normal resize-none"
+          className="grow ml-2 h-6 bg-transparent outline-hidden placeholder-subtle overflow-hidden whitespace-normal resize-none"
           role="textarea"
           aria-multiline
           placeholder={t("searchPlaceholder")}

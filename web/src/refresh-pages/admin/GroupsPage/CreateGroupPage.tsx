@@ -5,13 +5,12 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Table, Button, Divider } from "@opal/components";
 import { IllustrationContent } from "@opal/layouts";
-import { SvgUsers } from "@opal/icons";
+import { SvgUsers, SvgSimpleLoader } from "@opal/icons";
 import SvgNoResult from "@opal/illustrations/no-result";
-import * as SettingsLayouts from "@/layouts/settings-layouts";
+import { SettingsLayouts } from "@opal/layouts";
 import { Section } from "@/layouts/general-layouts";
-import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
+import { InputTypeIn } from "@opal/components";
 import Text from "@/refresh-components/texts/Text";
-import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
 import { toast } from "@/hooks/useToast";
 import useGroupMemberCandidates from "./useGroupMemberCandidates";
 import {
@@ -114,7 +113,7 @@ function CreateGroupPage() {
         <Divider paddingParallel="fit" paddingPerpendicular="fit" />
 
         {/* Members table */}
-        {isLoading && <SimpleLoader />}
+        {isLoading && <SvgSimpleLoader />}
 
         {error ? (
           <Text as="p" secondaryBody text03>
@@ -133,7 +132,7 @@ function CreateGroupPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search users and accounts..."
-              leftSearchIcon
+              searchIcon
             />
             <Table
               data={allRows}

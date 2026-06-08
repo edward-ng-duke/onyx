@@ -3,12 +3,12 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import * as SettingsLayouts from "@/layouts/settings-layouts";
+import { SettingsLayouts } from "@opal/layouts";
 import * as GeneralLayouts from "@/layouts/general-layouts";
 import { Button, Card, Divider, MessageCard } from "@opal/components";
 import { Hoverable, Disabled } from "@opal/core";
-import { FullPersona } from "@/app/admin/agents/interfaces";
-import { buildAgentAvatarUrl } from "@/app/app/components/files/images/utils";
+import { FullAgent } from "@/lib/agents/types";
+import { buildAgentAvatarUrl } from "@/lib/agents/utils";
 import { Formik, Form, FieldArray } from "formik";
 import * as Yup from "yup";
 import InputTypeInField from "@/refresh-components/form/InputTypeInField";
@@ -36,6 +36,7 @@ import {
   PYTHON_TOOL_ID,
   SEARCH_TOOL_ID,
   OPEN_URL_TOOL_ID,
+  CODING_AGENT_TOOL_ID,
 } from "@/app/app/components/tools/constants";
 import Text from "@/refresh-components/texts/Text";
 import SimpleCollapsible from "@/refresh-components/SimpleCollapsible";
@@ -45,12 +46,12 @@ import { useDocumentSets } from "@/app/admin/documents/sets/hooks";
 import { useProjectsContext } from "@/providers/ProjectsContext";
 import { useCreateModal } from "@/refresh-components/contexts/ModalContext";
 import { toast } from "@/hooks/useToast";
-import UserFilesModal from "@/components/modals/UserFilesModal";
+import UserFilesModal from "@/sections/modals/UserFilesModal";
 import {
   ProjectFile,
   UserFileStatus,
 } from "@/app/app/projects/projectsService";
-import Popover, { PopoverMenu } from "@/refresh-components/Popover";
+import { Popover, PopoverMenu } from "@opal/components";
 import LineItem from "@/refresh-components/buttons/LineItem";
 import {
   SvgActions,
@@ -62,24 +63,22 @@ import {
   SvgSliders,
   SvgUsers,
   SvgTrash,
+  SvgSimpleLoader,
 } from "@opal/icons";
 import CustomAgentAvatar, {
   agentAvatarIconMap,
 } from "@/refresh-components/avatars/CustomAgentAvatar";
 import InputAvatar from "@/refresh-components/inputs/InputAvatar";
 import SquareButton from "@/refresh-components/buttons/SquareButton";
-import { useAgents } from "@/hooks/useAgents";
-import {
-  createPersona,
-  updatePersona,
-  PersonaUpsertParameters,
-} from "@/app/admin/agents/lib";
-import useMcpServersForAgentEditor from "@/hooks/useMcpServersForAgentEditor";
+import { useAgents } from "@/lib/agents/hooks";
+import { createAgent, updateAgent } from "@/lib/agents/svc";
+import { AgentUpsertParameters } from "@/lib/agents/types";
+import { useMcpServersForAgentEditor } from "@/lib/agents/hooks";
 import useOpenApiTools from "@/hooks/useOpenApiTools";
 import { useAvailableTools } from "@/hooks/useAvailableTools";
 import { getActionIcon } from "@/lib/tools/mcpUtils";
 import { MCPServer, MCPTool, ToolSnapshot } from "@/lib/tools/interfaces";
-import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
+import { InputTypeIn } from "@opal/components";
 import useFilter from "@/hooks/useFilter";
 import EnabledCount from "@/refresh-components/EnabledCount";
 import { useAppRouter } from "@/hooks/appNavigation";
@@ -88,18 +87,18 @@ import {
   deleteAgent,
   updateAgentFeaturedStatus,
   updateAgentSharedStatus,
-} from "@/lib/agents";
+} from "@/lib/agents/svc";
 import ConfirmationModalLayout from "@/refresh-components/layouts/ConfirmationModalLayout";
 import ShareAgentModal from "@/sections/modals/ShareAgentModal";
 import AgentKnowledgePane from "@/sections/knowledge/AgentKnowledgePane";
 import { ValidSources } from "@/lib/types";
 import { useVectorDbEnabled } from "@/providers/SettingsProvider";
 import { useUser } from "@/providers/UserProvider";
-import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
+import { useTierAtLeast } from "@/hooks/useTierAtLeast";
+import { Tier } from "@/interfaces/settings";
 
 interface AgentIconEditorProps {
-  existingAgent?: FullPersona | null;
+  existingAgent?: FullAgent | null;
 }
 
 function FormWarningsEffect() {
@@ -214,7 +213,7 @@ function AgentIconEditor({ existingAgent }: AgentIconEditorProps) {
       <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
         <Popover.Trigger asChild>
           <Hoverable.Root group="inputAvatar" width="fit">
-            <InputAvatar className="relative flex flex-col items-center justify-center h-[7.5rem] w-[7.5rem]">
+            <InputAvatar className="relative flex flex-col items-center justify-center h-30 w-30">
               {/* We take the `InputAvatar`'s height/width (in REM) and multiply it by 16 (the REM -> px conversion factor). */}
               <CustomAgentAvatar
                 size={imageSrc ? 7.5 * 16 : 40}
@@ -245,7 +244,7 @@ function AgentIconEditor({ existingAgent }: AgentIconEditorProps) {
                 {t("uploadImage")}
               </LineItem>,
               null,
-              <div className="grid grid-cols-4 gap-1">
+              <div key="icon-grid" className="grid grid-cols-4 gap-1">
                 <SquareButton
                   key="default-icon"
                   icon={() => (
@@ -329,7 +328,7 @@ function MCPServerCard({
     cardContent = (
       <div className="flex flex-col gap-2 p-2">
         <GeneralLayouts.Section padding={1}>
-          <SimpleLoader />
+          <SvgSimpleLoader />
         </GeneralLayouts.Section>
       </div>
     );
@@ -380,7 +379,7 @@ function MCPServerCard({
             <InputTypeIn
               placeholder={t("searchToolsPlaceholder")}
               variant="internal"
-              leftSearchIcon
+              searchIcon
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -436,7 +435,7 @@ function MCPServerCard({
   );
 }
 
-function StarterMessages() {
+function AgentStarterMessages() {
   const t = useTranslations("agents.editor");
   const max_starters = STARTER_MESSAGE_EXAMPLE_KEYS.length;
 
@@ -482,7 +481,7 @@ function StarterMessages() {
 }
 
 export interface AgentEditorPageProps {
-  agent?: FullPersona;
+  agent?: FullAgent;
   refreshAgent?: () => void;
 }
 
@@ -502,7 +501,7 @@ export default function AgentEditorPage({
   const { isAdmin, isCurator } = useUser();
   const canUpdateFeaturedStatus = isAdmin || isCurator;
   const vectorDbEnabled = useVectorDbEnabled();
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
+  const businessTier = useTierAtLeast(Tier.BUSINESS);
 
   // Hooks for Knowledge section
   const { allRecentFiles, beginUpload } = useProjectsContext();
@@ -583,6 +582,9 @@ export default function AgentEditorPage({
   );
   const codeInterpreterTool = availableTools?.find(
     (t) => t.in_code_tool_id === PYTHON_TOOL_ID
+  );
+  const codingAgentTool = availableTools?.find(
+    (t) => t.in_code_tool_id === CODING_AGENT_TOOL_ID
   );
   const isImageGenerationAvailable = !!imageGenTool;
   const imageGenerationDisabledTooltip = isImageGenerationAvailable
@@ -675,6 +677,12 @@ export default function AgentEditorPage({
       !!codeInterpreterTool &&
       (existingAgent?.tools?.some(
         (tool) => tool.in_code_tool_id === PYTHON_TOOL_ID
+      ) ??
+        false),
+    coding_agent:
+      !!codingAgentTool &&
+      (existingAgent?.tools?.some(
+        (tool) => tool.in_code_tool_id === CODING_AGENT_TOOL_ID
       ) ??
         false),
     // MCP servers - dynamically add fields for each server with nested tool fields
@@ -792,7 +800,7 @@ export default function AgentEditorPage({
         }));
 
       // Send null instead of empty array if no starter messages
-      const finalStarterMessages =
+      const finalAgentStarterMessages =
         starterMessages.length > 0 ? starterMessages : null;
 
       // Always look up tools in availableTools to ensure we can find all tools
@@ -814,6 +822,9 @@ export default function AgentEditorPage({
       }
       if (values.code_interpreter && codeInterpreterTool) {
         toolIds.push(codeInterpreterTool.id);
+      }
+      if (values.coding_agent && codingAgentTool) {
+        toolIds.push(codingAgentTool.id);
       }
 
       // Collect enabled MCP tool IDs
@@ -848,7 +859,7 @@ export default function AgentEditorPage({
       });
 
       // Build submission data
-      const submissionData: PersonaUpsertParameters = {
+      const submissionData: AgentUpsertParameters = {
         name: values.name,
         description: values.description,
         document_set_ids: values.enable_knowledge
@@ -857,7 +868,7 @@ export default function AgentEditorPage({
         is_public: values.is_public,
         default_model_configuration_id:
           (values as any).default_model_configuration_id ?? null,
-        starter_messages: finalStarterMessages,
+        starter_messages: finalAgentStarterMessages,
         users: values.shared_user_ids,
         groups: values.shared_group_ids,
         tool_ids: toolIds,
@@ -884,10 +895,10 @@ export default function AgentEditorPage({
 
       // Call API
       let personaResponse;
-      if (!!existingAgent) {
-        personaResponse = await updatePersona(existingAgent.id, submissionData);
+      if (existingAgent) {
+        personaResponse = await updateAgent(existingAgent.id, submissionData);
       } else {
-        personaResponse = await createPersona(submissionData);
+        personaResponse = await createAgent(submissionData);
       }
 
       // Handle response
@@ -932,16 +943,19 @@ export default function AgentEditorPage({
   async function handleDeleteAgent() {
     if (!existingAgent) return;
 
-    const error = await deleteAgent(existingAgent.id);
-
-    if (error) {
-      toast.error(tToast("deleteFailed", { error: String(error) }));
-    } else {
+    try {
+      await deleteAgent(existingAgent.id);
       toast.success(tToast("deleteSuccess"));
-
       deleteAgentModal.toggle(false);
       await refreshAgents();
       router.push("/app/agents");
+    } catch (e) {
+      console.error("Delete agent error:", e);
+      toast.error(
+        tToast("deleteFailed", {
+          error: e instanceof Error ? e.message : "Unknown error",
+        })
+      );
     }
   }
 
@@ -1172,7 +1186,7 @@ export default function AgentEditorPage({
                           userIds,
                           groupIds,
                           isPublic,
-                          isPaidEnterpriseFeaturesEnabled,
+                          businessTier,
                           labelIds
                         );
                       } catch (error) {
@@ -1366,7 +1380,7 @@ export default function AgentEditorPage({
                           description={t("conversationStartersDescription")}
                           suffix={t("optional")}
                         >
-                          <StarterMessages />
+                          <AgentStarterMessages />
                         </InputVertical>
                       </GeneralLayouts.Section>
 
@@ -1492,6 +1506,22 @@ export default function AgentEditorPage({
                                   <SwitchField
                                     name="code_interpreter"
                                     disabled={!codeInterpreterTool}
+                                  />
+                                </InputHorizontal>
+                              </Card>
+                            </Disabled>
+
+                            <Disabled disabled={!codingAgentTool}>
+                              <Card border="solid" rounding="lg">
+                                <InputHorizontal
+                                  withLabel="coding_agent"
+                                  title="Coding Agent"
+                                  description="Investigate a GitHub repository and answer questions about its code."
+                                  disabled={!codingAgentTool}
+                                >
+                                  <SwitchField
+                                    name="coding_agent"
+                                    disabled={!codingAgentTool}
                                   />
                                 </InputHorizontal>
                               </Card>

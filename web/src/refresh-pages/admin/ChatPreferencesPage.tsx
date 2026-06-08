@@ -8,11 +8,11 @@ import { Formik, Form } from "formik";
 import useSWR, { mutate } from "swr";
 import { SWR_KEYS } from "@/lib/swr-keys";
 import { errorHandlingFetcher } from "@/lib/fetcher";
-import * as SettingsLayouts from "@/layouts/settings-layouts";
+import { SettingsLayouts } from "@opal/layouts";
 import { Section } from "@/layouts/general-layouts";
 import SimpleCollapsible from "@/refresh-components/SimpleCollapsible";
 import InputTextAreaField from "@/refresh-components/form/InputTextAreaField";
-import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
+import { InputTypeIn } from "@opal/components";
 import InputTextArea from "@/refresh-components/inputs/InputTextArea";
 import InputSelect from "@/refresh-components/inputs/InputSelect";
 import {
@@ -48,6 +48,7 @@ import {
   WEB_SEARCH_TOOL_ID,
   PYTHON_TOOL_ID,
   OPEN_URL_TOOL_ID,
+  CODING_AGENT_TOOL_ID,
 } from "@/app/app/components/tools/constants";
 import {
   EmptyMessageCard,
@@ -59,15 +60,16 @@ import {
   Tooltip,
 } from "@opal/components";
 import Modal from "@/refresh-components/Modal";
-import Switch from "@/refresh-components/inputs/Switch";
-import useMcpServersForAgentEditor from "@/hooks/useMcpServersForAgentEditor";
+import { Switch } from "@opal/components";
+import { useMcpServersForAgentEditor } from "@/lib/agents/hooks";
 import useOpenApiTools from "@/hooks/useOpenApiTools";
 import { getActionIcon } from "@/lib/tools/mcpUtils";
 import { Disabled, Hoverable } from "@opal/core";
 import useFilter from "@/hooks/useFilter";
 import { MCPServer } from "@/lib/tools/interfaces";
 import type { IconProps } from "@opal/types";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
+import { useTierAtLeast } from "@/hooks/useTierAtLeast";
+import { Tier } from "@/interfaces/settings";
 
 const route = ADMIN_ROUTES.CHAT_PREFERENCES;
 
@@ -108,8 +110,7 @@ function MCPServerCard({
   } = useFilter(tools, (tool) => `${tool.name} ${tool.description}`);
 
   const allToolIds = tools.map((t) => t.id);
-  const serverEnabled =
-    tools.length > 0 && tools.some((t) => isToolEnabled(t.id));
+  const serverEnabled = tools.some((t) => isToolEnabled(t.id));
   const needsAuth = !server.is_authenticated;
   const authTooltip = needsAuth ? t("mcpAuthTooltip") : undefined;
 
@@ -157,7 +158,7 @@ function MCPServerCard({
               <InputTypeIn
                 placeholder={t("searchToolsPlaceholder")}
                 variant="internal"
-                leftSearchIcon
+                searchIcon
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
@@ -293,7 +294,6 @@ function NumericLimitField({
     <Hoverable.Root group="numericLimit" width="full">
       <InputTypeIn
         inputMode="numeric"
-        showClearButton={false}
         pattern="[0-9]*"
         value={value}
         onChange={(e) => setValue(e.target.value)}
@@ -303,7 +303,7 @@ function NumericLimitField({
             : t("defaultPlaceholder", { value: defaultValue })
         }
         variant={isOverMax ? "error" : undefined}
-        rightSection={
+        rightChildren={
           (value || "") !== defaultValue ? (
             <Hoverable.Item group="numericLimit" variant="appear-on-hover">
               <Button
@@ -387,7 +387,9 @@ export default function ChatPreferencesPage() {
   const router = useRouter();
   const settings = useSettingsContext();
   const s = settings.settings;
-  const enterpriseEnabled = usePaidEnterpriseFeaturesEnabled();
+  // Search Mode toggle is Business+; Chat Retention is Enterprise-only.
+  const businessTier = useTierAtLeast(Tier.BUSINESS);
+  const enterpriseTier = useTierAtLeast(Tier.ENTERPRISE);
 
   // Local state for text fields (save-on-blur)
   const [companyName, setCompanyName] = useState(s.company_name ?? "");
@@ -436,6 +438,9 @@ export default function ChatPreferencesPage() {
   );
   const codeInterpreterTool = availableTools.find(
     (t) => t.in_code_tool_id === PYTHON_TOOL_ID
+  );
+  const codingAgentTool = availableTools.find(
+    (t) => t.in_code_tool_id === CODING_AGENT_TOOL_ID
   );
 
   // Connectors
@@ -571,10 +576,10 @@ export default function ChatPreferencesPage() {
           <Card border="solid" rounding="lg">
             <Section>
               <Disabled
-                disabled={!enterpriseEnabled || uniqueSources.length === 0}
-                allowClick={enterpriseEnabled}
+                disabled={!businessTier || uniqueSources.length === 0}
+                allowClick={businessTier}
                 tooltip={
-                  !enterpriseEnabled
+                  !businessTier
                     ? t("searchModeEnterpriseTooltip")
                     : t("searchModeNeedConnectors")
                 }
@@ -582,26 +587,26 @@ export default function ChatPreferencesPage() {
                 <InputHorizontal
                   title={t("searchModeTitle")}
                   tag={
-                    !enterpriseEnabled
+                    !businessTier
                       ? {
-                          title: t("enterprisePlanTag"),
+                          title: "Business Plan",
                           color: "amber",
                           icon: SvgOrganization,
                         }
                       : { title: t("betaTag"), color: "blue" }
                   }
                   description={t("searchModeDescription")}
-                  disabled={!enterpriseEnabled || uniqueSources.length === 0}
+                  disabled={!businessTier || uniqueSources.length === 0}
                   withLabel
                 >
                   <Switch
                     checked={
-                      enterpriseEnabled ? s.search_ui_enabled ?? true : false
+                      businessTier ? (s.search_ui_enabled ?? true) : false
                     }
                     onCheckedChange={(checked) => {
                       void saveSettings({ search_ui_enabled: checked });
                     }}
-                    disabled={!enterpriseEnabled || uniqueSources.length === 0}
+                    disabled={!businessTier || uniqueSources.length === 0}
                   />
                 </InputHorizontal>
               </Disabled>
@@ -741,7 +746,7 @@ export default function ChatPreferencesPage() {
                           {uniqueSources.slice(0, 3).map((source) => {
                             const meta = getSourceMetadata(source);
                             return (
-                              <div key={source} className="w-[10rem]">
+                              <div key={source} className="w-40">
                                 <Card padding="sm" border="solid">
                                   <Content
                                     icon={meta.icon}
@@ -889,6 +894,30 @@ export default function ChatPreferencesPage() {
                           </InputHorizontal>
                         </Card>
                       </Disabled>
+
+                      <Disabled disabled={!codingAgentTool}>
+                        <Card border="solid" rounding="lg">
+                          <InputHorizontal
+                            title="Coding Agent"
+                            description="Investigate a GitHub repository and answer questions about its code."
+                            disabled={!codingAgentTool}
+                            withLabel
+                          >
+                            <Switch
+                              checked={
+                                codingAgentTool
+                                  ? isToolEnabled(codingAgentTool.id)
+                                  : false
+                              }
+                              onCheckedChange={(checked) =>
+                                codingAgentTool &&
+                                void toggleTool(codingAgentTool.id, checked)
+                              }
+                              disabled={!codingAgentTool}
+                            />
+                          </InputHorizontal>
+                        </Card>
+                      </Disabled>
                     </Section>
 
                     {/* Separator between built-in tools and MCP/OpenAPI tools */}
@@ -946,14 +975,14 @@ export default function ChatPreferencesPage() {
                 <Card border="solid" rounding="lg">
                   <Section>
                     <Disabled
-                      disabled={!enterpriseEnabled}
+                      disabled={!enterpriseTier}
                       tooltip={t("keepChatHistoryEnterpriseTooltip")}
                     >
                       <InputHorizontal
                         title={t("keepChatHistoryTitle")}
                         description={t("keepChatHistoryDescription")}
                         tag={
-                          !enterpriseEnabled
+                          !enterpriseTier
                             ? {
                                 title: t("enterprisePlanTag"),
                                 color: "amber",
@@ -961,7 +990,7 @@ export default function ChatPreferencesPage() {
                               }
                             : undefined
                         }
-                        disabled={!enterpriseEnabled}
+                        disabled={!enterpriseTier}
                         withLabel
                       >
                         <InputSelect
@@ -977,7 +1006,7 @@ export default function ChatPreferencesPage() {
                                   : parseInt(value, 10),
                             });
                           }}
-                          disabled={!enterpriseEnabled}
+                          disabled={!enterpriseTier}
                         >
                           <InputSelect.Trigger />
                           <InputSelect.Content>
@@ -1052,8 +1081,8 @@ export default function ChatPreferencesPage() {
                       saveSettings={saveSettings}
                       initialUploadSizeMb={
                         (s.user_file_max_upload_size_mb ?? 0) <= 0
-                          ? s.default_user_file_max_upload_size_mb?.toString() ??
-                            "100"
+                          ? (s.default_user_file_max_upload_size_mb?.toString() ??
+                            "100")
                           : s.user_file_max_upload_size_mb!.toString()
                       }
                       defaultUploadSizeMb={
@@ -1062,8 +1091,8 @@ export default function ChatPreferencesPage() {
                       }
                       initialTokenThresholdK={
                         s.file_token_count_threshold_k == null
-                          ? s.default_file_token_count_threshold_k?.toString() ??
-                            "200"
+                          ? (s.default_file_token_count_threshold_k?.toString() ??
+                            "200")
                           : s.file_token_count_threshold_k === 0
                             ? ""
                             : s.file_token_count_threshold_k.toString()

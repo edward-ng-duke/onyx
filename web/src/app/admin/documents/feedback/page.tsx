@@ -5,7 +5,7 @@ import { useMostReactedToDocuments } from "@/lib/hooks";
 import { DocumentFeedbackTable } from "./DocumentFeedbackTable";
 import { numPages, numToDisplay } from "./constants";
 import Title from "@/components/ui/title";
-import * as SettingsLayouts from "@/layouts/settings-layouts";
+import { SettingsLayouts } from "@opal/layouts";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
 import { useAdminRouteI18n } from "@/hooks/useAdminRouteI18n";
 import { useTranslations } from "next-intl";

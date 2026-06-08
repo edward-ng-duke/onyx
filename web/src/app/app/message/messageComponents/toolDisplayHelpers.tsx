@@ -18,6 +18,7 @@ import {
   SvgBookOpen,
   SvgSlowTime,
   SvgXCircle,
+  SvgCode,
 } from "@opal/icons";
 
 /**
@@ -45,6 +46,17 @@ export function isToolComplete(packets: Packet[]): boolean {
           p.obj.type === PacketType.ERROR) &&
         (p.placement.sub_turn_index === undefined ||
           p.placement.sub_turn_index === null)
+    );
+  }
+
+  // For coding agents, the CodingAgentFinal packet (or an error) marks completion.
+  // Nested BashTool packets are part of the same group and don't indicate the
+  // agent is done.
+  if (firstPacket.obj.type === PacketType.CODING_AGENT_START) {
+    return packets.some(
+      (p) =>
+        p.obj.type === PacketType.CODING_AGENT_FINAL ||
+        p.obj.type === PacketType.ERROR
     );
   }
 
@@ -151,7 +163,9 @@ export function getToolNameRaw(packets: Packet[]): string {
     case PacketType.DEEP_RESEARCH_PLAN_START:
       return "Plan";
     case PacketType.RESEARCH_AGENT_START:
-      return "Research";
+      return "Research agent";
+    case PacketType.CODING_AGENT_START:
+      return "Coding agent";
     case PacketType.REASONING_START:
       return "Reasoning";
     case PacketType.MEMORY_TOOL_START:
@@ -189,6 +203,8 @@ export function getToolIcon(packets: Packet[]): React.ReactNode {
       return <FiList className="w-3.5 h-3.5" />;
     case PacketType.RESEARCH_AGENT_START:
       return <SvgUser className="w-3.5 h-3.5" />;
+    case PacketType.CODING_AGENT_START:
+      return <SvgCode className="w-3.5 h-3.5" />;
     case PacketType.REASONING_START:
       return <SvgSlowTime className="w-3.5 h-3.5" />;
     case PacketType.MEMORY_TOOL_START:

@@ -6,12 +6,13 @@ import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { useSWRConfig } from "swr";
 import { useFormikContext } from "formik";
 import { InputDivider, InputVertical } from "@opal/layouts";
+import { markdown } from "@opal/utils";
 import PasswordInputTypeInField from "@/refresh-components/form/PasswordInputTypeInField";
 import {
   LLMProviderFormProps,
   LLMProviderName,
   LLMProviderView,
-} from "@/interfaces/llm";
+} from "@/lib/languageModels/types";
 import {
   useInitialValues,
   buildValidationSchema,
@@ -21,19 +22,18 @@ import {
 import { submitProvider } from "@/sections/modals/languageModels/svc";
 import { LLMProviderConfiguredSource } from "@/lib/analytics";
 import {
+  CONTAINERIZED_HOST_NOTE,
   ModelSelectionField,
   DisplayNameField,
   ModelAccessField,
   ModalWrapper,
 } from "@/sections/modals/languageModels/shared";
 import { fetchOllamaModels } from "@/lib/languageModels/svc";
-import Tabs from "@/refresh-components/Tabs";
-import { Card } from "@opal/components";
+import { Card, Tabs } from "@opal/components";
 import { toast } from "@/hooks/useToast";
 import { refreshLlmProviderCaches } from "@/lib/languageModels/cache";
 import InputTypeInField from "@/refresh-components/form/InputTypeInField";
-
-const DEFAULT_API_BASE = "http://127.0.0.1:11434";
+import { useSettingsContext } from "@/providers/SettingsProvider";
 const CLOUD_API_BASE = "https://ollama.com";
 
 enum Tab {
@@ -64,6 +64,7 @@ function OllamaModalInternals({
   const t = useTranslations("modals.llmConfig.ollama");
   const tShared = useTranslations("modals.llmConfig.shared");
   const formikProps = useFormikContext<OllamaModalValues>();
+  const { settings } = useSettingsContext();
 
   const isFetchDisabled = useMemo(
     () =>
@@ -106,31 +107,39 @@ function OllamaModalInternals({
             </Tabs.Trigger>
             <Tabs.Trigger value={Tab.TAB_CLOUD}>Ollama Cloud</Tabs.Trigger>
           </Tabs.List>
-          <Tabs.Content value={Tab.TAB_SELF_HOSTED} padding={0}>
-            <InputVertical
-              withLabel="api_base"
-              title={tShared("apiBaseUrl")}
-              subDescription={t("endpointDescription")}
-            >
-              <InputTypeInField
-                name="api_base"
-                placeholder={t("endpointPlaceholder")}
-              />
-            </InputVertical>
-          </Tabs.Content>
+          <div className="pt-4">
+            <Tabs.Content value={Tab.TAB_SELF_HOSTED}>
+              <InputVertical
+                withLabel="api_base"
+                title={tShared("apiBaseUrl")}
+                subDescription={
+                  settings.is_containerized
+                    ? markdown(
+                        `${t("endpointDescription")} ${CONTAINERIZED_HOST_NOTE}`
+                      )
+                    : t("endpointDescription")
+                }
+              >
+                <InputTypeInField
+                  name="api_base"
+                  placeholder={t("endpointPlaceholder")}
+                />
+              </InputVertical>
+            </Tabs.Content>
 
-          <Tabs.Content value={Tab.TAB_CLOUD}>
-            <InputVertical
-              withLabel="custom_config.OLLAMA_API_KEY"
-              title={tShared("apiKey")}
-              subDescription={t("cloudApiKeyDescription")}
-            >
-              <PasswordInputTypeInField
-                name="custom_config.OLLAMA_API_KEY"
-                placeholder={tShared("apiKey")}
-              />
-            </InputVertical>
-          </Tabs.Content>
+            <Tabs.Content value={Tab.TAB_CLOUD}>
+              <InputVertical
+                withLabel="custom_config.OLLAMA_API_KEY"
+                title={tShared("apiKey")}
+                subDescription={t("cloudApiKeyDescription")}
+              >
+                <PasswordInputTypeInField
+                  name="custom_config.OLLAMA_API_KEY"
+                  placeholder={tShared("apiKey")}
+                />
+              </InputVertical>
+            </Tabs.Content>
+          </div>
         </Tabs>
       </Card>
 
@@ -168,6 +177,10 @@ export default function OllamaModal({
   const tValLlm = useTranslations("validation.llm");
   const isOnboarding = variant === "onboarding";
   const { mutate } = useSWRConfig();
+  const { settings } = useSettingsContext();
+  const defaultApiBase = settings.is_containerized
+    ? "http://host.docker.internal:11434"
+    : "http://127.0.0.1:11434";
   const apiKey = existingLlmProvider?.custom_config?.OLLAMA_API_KEY;
   const defaultTab =
     existingLlmProvider && !!apiKey ? Tab.TAB_CLOUD : Tab.TAB_SELF_HOSTED;
@@ -181,7 +194,7 @@ export default function OllamaModal({
       LLMProviderName.OLLAMA_CHAT,
       existingLlmProvider
     ),
-    api_base: existingLlmProvider?.api_base ?? DEFAULT_API_BASE,
+    api_base: existingLlmProvider?.api_base ?? defaultApiBase,
     custom_config: {
       OLLAMA_API_KEY: apiKey,
     },

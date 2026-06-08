@@ -3,10 +3,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import * as SettingsLayouts from "@/layouts/settings-layouts";
+import { SettingsLayouts } from "@opal/layouts";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
 import { useSettingsContext } from "@/providers/SettingsProvider";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
+import { useTierAtLeast } from "@/hooks/useTierAtLeast";
+import { Tier } from "@/interfaces/settings";
 import { useHookSpecs } from "@/ee/hooks/useHookSpecs";
 import { useHooks } from "@/ee/hooks/useHooks";
 import useFilter from "@/hooks/useFilter";
@@ -15,7 +16,6 @@ import {
   useCreateModal,
   useModalClose,
 } from "@/refresh-components/contexts/ModalContext";
-import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
 import { Button, LinkButton, SelectCard, Text } from "@opal/components";
 import { Disabled, Hoverable } from "@opal/core";
 import { markdown } from "@opal/utils";
@@ -23,6 +23,7 @@ import { Content, IllustrationContent } from "@opal/layouts";
 import Modal from "@/refresh-components/Modal";
 import {
   SvgArrowExchange,
+  SvgArrowRightDot,
   SvgBubbleText,
   SvgFileBroadcast,
   SvgShareWebhook,
@@ -31,10 +32,11 @@ import {
   SvgSettings,
   SvgTrash,
   SvgUnplug,
+  SvgSimpleLoader,
 } from "@opal/icons";
 import type { IconFunctionComponent } from "@opal/types";
 import { SvgNoResult, SvgEmpty } from "@opal/illustrations";
-import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
+import { InputTypeIn } from "@opal/components";
 import HookFormModal from "@/ee/refresh-pages/admin/HooksPage/HookFormModal";
 import HookStatusPopover from "@/ee/refresh-pages/admin/HooksPage/HookStatusPopover";
 import {
@@ -54,6 +56,7 @@ const route = ADMIN_ROUTES.HOOKS;
 
 const HOOK_POINT_ICONS: Record<string, IconFunctionComponent> = {
   document_ingestion: SvgFileBroadcast,
+  document_push: SvgArrowRightDot,
   query_processing: SvgBubbleText,
 };
 
@@ -396,7 +399,7 @@ function ConnectedHookCard({
               </div>
 
               <Disabled disabled={isBusy}>
-                <div className="flex items-center pb-1 px-1 gap-1">
+                <div className="flex items-center justify-end pb-1 px-1 gap-1">
                   {hook.is_active ? (
                     <>
                       <Hoverable.Item
@@ -456,7 +459,7 @@ function ConnectedHookCard({
 export default function HooksPage() {
   const router = useRouter();
   const { settings, settingsLoading } = useSettingsContext();
-  const isEE = usePaidEnterpriseFeaturesEnabled();
+  const enterpriseTier = useTierAtLeast(Tier.ENTERPRISE);
   const tToasts = useTranslations("toasts.admin.hooks");
   const tAdmin = useTranslations("admin.hooks");
 
@@ -516,17 +519,17 @@ export default function HooksPage() {
 
   useEffect(() => {
     if (settingsLoading) return;
-    if (!isEE) {
+    if (!enterpriseTier) {
       toast.info(tToasts("requiresEnterprise"));
       router.replace("/");
     } else if (!settings.hooks_enabled) {
       toast.info(tToasts("notEnabled"));
       router.replace("/");
     }
-  }, [settingsLoading, isEE, settings.hooks_enabled, router, tToasts]);
+  }, [settingsLoading, enterpriseTier, settings.hooks_enabled, router, tToasts]);
 
-  if (settingsLoading || !isEE || !settings.hooks_enabled) {
-    return <SimpleLoader />;
+  if (settingsLoading || !enterpriseTier || !settings.hooks_enabled) {
+    return <SvgSimpleLoader />;
   }
 
   const isLoading = specsLoading || hooksLoading;
@@ -545,9 +548,8 @@ export default function HooksPage() {
   }
 
   function handleHookDeleted(id: number) {
-    mutate(
-      (prev: HookResponse[] | undefined) =>
-        prev?.filter((h: HookResponse) => h.id !== id)
+    mutate((prev: HookResponse[] | undefined) =>
+      prev?.filter((h: HookResponse) => h.id !== id)
     );
   }
 
@@ -593,7 +595,7 @@ export default function HooksPage() {
         />
         <SettingsLayouts.Body>
           {isLoading ? (
-            <SimpleLoader />
+            <SvgSimpleLoader />
           ) : specsError || hooksError ? (
             <Text font="secondary-body" color="text-03">
               {`Failed to load${
@@ -607,7 +609,7 @@ export default function HooksPage() {
                   placeholder={tAdmin("searchPlaceholder")}
                   value={search}
                   variant="internal"
-                  leftSearchIcon
+                  searchIcon
                   onChange={(e) => setSearch(e.target.value)}
                 />
               </div>

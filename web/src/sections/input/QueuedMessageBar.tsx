@@ -5,7 +5,7 @@ import { cn } from "@opal/utils";
 import { QueuedMessage } from "@/app/app/interfaces";
 
 interface QueuedMessageBarProps {
-  messages: QueuedMessage[];
+  messages: readonly QueuedMessage[];
   highlightedIndex: number | null;
   awaitingPreferredSelection: boolean;
   onDiscard: (index: number) => void;
@@ -60,14 +60,14 @@ function QueuedMessageBar({
                   </Text>
                 </div>
                 {showAwaitingLabel && (
-                  <div className="flex-shrink-0 whitespace-nowrap">
+                  <div className="shrink-0 whitespace-nowrap">
                     <Text font="secondary-body" color="text-02">
                       {t("selectResponseToContinue")}
                     </Text>
                   </div>
                 )}
                 {showEditLabel && (
-                  <div className="flex-shrink-0 whitespace-nowrap flex items-center gap-0.5">
+                  <div className="shrink-0 whitespace-nowrap flex items-center gap-0.5">
                     <span className="translate-y-[1.5px] text-text-02 text-[0.7rem]">
                       ↵
                     </span>

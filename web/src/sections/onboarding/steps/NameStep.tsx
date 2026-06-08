@@ -3,7 +3,7 @@
 import React, { useRef } from "react";
 import { useTranslations } from "next-intl";
 import Text from "@/refresh-components/texts/Text";
-import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
+import { InputTypeIn } from "@opal/components";
 import {
   OnboardingState,
   OnboardingActions,
@@ -63,7 +63,6 @@ const NameStep = React.memo(
               value={userName || ""}
               onChange={(e) => updateName(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="max-w-60"
             />
           }
         />

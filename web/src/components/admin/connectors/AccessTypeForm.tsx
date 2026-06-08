@@ -7,7 +7,8 @@ import {
 } from "@/lib/types";
 import { useField } from "formik";
 import { AutoSyncOptions } from "./AutoSyncOptions";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
+import { useTierAtLeast } from "@/hooks/useTierAtLeast";
+import { Tier } from "@/interfaces/settings";
 import { useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Credential } from "@/lib/connectors/credentials";
@@ -30,8 +31,10 @@ export function AccessTypeForm({
   const [access_type, meta, access_type_helpers] =
     useField<AccessType>("access_type");
 
-  const isPaidEnterpriseEnabled = usePaidEnterpriseFeaturesEnabled();
-  const isAutoSyncSupported = isValidAutoSyncSource(connector);
+  // Private requires User Groups, Auto Sync requires permission-sync —
+  // both are Business+ features.
+  const businessTier = useTierAtLeast(Tier.BUSINESS);
+  const showAutoSync = businessTier && isValidAutoSyncSource(connector);
 
   const selectedAuthMethod = currentCredential?.credential_json?.[
     "authentication_method"
@@ -48,43 +51,49 @@ export function AccessTypeForm({
     return method?.disablePermSync === true;
   }, [connector, selectedAuthMethod]);
 
-  useEffect(
-    () => {
-      // Only set default value if access_type.value is not already set
-      if (!access_type.value) {
-        if (!isPaidEnterpriseEnabled) {
-          access_type_helpers.setValue("public");
-        } else if (isAutoSyncSupported) {
-          access_type_helpers.setValue("sync");
-        } else {
-          access_type_helpers.setValue("private");
-        }
-      }
-    },
-    [
-      // Only run this effect once when the component mounts
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    ]
-  );
+  // Prefer Auto Sync when available, else Private (User Groups), else
+  // Public. Mirrors the option-availability rules below.
+  const defaultAccess: AccessType = showAutoSync
+    ? "sync"
+    : businessTier
+      ? "private"
+      : "public";
 
-  const options = [
-    {
+  useEffect(() => {
+    if (!access_type.value) access_type_helpers.setValue(defaultAccess);
+  }, [
+    // Only run this effect once when the component mounts
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  ]);
+
+  // Build options in display order: Private, Public, Auto Sync.
+  const options: {
+    name: string;
+    value: string;
+    description: string;
+    disabled: boolean;
+    disabledReason: string;
+  }[] = [];
+
+  if (businessTier) {
+    options.push({
       name: t("privateName"),
       value: "private",
       description: t("privateDescription"),
       disabled: false,
       disabledReason: "",
-    },
-    {
-      name: t("publicName"),
-      value: "public",
-      description: t("publicDescription"),
-      disabled: false,
-      disabledReason: "",
-    },
-  ];
+    });
+  }
 
-  if (isAutoSyncSupported && isPaidEnterpriseEnabled) {
+  options.push({
+    name: t("publicName"),
+    value: "public",
+    description: t("publicDescription"),
+    disabled: false,
+    disabledReason: "",
+  });
+
+  if (showAutoSync) {
     options.push({
       name: t("syncName"),
       value: "sync",
@@ -94,26 +103,24 @@ export function AccessTypeForm({
     });
   }
 
+  if (!businessTier) return null;
+
   return (
     <>
-      {isPaidEnterpriseEnabled && (
-        <>
-          <div>
-            <label className="text-text-950 font-medium">{t("title")}</label>
-            <p className="text-sm text-text-500">{t("description")}</p>
-          </div>
-          <DefaultDropdown
-            options={options}
-            selected={access_type.value}
-            onSelect={(selected) => {
-              access_type_helpers.setValue(selected as AccessType);
-            }}
-            includeDefault={false}
-          />
-          {access_type.value === "sync" && isAutoSyncSupported && (
-            <AutoSyncOptions connectorType={connector as ValidAutoSyncSource} />
-          )}
-        </>
+      <div>
+        <label className="text-text-950 font-medium">{t("title")}</label>
+        <p className="text-sm text-text-500">{t("description")}</p>
+      </div>
+      <DefaultDropdown
+        options={options}
+        selected={access_type.value}
+        onSelect={(selected) =>
+          access_type_helpers.setValue(selected as AccessType)
+        }
+        includeDefault={false}
+      />
+      {access_type.value === "sync" && showAutoSync && (
+        <AutoSyncOptions connectorType={connector as ValidAutoSyncSource} />
       )}
     </>
   );

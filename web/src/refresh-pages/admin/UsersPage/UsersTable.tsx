@@ -5,14 +5,13 @@ import { useTranslations } from "next-intl";
 import { Table, createTableColumns } from "@opal/components";
 import { Content } from "@opal/layouts";
 import { Button } from "@opal/components";
-import { SvgDownload } from "@opal/icons";
+import { SvgDownload, SvgSimpleLoader } from "@opal/icons";
 import SvgNoResult from "@opal/illustrations/no-result";
 import { IllustrationContent } from "@opal/layouts";
-import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
 import { UserRole, UserStatus, USER_STATUS_LABELS } from "@/lib/types";
-import { timeAgo } from "@/lib/time";
+import { timeAgo } from "@opal/time";
 import Text from "@/refresh-components/texts/Text";
-import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
+import { InputTypeIn } from "@opal/components";
 import { toast } from "@/hooks/useToast";
 import useAdminUsers from "@/hooks/useAdminUsers";
 import useGroups from "@/hooks/useGroups";
@@ -68,7 +67,7 @@ function renderStatusColumn(value: UserStatus, row: UserRow) {
 function renderLastUpdatedColumn(value: string | null) {
   return (
     <Text as="span" secondaryBody text03>
-      {value ? timeAgo(value) ?? "\u2014" : "\u2014"}
+      {value ? (timeAgo(value) ?? "\u2014") : "\u2014"}
     </Text>
   );
 }
@@ -197,7 +196,7 @@ export default function UsersTable({
   if (isLoading) {
     return (
       <div className="flex justify-center py-12">
-        <SimpleLoader className="h-6 w-6" />
+        <SvgSimpleLoader className="h-6 w-6" />
       </div>
     );
   }
@@ -216,7 +215,7 @@ export default function UsersTable({
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder={t("searchUsersPlaceholder")}
-        leftSearchIcon
+        searchIcon
       />
       <UserFilters
         selectedRoles={selectedRoles}

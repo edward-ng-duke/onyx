@@ -2,22 +2,23 @@
 
 import { useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { MinimalPersonaSnapshot } from "@/app/admin/agents/interfaces";
+import { MinimalAgent } from "@/lib/agents/types";
 import AgentAvatar from "@/refresh-components/avatars/AgentAvatar";
 import { Button } from "@opal/components";
 import { useAppRouter } from "@/hooks/appNavigation";
 import IconButton from "@/refresh-components/buttons/IconButton";
-import { usePinnedAgents, useAgent } from "@/hooks/useAgents";
+import { usePinnedAgents, useAgent } from "@/lib/agents/hooks";
 import { noProp } from "@/lib/utils";
 import { cn } from "@opal/utils";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
+import { checkUserOwnsAgent } from "@/lib/agents/utils";
+import { useTierAtLeast } from "@/hooks/useTierAtLeast";
+import { Tier } from "@/interfaces/settings";
 import {
-  checkUserOwnsAgent,
   updateAgentSharedStatus,
   updateAgentFeaturedStatus,
-} from "@/lib/agents";
+} from "@/lib/agents/svc";
 import { useUser } from "@/providers/UserProvider";
 import {
   SvgActions,
@@ -39,7 +40,7 @@ import { Interactive } from "@opal/core";
 import { Card } from "@/refresh-components/cards";
 
 export interface AgentCardProps {
-  agent: MinimalPersonaSnapshot;
+  agent: MinimalAgent;
 }
 
 export default function AgentCard({ agent }: AgentCardProps) {
@@ -53,7 +54,7 @@ export default function AgentCard({ agent }: AgentCardProps) {
     [agent.id, pinnedAgents]
   );
   const { user, isAdmin, isCurator } = useUser();
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
+  const businessTier = useTierAtLeast(Tier.BUSINESS);
   const canUpdateFeaturedStatus = isAdmin || isCurator;
   const isOwnedByUser = checkUserOwnsAgent(user, agent);
   const shareAgentModal = useCreateModal();
@@ -81,7 +82,7 @@ export default function AgentCard({ agent }: AgentCardProps) {
         userIds,
         groupIds,
         isPublic,
-        isPaidEnterpriseFeaturesEnabled,
+        businessTier,
         labelIds
       );
 
@@ -107,12 +108,7 @@ export default function AgentCard({ agent }: AgentCardProps) {
       refreshAgent();
       shareAgentModal.toggle(false);
     },
-    [
-      agent.id,
-      canUpdateFeaturedStatus,
-      isPaidEnterpriseFeaturesEnabled,
-      refreshAgent,
-    ]
+    [agent.id, canUpdateFeaturedStatus, businessTier, refreshAgent]
   );
 
   return (
@@ -143,14 +139,14 @@ export default function AgentCard({ agent }: AgentCardProps) {
           height="full"
           className="radial-00 hover:shadow-00"
         >
-          <div className="flex self-stretch h-[6rem]">
+          <div className="flex self-stretch h-24">
             <CardItemLayout
               icon={(props) => <AgentAvatar agent={agent} {...props} />}
               title={agent.name}
               description={agent.description}
               rightChildren={
                 <>
-                  {isOwnedByUser && isPaidEnterpriseFeaturesEnabled && (
+                  {isOwnedByUser && businessTier && (
                     // TODO(@raunakab): migrate to opal Button once className/iconClassName is resolved
                     <IconButton
                       icon={SvgBarChart}

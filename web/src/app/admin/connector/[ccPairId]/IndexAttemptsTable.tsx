@@ -16,14 +16,12 @@ import { CCPairFullInfo } from "./types";
 import { IndexAttemptSnapshot } from "@/lib/types";
 import { IndexAttemptStatus } from "@/components/Status";
 import { PageSelector } from "@/components/PageSelector";
-import { localizeAndPrettify } from "@/lib/time";
+import { localizeAndPrettify } from "@opal/time";
 import { getDocsProcessedPerMinute } from "@/lib/indexAttempt";
 import { SvgBarChartSmall, SvgClock, SvgInfo } from "@opal/icons";
 import ExceptionTraceModal from "@/sections/modals/PreviewModal/ExceptionTraceModal";
 import { Tooltip } from "@opal/components";
 import { Section } from "@/layouts/general-layouts";
-import useFeatureFlag from "@/hooks/useFeatureFlag";
-import { FEATURE_FLAGS } from "@/lib/featureFlags";
 import StageMetricsModal from "./StageMetricsModal";
 export interface IndexingAttemptsTableProps {
   ccPair: CCPairFullInfo;
@@ -44,9 +42,6 @@ export function IndexAttemptsTable({
     number | null
   >(null);
   const [metricsAttemptId, setMetricsAttemptId] = useState<number | null>(null);
-  const stageMetricsEnabled = useFeatureFlag(
-    FEATURE_FLAGS.INDEX_ATTEMPT_METRICS
-  );
 
   if (!indexAttempts?.length) {
     return (
@@ -73,7 +68,7 @@ export function IndexAttemptsTable({
         />
       )}
 
-      {stageMetricsEnabled && metricsAttemptId !== null && (
+      {metricsAttemptId !== null && (
         <StageMetricsModal
           indexAttemptId={metricsAttemptId}
           onClose={() => setMetricsAttemptId(null)}
@@ -149,15 +144,13 @@ export function IndexAttemptsTable({
                         <Text font="secondary-body" color="text-03">
                           {t("docsPerMinute", { speed: docsPerMinute })}
                         </Text>
-                        {stageMetricsEnabled && (
-                          <Button
-                            icon={SvgBarChartSmall}
-                            prominence="tertiary"
-                            size="sm"
-                            tooltip={t("viewStageMetricsTooltip")}
-                            onClick={() => setMetricsAttemptId(indexAttempt.id)}
-                          />
-                        )}
+                        <Button
+                          icon={SvgBarChartSmall}
+                          prominence="tertiary"
+                          size="sm"
+                          tooltip={t("viewStageMetricsTooltip")}
+                          onClick={() => setMetricsAttemptId(indexAttempt.id)}
+                        />
                       </Section>
                     ) : (
                       indexAttempt.status === "success" && (

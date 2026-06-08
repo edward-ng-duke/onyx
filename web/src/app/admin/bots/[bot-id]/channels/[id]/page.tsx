@@ -4,19 +4,20 @@ import { use } from "react";
 import { useTranslations } from "next-intl";
 import { SlackChannelConfigCreationForm } from "@/app/admin/bots/[bot-id]/channels/SlackChannelConfigCreationForm";
 import { ErrorCallout } from "@/components/ErrorCallout";
-import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
-import * as SettingsLayouts from "@/layouts/settings-layouts";
+import { SvgSimpleLoader } from "@opal/icons";
+import { SettingsLayouts } from "@opal/layouts";
 import { SvgSlack } from "@opal/logos";
 import { useSlackChannelConfigs } from "@/app/admin/bots/[bot-id]/hooks";
 import { useDocumentSets } from "@/app/admin/documents/sets/hooks";
-import { useAgents } from "@/hooks/useAgents";
+import { useAgents } from "@/lib/agents/hooks";
 import { useStandardAnswerCategories } from "@/app/ee/admin/standard-answer/hooks";
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
+import { useTierAtLeast } from "@/hooks/useTierAtLeast";
+import { Tier } from "@/interfaces/settings";
 import type { StandardAnswerCategoryResponse } from "@/components/standardAnswers/getStandardAnswerCategoriesIfEE";
 
 function EditSlackChannelConfigContent({ id }: { id: string }) {
   const t = useTranslations("admin.bots.channels");
-  const isPaidEnterprise = usePaidEnterpriseFeaturesEnabled();
+  const enterpriseTier = useTierAtLeast(Tier.ENTERPRISE);
 
   const {
     data: slackChannelConfigs,
@@ -46,7 +47,7 @@ function EditSlackChannelConfigContent({ id }: { id: string }) {
     isChannelsLoading ||
     isDocSetsLoading ||
     isAgentsLoading ||
-    (isPaidEnterprise && isStdAnswerLoading);
+    (enterpriseTier && isStdAnswerLoading);
 
   const slackChannelConfig = slackChannelConfigs?.find(
     (config) => config.id === Number(id)
@@ -66,7 +67,7 @@ function EditSlackChannelConfigContent({ id }: { id: string }) {
       />
       <SettingsLayouts.Body>
         {isLoading ? (
-          <SimpleLoader />
+          <SvgSimpleLoader />
         ) : channelsError || !slackChannelConfigs ? (
           <ErrorCallout
             errorTitle={t("fetchFailedTitle")}
@@ -99,7 +100,7 @@ function EditSlackChannelConfigContent({ id }: { id: string }) {
             documentSets={documentSets}
             personas={agents}
             standardAnswerCategoryResponse={
-              isPaidEnterprise
+              enterpriseTier
                 ? {
                     paidEnterpriseFeaturesEnabled: true,
                     categories: standardAnswerCategories ?? [],

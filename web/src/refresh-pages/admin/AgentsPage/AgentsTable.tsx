@@ -5,55 +5,25 @@ import { useTranslations } from "next-intl";
 import { Table, createTableColumns } from "@opal/components";
 import { Content, IllustrationContent } from "@opal/layouts";
 import SvgNoResult from "@opal/illustrations/no-result";
-import SimpleLoader from "@/refresh-components/loaders/SimpleLoader";
 import Text from "@/refresh-components/texts/Text";
-import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
+import { InputTypeIn } from "@opal/components";
 import type { MinimalUserSnapshot } from "@/lib/types";
 import AgentAvatar from "@/refresh-components/avatars/AgentAvatar";
-import type { MinimalPersonaSnapshot } from "@/app/admin/agents/interfaces";
-import { useAdminAgents } from "@/hooks/useAgents";
+import type { MinimalAgent, Agent } from "@/lib/agents/types";
+import { useAdminAgents } from "@/lib/agents/hooks";
 import { toast } from "@/hooks/useToast";
 import AgentRowActions from "@/refresh-pages/admin/AgentsPage/AgentRowActions";
-import { updateAgentDisplayPriorities } from "@/refresh-pages/admin/AgentsPage/svc";
-import type { AgentRow } from "@/refresh-pages/admin/AgentsPage/interfaces";
-import type { Persona } from "@/app/admin/agents/interfaces";
-import { SvgUser } from "@opal/icons";
+import { updateAgentDisplayPriorities } from "@/lib/agents/svc";
+import { SvgUser, SvgSimpleLoader } from "@opal/icons";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import { Section } from "@/layouts/general-layouts";
 import { useAgentsFilters } from "@/sections/agents/AgentsFilters";
 
 // ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function toAgentRow(persona: Persona): AgentRow {
-  return {
-    id: persona.id,
-    name: persona.name,
-    description: persona.description,
-    is_public: persona.is_public,
-    is_listed: persona.is_listed,
-    is_featured: persona.is_featured,
-    builtin_persona: persona.builtin_persona,
-    display_priority: persona.display_priority,
-    owner: persona.owner,
-    groups: persona.groups,
-    users: persona.users,
-    tools: persona.tools,
-    uploaded_image_id: persona.uploaded_image_id,
-    icon_name: persona.icon_name,
-  };
-}
-
-// ---------------------------------------------------------------------------
 // Column renderers
 // ---------------------------------------------------------------------------
 
-function CreatedByColumn({
-  row,
-}: {
-  row: AgentRow;
-}) {
+function CreatedByColumn({ row }: { row: Agent }) {
   const t = useTranslations("admin.adminAgents");
   return (
     <Content
@@ -61,7 +31,7 @@ function CreatedByColumn({
       variant="section"
       icon={SvgUser}
       title={
-        row.builtin_persona ? t("createdBySystem") : row.owner?.email ?? "\u2014"
+        row.builtin_persona ? t("createdBySystem") : (row.owner?.email ?? "\u2014")
       }
     />
   );
@@ -69,14 +39,14 @@ function CreatedByColumn({
 
 function renderCreatedByColumn(
   _value: MinimalUserSnapshot | null,
-  row: AgentRow
+  row: Agent
 ) {
   return <CreatedByColumn row={row} />;
 }
 
-function AccessColumn({ row }: { row: AgentRow }) {
+function AccessColumn({ row }: { row: Agent }) {
   const t = useTranslations("admin.adminAgents");
-  function getAccessTitle(row: AgentRow): string {
+  function getAccessTitle(row: Agent): string {
     if (row.is_public) return t("accessPublic");
     if (row.groups.length > 0 || row.users.length > 0) return t("accessShared");
     return t("accessPrivate");
@@ -97,7 +67,7 @@ function AccessColumn({ row }: { row: AgentRow }) {
   );
 }
 
-function renderAccessColumn(_isPublic: boolean, row: AgentRow) {
+function renderAccessColumn(_isPublic: boolean, row: Agent) {
   return <AccessColumn row={row} />;
 }
 
@@ -105,7 +75,7 @@ function renderAccessColumn(_isPublic: boolean, row: AgentRow) {
 // Columns
 // ---------------------------------------------------------------------------
 
-const tc = createTableColumns<AgentRow>();
+const tc = createTableColumns<Agent>();
 
 function buildColumns(
   onMutate: () => void,
@@ -116,10 +86,7 @@ function buildColumns(
       content: "icon",
       background: true,
       getContent: (row) => (props) => (
-        <AgentAvatar
-          agent={row as unknown as MinimalPersonaSnapshot}
-          size={props.size}
-        />
+        <AgentAvatar agent={row as unknown as MinimalAgent} size={props.size} />
       ),
     }),
     tc.column("name", {
@@ -136,7 +103,7 @@ function buildColumns(
       weight: 35,
       cell: (value) => (
         <Text as="span" mainUiBody text03>
-          {value || "\u2014"}
+          {value || "—"}
         </Text>
       ),
     }),
@@ -176,11 +143,6 @@ export default function AgentsTable() {
   const { filtered: filteredAgents, filterBar } =
     useAgentsFilters(nonBuiltinAgents);
 
-  const agentRows: AgentRow[] = useMemo(
-    () => filteredAgents.map(toAgentRow),
-    [filteredAgents]
-  );
-
   async function handleReorder(
     _orderedIds: string[],
     changedOrders: Record<string, number>
@@ -199,7 +161,7 @@ export default function AgentsTable() {
   if (isLoading) {
     return (
       <div className="flex justify-center py-12">
-        <SimpleLoader className="h-6 w-6" />
+        <SvgSimpleLoader className="h-6 w-6" />
       </div>
     );
   }
@@ -211,14 +173,14 @@ export default function AgentsTable() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder={t("searchPlaceholder")}
-          leftSearchIcon
+          searchIcon
         />
         <Section gap={0.25} flexDirection="row" justifyContent="start">
           {filterBar}
         </Section>
       </Section>
       <Table
-        data={agentRows}
+        data={filteredAgents}
         columns={columns}
         getRowId={(row) => String(row.id)}
         pageSize={DEFAULT_PAGE_SIZE}

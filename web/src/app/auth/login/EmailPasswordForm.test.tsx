@@ -71,7 +71,7 @@ describe("Email/Password Login Workflow", () => {
 
     // User fills out the form using placeholder text
     const emailInput = screen.getByPlaceholderText(/email@yourcompany.com/i);
-    const passwordInput = screen.getByPlaceholderText(/∗/);
+    const passwordInput = screen.getByTestId("password");
 
     await user.type(emailInput, "test@example.com");
     await user.type(passwordInput, "password123");
@@ -117,7 +117,7 @@ describe("Email/Password Login Workflow", () => {
 
     // User fills out form with invalid credentials
     const emailInput = screen.getByPlaceholderText(/email@yourcompany.com/i);
-    const passwordInput = screen.getByPlaceholderText(/∗/);
+    const passwordInput = screen.getByTestId("password");
 
     await user.type(emailInput, "wrong@example.com");
     await user.type(passwordInput, "wrongpassword");
@@ -166,7 +166,7 @@ describe("Email/Password Signup Workflow", () => {
 
     // User fills out the signup form
     const emailInput = screen.getByPlaceholderText(/email@yourcompany.com/i);
-    const passwordInput = screen.getByPlaceholderText(/∗/);
+    const passwordInput = screen.getByTestId("password");
 
     await user.type(emailInput, "newuser@example.com");
     await user.type(passwordInput, "securepassword123");
@@ -232,7 +232,7 @@ describe("Email/Password Signup Workflow", () => {
 
     // User fills out form with existing email
     const emailInput = screen.getByPlaceholderText(/email@yourcompany.com/i);
-    const passwordInput = screen.getByPlaceholderText(/∗/);
+    const passwordInput = screen.getByTestId("password");
 
     await user.type(emailInput, "existing@example.com");
     await user.type(passwordInput, "password123");
@@ -267,7 +267,7 @@ describe("Email/Password Signup Workflow", () => {
 
     // User fills out form
     const emailInput = screen.getByPlaceholderText(/email@yourcompany.com/i);
-    const passwordInput = screen.getByPlaceholderText(/∗/);
+    const passwordInput = screen.getByTestId("password");
 
     await user.type(emailInput, "user@example.com");
     await user.type(passwordInput, "password123");
@@ -284,5 +284,29 @@ describe("Email/Password Signup Workflow", () => {
         screen.getByText(/^Too many requests\. Please try again later\.$/i)
       ).toBeInTheDocument();
     });
+  });
+});
+
+describe("Email/Password autofill attributes", () => {
+  // Browsers / password managers (e.g. Firefox) only offer saved passwords on
+  // native `type="password"` fields, and pair the identifier via
+  // autocomplete="username". See issue #11578.
+  test("login form exposes password-manager-friendly attributes", () => {
+    render(<EmailPasswordForm isSignup={false} />);
+
+    const emailInput = screen.getByTestId("email");
+    expect(emailInput).toHaveAttribute("autocomplete", "username");
+
+    const passwordInput = screen.getByTestId("password");
+    expect(passwordInput).toHaveAttribute("type", "password");
+    expect(passwordInput).toHaveAttribute("autocomplete", "current-password");
+  });
+
+  test("signup form requests a new password from the manager", () => {
+    render(<EmailPasswordForm isSignup={true} />);
+
+    const passwordInput = screen.getByTestId("password");
+    expect(passwordInput).toHaveAttribute("type", "password");
+    expect(passwordInput).toHaveAttribute("autocomplete", "new-password");
   });
 });

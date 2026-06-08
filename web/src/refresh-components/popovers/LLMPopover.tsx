@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import Popover from "@/refresh-components/Popover";
+import { Popover } from "@opal/components";
 import { LlmDescriptor, LlmManager } from "@/lib/hooks";
 import { structureValue } from "@/lib/languageModels/utils";
 import { getModelIcon } from "@/lib/languageModels";
@@ -150,7 +150,7 @@ export default function LLMPopover({
         (m) => m.name === currentModel
       );
       if (config) {
-        return config.display_name || config.name;
+        return config.custom_display_name || config.display_name || config.name;
       }
     }
     return currentModel;

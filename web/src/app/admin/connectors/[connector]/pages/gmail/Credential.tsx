@@ -262,8 +262,8 @@ export const GmailJsonUploadSection = ({
   if (!isAdmin) {
     return (
       <div>
-        <div className="flex items-start py-3 px-4 bg-yellow-50/30 dark:bg-yellow-900/5 rounded">
-          <FiAlertTriangle className="text-yellow-500 h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
+        <div className="flex items-start py-3 px-4 bg-yellow-50/30 dark:bg-yellow-900/5 rounded-sm">
+          <FiAlertTriangle className="text-yellow-500 h-5 w-5 mr-2 mt-0.5 shrink-0" />
           <p className="text-sm">{t("gmailCuratorRestricted")}</p>
         </div>
       </div>
@@ -292,17 +292,11 @@ export const GmailJsonUploadSection = ({
             <label
               className={cn(
                 "flex h-10 items-center justify-center w-full px-4 py-2 border border-dashed rounded-md transition-colors",
-                false
-                  ? "opacity-70 cursor-not-allowed border-background-400 bg-background-50/30"
-                  : "cursor-pointer hover:bg-background-50/30 hover:border-primary dark:hover:border-primary border-background-300 dark:border-background-600"
+                "cursor-pointer hover:bg-background-50/30 hover:border-primary dark:hover:border-primary border-background-300 dark:border-background-600"
               )}
             >
               <div className="flex items-center space-x-2">
-                {false ? (
-                  <div className="h-4 w-4 border-t-2 border-b-2 border-primary rounded-full animate-spin"></div>
-                ) : (
-                  <FiFile className="h-4 w-4 text-text-500" />
-                )}
+                <FiFile className="h-4 w-4 text-text-500" />
                 <span className="text-sm text-text-500">
                   {truncateString(
                     localServiceAccountData?.service_account_email ||
@@ -469,13 +463,13 @@ export const GmailAuthSection = ({
     return (
       <div>
         <div className="mt-4">
-          <div className="py-3 px-4 bg-blue-50/30 dark:bg-blue-900/5 rounded mb-4 flex items-start">
-            <FiCheck className="text-blue-500 h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
+          <div className="py-3 px-4 bg-blue-50/30 dark:bg-blue-900/5 rounded-sm mb-4 flex items-start">
+            <FiCheck className="text-blue-500 h-5 w-5 mr-2 mt-0.5 shrink-0" />
             <div className="flex-1">
               <span className="font-medium block">
                 {t("gmailAuthCompleteTitle")}
               </span>
-              <p className="text-sm mt-1 text-text-500 dark:text-text-400 break-words">
+              <p className="text-sm mt-1 text-text-500 dark:text-text-400 wrap-break-word">
                 {t("gmailAuthCompleteBody")}
               </p>
             </div>
@@ -514,8 +508,8 @@ export const GmailAuthSection = ({
       <div>
         <SectionHeader>{t("gmailAuthHeader")}</SectionHeader>
         <div className="mt-4">
-          <div className="flex items-start py-3 px-4 bg-yellow-50/30 dark:bg-yellow-900/5 rounded">
-            <FiAlertTriangle className="text-yellow-500 h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
+          <div className="flex items-start py-3 px-4 bg-yellow-50/30 dark:bg-yellow-900/5 rounded-sm">
+            <FiAlertTriangle className="text-yellow-500 h-5 w-5 mr-2 mt-0.5 shrink-0" />
             <p className="text-sm">{t("completeStepOneFirst")}</p>
           </div>
         </div>
@@ -595,7 +589,7 @@ export const GmailAuthSection = ({
   if (localAppCredentialData?.client_id) {
     return (
       <div>
-        <div className="bg-background-50/30 dark:bg-background-900/20 rounded mb-4">
+        <div className="bg-background-50/30 dark:bg-background-900/20 rounded-sm mb-4">
           <p className="text-sm">{t("gmailOauthNextStep")}</p>
         </div>
         <Button

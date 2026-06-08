@@ -1,4 +1,5 @@
-import { usePaidEnterpriseFeaturesEnabled } from "@/components/settings/usePaidEnterpriseFeaturesEnabled";
+import { useTierAtLeast } from "@/hooks/useTierAtLeast";
+import { Tier } from "@/interfaces/settings";
 import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { FieldArray, ArrayHelpers, ErrorMessage, useField } from "formik";
@@ -37,7 +38,7 @@ export function AccessTypeGroupSelector({
   const tCommon = useTranslations("common.actions");
   const { data: userGroups, isLoading: userGroupsIsLoading } = useUserGroups();
   const { isAdmin, user, isCurator } = useUser();
-  const isPaidEnterpriseFeaturesEnabled = usePaidEnterpriseFeaturesEnabled();
+  const businessTier = useTierAtLeast(Tier.BUSINESS);
   const [shouldHideContent, setShouldHideContent] = useState(false);
   const isAutoSyncSupported = isValidAutoSyncSource(connector);
 
@@ -46,9 +47,9 @@ export function AccessTypeGroupSelector({
   const [groups, groups_meta, groups_helpers] = useField<number[]>("groups");
 
   useEffect(() => {
-    if (user && userGroups && isPaidEnterpriseFeaturesEnabled) {
+    if (user && userGroups && businessTier) {
       const isUserAdmin = user.role === UserRole.ADMIN;
-      if (!isPaidEnterpriseFeaturesEnabled) {
+      if (!businessTier) {
         access_type_helpers.setValue("public");
         return;
       }
@@ -80,14 +81,14 @@ export function AccessTypeGroupSelector({
     access_type.value,
     access_type_helpers,
     groups_helpers,
-    isPaidEnterpriseFeaturesEnabled,
+    businessTier,
     isAutoSyncSupported,
   ]);
 
   if (userGroupsIsLoading) {
     return <div>{tCommon("loading")}</div>;
   }
-  if (!isPaidEnterpriseFeaturesEnabled) {
+  if (!businessTier) {
     return null;
   }
 
@@ -118,7 +119,7 @@ export function AccessTypeGroupSelector({
                 {t("assignGroupAccess")}
               </Text>
               {userGroupsIsLoading ? (
-                <div className="animate-pulse bg-background-200 h-8 w-32 rounded" />
+                <div className="animate-pulse bg-background-200 h-8 w-32 rounded-sm" />
               ) : (
                 <Text as="p" mainUiMuted text03>
                   {isAdmin
@@ -132,7 +133,7 @@ export function AccessTypeGroupSelector({
               render={(arrayHelpers: ArrayHelpers) => (
                 <div className="flex flex-wrap gap-2 py-4">
                   {userGroupsIsLoading ? (
-                    <div className="animate-pulse bg-background-200 h-8 w-32 rounded"></div>
+                    <div className="animate-pulse bg-background-200 h-8 w-32 rounded-sm"></div>
                   ) : (
                     userGroups &&
                     userGroups.map((userGroup: UserGroup) => {

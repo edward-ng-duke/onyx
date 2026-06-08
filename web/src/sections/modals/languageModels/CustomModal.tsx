@@ -7,8 +7,8 @@ import { useFormikContext } from "formik";
 import {
   LLMProviderFormProps,
   LLMProviderName,
-  ModelConfiguration,
-} from "@/interfaces/llm";
+} from "@/lib/languageModels/types";
+import type { ModelConfiguration } from "@/lib/languageModels/types";
 import * as Yup from "yup";
 import { useInitialValues } from "@/sections/modals/languageModels/utils";
 import { submitProvider } from "@/sections/modals/languageModels/svc";
@@ -26,7 +26,7 @@ import KeyValueInput, {
   KeyValue,
 } from "@/refresh-components/inputs/InputKeyValue";
 import InputComboBox from "@/refresh-components/inputs/InputComboBox";
-import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
+import { InputTypeIn } from "@opal/components";
 import InputSelect from "@/refresh-components/inputs/InputSelect";
 import Text from "@/refresh-components/texts/Text";
 import { Button, Card, EmptyMessageCard } from "@opal/components";
@@ -73,13 +73,11 @@ function ModelConfigurationItem({
         placeholder={t("modelNamePlaceholder")}
         value={model.name}
         onChange={(e) => onChange({ ...model, name: e.target.value })}
-        showClearButton={false}
       />
       <InputTypeIn
         placeholder={t("displayNamePlaceholder")}
         value={model.display_name}
         onChange={(e) => onChange({ ...model, display_name: e.target.value })}
-        showClearButton={false}
       />
       <InputSelect
         value={model.supports_image_input ? "text-image" : "text-only"}
@@ -107,7 +105,6 @@ function ModelConfigurationItem({
               e.target.value === "" ? null : Number(e.target.value),
           })
         }
-        showClearButton={false}
         type="number"
       />
       <Button

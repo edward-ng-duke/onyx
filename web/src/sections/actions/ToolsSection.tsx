@@ -4,7 +4,7 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@opal/utils";
 import { Button } from "@opal/components";
-import InputTypeIn from "@/refresh-components/inputs/InputTypeIn";
+import { InputTypeIn } from "@opal/components";
 import { SvgFold } from "@opal/icons";
 interface ToolsSectionProps {
   onFold?: () => void;
@@ -34,9 +34,8 @@ const ToolsSection: React.FC<ToolsSectionProps> = ({
             aria-label={t("searchToolsAria")}
             value={searchQuery}
             onChange={handleSearchChange}
-            leftSearchIcon
-            showClearButton
-            className="w-full"
+            searchIcon
+            clearButton
           />
         </div>
 
